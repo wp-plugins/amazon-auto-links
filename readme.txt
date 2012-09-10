@@ -17,10 +17,11 @@ Still manually searching products and pasting affiliate links? What happens if t
 The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazon locales and works even on JavaScript disabled browsers. Insert the ads as widget or place generated shortcode or PHP code where the links should appear.
 
 The features include:
+
 * Supports all Amazon locales including German, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the links to appear.
 * Widget. If you check the widget option, a widget with the unit label will be created so you just put it in a sidebar.
-* Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense wonÅft show up to them. But this one works.
+* Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will no show up to them. But this one works.
 * Random/Title/Date sort order. It's totally possible to show links in random order. 
 * Shortcode to embed the ads into posts.
 * PHP function to insert in the theme.
