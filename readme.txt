@@ -42,8 +42,8 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 == Screenshots ==
 
-1. Setting Page (Overview) : `/assets/amazonautolinks_screenshot1.jpg`
-2. Setting Page (Selecting Categories) : `/assets/amazonautolinks_screenshot2.jpg`
+1. Setting Page (Overview)
+2. Setting Page (Selecting Categories)
 
 == Changelog ==
 
