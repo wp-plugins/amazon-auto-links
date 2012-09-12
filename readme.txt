@@ -18,7 +18,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 
 The features include:
 
-* Supports all Amazon locales including German, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
+* Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the links to appear.
 * Widget. If you check the widget option, a widget with the unit label will be created so you just put it in a sidebar.
 * Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will no show up to them. But this one works.
@@ -37,7 +37,7 @@ The features include:
 
 == Frequently asked questions ==
 
-= Do I need Associate ID to use this plug-in? =
+= Do I need Amazon Associate ID to use this plug-in? =
 
 Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Amazon Associates](https://affiliate-program.amazon.com/).  
 
@@ -47,6 +47,9 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 2. Setting Page (Selecting Categories)
 
 == Changelog ==
+
+= 1.0.2 =
+* Fixed: an issue that form buttons do not appear in category selection page in WordPress version 3.1x or ealier. 
 
 = 1.0.1 =
 * Added: the Widget option.

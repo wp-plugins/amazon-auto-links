@@ -185,7 +185,9 @@
 							<div style="padding-left: 60px; <?php echo $strRightArrow; ?>">
 								<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][addcurrentcategory]" class="button-primary" <?php echo $strRssLink && (!array_key_exists(trim($strBreadcrumb), $oAALOptions->arrOptions[$mode]['categories'])) ? '' : 'Disabled' ?> value="<?php _e('Add Current Category', 'amazonautolinks'); ?>" /><br />
 							</div>
-							<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][deletecategories]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?> value="<?php _e('Delete Selected', 'amazonautolinks'); ?>" /><br />
+							<div style="padding-left: 60px;"><!-- this is necessary for IE -->
+								<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][deletecategories]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?> value="<?php _e('Delete Selected', 'amazonautolinks'); ?>" /><br />
+							</div>
 						</div>						
 					</td>
 				</tr>

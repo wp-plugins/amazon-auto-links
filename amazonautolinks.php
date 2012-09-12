@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.1
+	Version: 1.0.2
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -32,13 +32,38 @@ add_action('widgets_init', 'AmazonAutoLinks_Widgets');
 
 // for the plugin admin panel theming
 function AmazonAutoLinks_CustomCSS() {
-	// if the setting page of this plugin is loaded
+	global $wp_version;
+
+	if ($_GET['page'] != AMAZONAUTOLINKSKEY)
+		return;
+		
+	// if the option page of this plugin is loaded
 	if (IsSet($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) || IsSet($_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton'])) {
-		if ($_GET['page'] == AMAZONAUTOLINKSKEY) 
-			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab101.css', __FILE__). '">';
-	} else if ($_GET['page'] == AMAZONAUTOLINKSKEY && $_GET['tab'] == 400) {	// for the upgrading tab
+
+				$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
+				$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
+				$numIframeWidth =  $numImageSize * 2 + 480;		// $strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]'		
+	
+			if ( version_compare($wp_version, '3.1.9', "<" ) )  // if the WordPress version is below 3.2 
+				$strIframeWidth = $numIframeWidth < 1180 ? 'width:100%;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+			else 				// if the WordPress version is above 3.2
+				$strIframeWidth = $numIframeWidth < 1180 ? 'width:1180px;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+
+			echo '<style type="text/css">
+				#wpcontent {
+					height:100%;
+					' . $strIframeWidth . '
+				}
+				#footer {
+					' . $strIframeWidth . '
+					color: #777;
+					border-color: #DFDFDF;
+				}    					
+				</style>';				
+
+	} else if ($_GET['tab'] == 400) 	// for the upgrading to pro tab; the table needs additional styles
 		echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', __FILE__). '">';
-	}
+	
 }
 
 // the function used to embed the Amazon products unit in a theme
