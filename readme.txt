@@ -51,7 +51,7 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 = 1.0.3 =
 * Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
 * Improved: the browsing speed of the category selection page with caches.
-* Removed: the widget functionality since it produces a blank page in some systems and the cause and solution has not been discovered.
+* Removed: the widget functionality since it produces a blank page in some systems and the cause and solution have not been discovered.
 
 = 1.0.2 =
 * Fixed: an issue that form buttons do not appear in the category selection page in WordPress version 3.1x or ealier.
