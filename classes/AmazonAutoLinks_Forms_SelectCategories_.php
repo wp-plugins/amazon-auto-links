@@ -12,6 +12,8 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		// Include helper classes
 		// require_once(dirname(__FILE__) . '/amazonautolinks_helperclass.php');
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($pluginkey);
+		
 		
 		$this->pluginkey = $pluginkey;
 		$this->textdomain = $pluginkey;	
@@ -54,44 +56,17 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	/* methods for inline frame page */
 	function load_dom($strURL, $lang) {
 	
-		// create dom document object
-		if (!$lang) 
-			$lang = 'uni';
-		mb_language($lang); // <-- without this, the characters get broken
-		$html = @mb_convert_encoding($this->get_html($strURL), 'HTML-ENTITIES', 'AUTO');
+		// create a dom document object
+		mb_language(empty($lang) ? 'uni' : $lang); // <-- without this, the characters get broken
+		$html = $this->oAALCatCache->get_html($strURL);
+		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
 		$doc = new DOMDocument();
 		$doc->preserveWhiteSpace = false;
 		$doc->formatOutput = true;
 		@$doc->loadHTML($html);	
 		return $doc;
 	}
-	function iscurlon() {
-		if  (in_array  ('curl', get_loaded_extensions()))
-			return true;
-		else
-			return false;
-	}	
-	function get_html($strURL) {
-		if ($this->iscurlon())
-			return $this->file_get_contents_curl($strURL);
-		else
-			return file_get_contents($strURL);
-	}
-	function file_get_contents_curl($url) {
-		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);       
-
-		$data = curl_exec($ch);
-		curl_close($ch);
-
-		return $data;
-	}
-	
 	function get_rss_link($doc) {
 		
 		// the parameter must be a dom object
@@ -127,6 +102,11 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		}
 		$id_sidebar = 'zg_browseRoot';
 		$domleftCol = $doc->getElementById($id_sidebar);
+		if (!$domleftCol) {
+			echo 'Categories not found. Plaese consult the plugin developer.<br />';
+			htmlspecialchars(print_r($doc->saveXML($doc)));
+			Exit;
+		}
 		ForEach( $domleftCol->getElementsByTagName('a') as $nodeA) {
 			$href = $nodeA->getAttribute('href');
 			$nodeA->removeAttribute('href');

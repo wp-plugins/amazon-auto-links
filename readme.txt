@@ -20,12 +20,12 @@ The features include:
 
 * Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the links to appear.
-* Widget. If you check the widget option, a widget with the unit label will be created so you just put it in a sidebar.
-* Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will no show up to them. But this one works.
+* Image Size. The size of thumbnails can be specified. It supports up to 500 pixel large with a clean resolution.
+* Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will not show up to them. But this one works.
 * Random/Title/Date sort order. It's totally possible to show links in random order. 
-* Shortcode to embed the ads into posts.
+* Shortcode to embed the ads into posts and pages. 
 * PHP function to insert in the theme.
-* Blacklist. If you want certain products not to show, the black list can be set by ASIN.
+* Blacklist. If you want certain products not to be shown, the black list can be set by ASIN.
   
 == Installation ==
 
@@ -48,8 +48,13 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 == Changelog ==
 
+= 1.0.3 =
+* Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
+* Improved: the browsing speed of the category selection page with caches.
+* Removed: the widget functionality since it produces a blank page in some systems and the cause and solution has not been discovered.
+
 = 1.0.2 =
-* Fixed: an issue that form buttons do not appear in category selection page in WordPress version 3.1x or ealier. 
+* Fixed: an issue that form buttons do not appear in the category selection page in WordPress version 3.1x or ealier.
 
 = 1.0.1 =
 * Added: the Widget option.

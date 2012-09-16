@@ -109,11 +109,11 @@ class AmazonAutoLinks_Options_ {
 			"newunit" 	=> array(),		// creating unit page: tab 100, tab 101
 			"editunit" 	=> array(),		// editing unit page: tab 202, tab 203
 			"units"		=> array(),		// stores created unit info.
-			"general"	=> array()
+			"general"	=> array()		// stores general options
 		);
 		$this->arrOptions = array_merge($arrOption_new, $this->arrOptions);
 		$this->set_support_rate();
-		update_option($this->pluginkey, $this->arrOptions);
+		$this->update();
 	}		
 	function set_support_rate() {
 		return;
@@ -125,7 +125,7 @@ class AmazonAutoLinks_Options_ {
 			$this->arrOptions['tab101']['cameback'] = False;		// this flag is used for pseudo session.
 			$this->arrOptions['tab100']['errors'] = False;	
 		}
-		update_option($this->pluginkey, $this->arrOptions);
+		$this->update();
 	}	
 	
 	/* Used in the Category Selection Page */
@@ -143,7 +143,7 @@ class AmazonAutoLinks_Options_ {
 		if ($numCategories >= 3) 
 			return -1;
 		$this->arrOptions[$NewOrEdit]['categories'][$strCatName] = $arrCatInfo;
-		update_option($this->pluginkey, $this->arrOptions);		
+		$this->update();
 		return count($this->arrOptions[$NewOrEdit]['categories']);
 	}		
 	function delete_categories($NewOrEdit, $arrCategories) {
@@ -155,7 +155,7 @@ class AmazonAutoLinks_Options_ {
 			if (isset($key)) 	// if the check box of category breadcrumb is checked
 				unset($this->arrOptions[$NewOrEdit]['categories'][$key]);			
 		}				
-		update_option($this->pluginkey, $this->arrOptions);
+		$this->update();
 		return count($this->arrOptions[$NewOrEdit]['categories']);
 	}		
 	function get_category_links($NewOrEdit) {
@@ -174,7 +174,14 @@ class AmazonAutoLinks_Options_ {
 	function set_id($strUnitLabel) {
 		if (empty($this->arrOptions['units'][$strUnitLabel]['id']))
 			$this->arrOptions['units'][$strUnitLabel]['id'] = uniqid();
-		update_option($this->pluginkey, $this->arrOptions);
+		$this->update();
 	}
+	function update() {
+	
+		// wrap the WordPress function so that this method can be called outside the class
+		update_option($this->pluginkey, $this->arrOptions);	
+	}
+	
+
 }
 ?>

@@ -180,7 +180,7 @@ class AmazonAutoLinks_Forms_ {
 		return $arrUnitOptions;	
 	}
 	function get_pro_description() {
-		$strCurrURL = preg_replace('/tab\=\K\d+/i', '400', $this->oAALfuncs->selfURL());	// the url specifying the tab number, 400, which is for the pro version info page.
+		$strCurrURL = preg_replace('/(?<=tab=)\d+/i', '400', $this->oAALfuncs->selfURL());	// the url specifying the tab number, 400, which is for the pro version info page. // the pattern is replaced from '/tab\=\K\d+/i' since \K is avaiable above PHP 5.2.4
 	?>	
 		<p><?php _e('In order to set up the following options, please upgrade to the <a href="' . $strCurrURL . '">pro version</a>.', 'amazonautolinks'); ?></p>
 	<?php
@@ -207,7 +207,7 @@ class AmazonAutoLinks_Forms_ {
 				<?php $this->field_element_adtypes($numTabNum, $arrOptionsToDisplay['feedtypes']); ?>
 				<?php $this->field_element_nosim($numTabNum, $arrOptionsToDisplay['nosim']); ?>
 				<?php $this->field_element_insert($numTabNum, $arrOptionsToDisplay['insert']); ?>
-				<?php $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); ?>
+				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); ?>
 			</tbody>
 		</table>
 		<p class="submit">

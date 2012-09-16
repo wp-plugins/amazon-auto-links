@@ -274,7 +274,7 @@ class AmazonAutoLinks_Core_
 	function alter_tag($strURL) {
 		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) {
 			$strToken = $this->oAALOptions->get_token($this->arrUnitOptions['country']);
-			$strURL = preg_replace('/tag\=\K(.+?-\d{2,})?/i', $strToken, $strURL);
+			$strURL = preg_replace('/(?<=tag=)(.+?-\d{2,})?/i', $strToken, $strURL);	// the pattern is replaced from '/tag\=\K(.+?-\d{2,})?/i' since \K is avaiable above PHP 5.2.4
 		}
 		return $strURL;
 	}
@@ -296,11 +296,15 @@ class AmazonAutoLinks_Core_
 		$strDescription = str_replace('[identical_replacement_string]', '<br>', $strDescription);
 		// omit the text 'visit blah blah blah for more information'
 		if (preg_match('/<span.+class=["\']price["\'].+span>/i', $strDescription)) {
-			$arrDescription = preg_split('/<span.+class=["\']price["\'].+span>\K/i', $strDescription);
+			// $arrDescription = preg_split('/<span.+class=["\']price["\'].+span>\K/i', $strDescription);  // this works above PHP v5.2.4
+			$arrDescription = preg_split('/(<span.+class=["\']price["\'].+span>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
+			
 		} else {
-			$arrDescription = preg_split('/<font.+color=["\']#990000["\'].+font>\K/i', $strDescription);
-		}				
-		$arrDescription = preg_split('/<br.*?\/?>/i', $arrDescription[0]);		// devide the string into arrays by <br> or <br />
+			// $arrDescription = preg_split('/<font.+color=["\']#990000["\'].+font>\K/i', $strDescription);	 // this works above PHP v5.2.4
+			$arrDescription = preg_split('/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
+		}	
+		$strDescription = $arrDescription[0] . $arrDescription[1];
+		$arrDescription = preg_split('/<br.*?\/?>/i', $strDescription);		// devide the string into arrays by <br> or <br />
 		return trim(implode(" ", $arrDescription));	// return them back to html text
 	}
 	

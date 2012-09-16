@@ -2,8 +2,7 @@
 class AmazonAutoLinks_Helper_Functions_
 {
 	/* 
-		This class is a set of functions(methods) that are not dependant to any file. 
-		Should work just fine by just including it except that the constructer needs a key to be passed.
+		This class is a set of functions(methods) that is called from all classes.
 	*/
 	
 	public $classver = 'standard';
@@ -11,20 +10,18 @@ class AmazonAutoLinks_Helper_Functions_
 	function __construct($pluginkey) {
 		$this->pluginkey = $pluginkey;	// for translation textdomain
 		$this->key = $pluginkey;	// for decrypt and encrypt strings
+		$this->wp = & $GLOBALS["wp"];
 	}
 	public function selfURLwithoutQuery() {
 		$arrURL = explode("?", $this->selfURL(), 2);
 		return $arrURL[0];
 	}
-	public function selfURL() {
-		$s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
-		$protocol = $this->strleft(strtolower($_SERVER["SERVER_PROTOCOL"]), "/").$s;
-		$port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
-		return $protocol."://".$_SERVER['SERVER_NAME'].$port.$_SERVER['REQUEST_URI'];
+	public function selfURL() {	
+		return 'http'
+			. (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '')
+			. '://'
+			. $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; 
 	}
-	public function strleft($s1, $s2) {
-		return substr($s1, 0, strpos($s1, $s2));
-	} 
 	public function RemoveLineFeeds($output) {
 		$output = str_replace(array("\r\n", "\r"), "\n", $output);
 		// return $output;
@@ -90,8 +87,42 @@ class AmazonAutoLinks_Helper_Functions_
 			return __($translatingtext, $this->textdomain);
 	}	
 	
+/*	if wp_remote_get() can be used, delete these: from here
+	currently for an encoding issue, wp_remote_get() is not used.
+*/	
+
+	function iscurlon() {
+		if  (in_array  ('curl', get_loaded_extensions()))
+			return true;
+		else
+			return false;
+	}	
+	function get_html($strURL) {
+		if ($this->iscurlon()) 
+			return $this->file_get_contents_curl($strURL);
+		else
+			return file_get_contents($strURL);
+	}
+	function file_get_contents_curl($strURL) {
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_URL, $strURL);
+		if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off'))
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);       
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);	// the maximum number of seconds to allow cURL functions to execute.
+			
+		$data = curl_exec($ch);
+		curl_close($ch);
+		
+		return $data ? $data : file_get_contents($strURL);	// if failed to retrieve data for some reasons, use file_get_contents()
+	}
+/* Planning to delete to here */
 	
-	/* debuggin methods */
+	/* debugging methods */
 	function print_r($arr, $strTitle="") {
 		echo '<pre>';
 		echo '<hr>';

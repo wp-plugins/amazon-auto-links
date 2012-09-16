@@ -40,6 +40,9 @@
 	// AmazonAutoLinks Option Class
 	$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
 
+	// AmazonAutoLinks Category Cache Class
+	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY);
+	
 	/* Retrieve Options from Database*/
 	// $oAALOptions->arrOptions = get_option(AMAZONAUTOLINKSKEY);
 
@@ -116,7 +119,9 @@
 	$numImageWidth = $oAALOptions->arrOptions[$mode]['imagesize'];
 	
 // print_r(get_declared_classes());	
-// $oAALfuncs->print_r($oAALOptions->arrOptions[$mode]);	
+// $oAALfuncs->print_r($oAALOptions->arrOptions['events']);	<-- 'events' is moved to $option['amazonautolinks_events']
+// AmazonAutoLinks_CacheCategory();
+
 ?>
 <html>
 	<head>
@@ -137,7 +142,7 @@
 
 		// first check the $_GET array
 		$url = isset($_GET['href']) ? $oAALfuncs->urldecrypt($_GET['href']) : $oAALOptions->arrOptions[$mode]['countryurl'];
-		
+				
 		// create dom document object
 		$doc = $oAALSelectCategories->load_dom($url, $oAALOptions->arrOptions[$mode]['mblang']);
 		if (!doc) {
@@ -230,3 +235,9 @@
 	</form>
 	</body>
 	</html>
+<?php
+	flush();
+	// schedule pre-fetch sub-category links
+	$oAALCatCache->schedule_prefetch($url);
+	
+?>	

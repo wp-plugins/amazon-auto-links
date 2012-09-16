@@ -51,6 +51,9 @@ class AmazonAutoLinks_Admin_ {
 		// Include AmazonAutoLinks_Forms class
 		$this->oAALforms = new AmazonAutoLinks_Forms($this->pluginkey);		
 		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories($this->pluginkey);
+		
+		// cache class
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
 	}
 	function localize() {
 		// $loaded = load_plugin_textdomain( $this->textdomain, false, dirname(  __FILE__  ) . '/lang/');		// modified the last parameter <-- needs to examin if it works
@@ -64,27 +67,6 @@ class AmazonAutoLinks_Admin_ {
 			add_action( 'admin_notices', create_function( '', 'echo "' . addcslashes( $msg, '"' ) . '";' ) );
 		}	
 	}
-/* 	function load_settings() {
-	
-		// create an option array, if it is the first time of loading this plugin
-		$this->oAALOptions->arrOptions = get_option( $this->pluginkey );	
-		$this->oAALOptions->arrOptions = is_array($this->oAALOptions->arrOptions) ? $this->oAALOptions->arrOptions : array();
-		$arrOption_new = array(
-			"tab100"	=> array(),		// for tab 100
-			"tab101"	=> array(),		// for tab 101
-			"tab200"	=> array(),		// for tab 200
-			"tab201"	=> array(),		// for tab 201; almost not used, it's just a preview page and has one Go Back button
-			"tab202"	=> array(),		// for tab 202
-			"tab203"	=> array(),		// for tab 203
-			"tab300"	=> array(),		// for tab 300
-			"newunit" 	=> array(),		// creating unit page: tab 100, tab 101
-			"editunit" 	=> array(),		// editing unit page: tab 202, tab 203
-			"units"		=> array(),		// stores created unit info.
-			"general"	=> array()
-		);
-		$this->oAALOptions->arrOptions = array_merge($arrOption_new, $this->oAALOptions->arrOptions);
-		update_option($this->pluginkey, $this->oAALOptions->arrOptions);
-	} */
 	function shortcode($atts) {
 	
 		// reload the option since the timing of this function call depends and the options can have not be updated
@@ -178,7 +160,7 @@ class AmazonAutoLinks_Admin_ {
 		<!-- Start Rendering the Form -->
 		<div class="wrap">
 			<?php 
-			$this->page_header();	// this includs displaying the tabs on top. And determins the $this->current_tab value.					
+			$this->page_header();	// this includs displaying the tabs on top and determins the $this->current_tab value.						
 			switch ($this->current_tab) {
 				case 100: 	// create a new unit
 					$this->admin_tab100();
@@ -186,10 +168,10 @@ class AmazonAutoLinks_Admin_ {
 				case 200:	// manage units
 					$this->admin_tab200();
 					break;
-				case 201;
+				case 201;	// preview the unit
 					$this->admin_tab201();
 					break;
-				case 202;
+				case 202;	// edit the slected unit
 					$this->admin_tab202();
 					break;				
 				case 300:	// general settings
@@ -205,6 +187,7 @@ class AmazonAutoLinks_Admin_ {
 			?>
 		</div> <!-- end the admin page wrapper -->
 		<?php 
+// print_r(get_option('amazonautolinks_events'));		
 	} 	// admin_page() end
 	/* ------------------------------------------ Tab 100 : Create Unit --------------------------------------------- */
 	function IsReachedLimitNumUnits($num=3) {
@@ -257,11 +240,18 @@ class AmazonAutoLinks_Admin_ {
 				echo '<h3>' . __('Add New Unit', 'amazonautolinks') . '</h3>';
 				$this->oAALforms->form_setunit($numTabNum, $this->oAALOptions->arrOptions['newunit'], $this->oAALOptions->arrOptions['tab100']['errors']); 
 				
+				// schedule prefetch; the parameter is empty, which means prefetch the root pages.
+				$this->oAALCatCache->schedule_prefetch();
+			
+// AmazonAutoLinks_CacheCategory();
+				
 			} else if ($numTabNum == 101) 
 				$this->admin_tab101();
 			?>
 		</form>
 		<?php
+		
+
 	}
 	function admin_tab100_determine_next_page_to_go() {
 	
@@ -313,6 +303,7 @@ class AmazonAutoLinks_Admin_ {
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
+// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['events']);	<-- 'events' is moved to $option['amazonautolinks_events']
 		$this->oAALforms_selectcategories->form_selectcategories(101, $this->oAALOptions->arrOptions['newunit']);
 	} // end of tab101
 
@@ -547,7 +538,7 @@ class AmazonAutoLinks_Admin_ {
 	function change_tabnum_in_url($changeto) {
 	
 		// changes the current url's tab number
-		return preg_replace('/tab\=\K\d+/i', $changeto, $this->oAALfuncs->selfURL() );
+		return preg_replace('/(?<=tab=)\d+/i', $changeto, $this->oAALfuncs->selfURL() );		// '/tab\=\K\d+/i' can be used above PHP v5.2.4
 	}
 	
 	/* ------------------------------------------ Tab 201 : Unit Preview --------------------------------------------- */
@@ -608,15 +599,15 @@ class AmazonAutoLinks_Admin_ {
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
 						
 				// Update the option values as preview to refill the submitted values
-				// has to merge with the previous options because they have data which the submitted ones don't have such as categories
+				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories
 				// $this->oAALOptions->arrOptions['editunit'] = $arrSubmittedFormValues;
 				$this->oAALOptions->arrOptions['editunit'] = array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues);
 				update_option($this->pluginkey, $this->oAALOptions->arrOptions);							
 				$numTabNum = 202;	// do it again
-			} else {	// if it the submitted option values are valid
+			} else {	// if the submitted option values are valid
 
 				// okey, save options and go to the next page, category selection.
-				// has to merge with the previous options because they have data which the submitted ones don't have such as categories
+				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories
 				$this->oAALOptions->arrOptions['editunit'] = array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues);
 				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->clean_unitoptions($this->oAALOptions->arrOptions['editunit']);
 				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->changecountyinfo_unitoptions($this->oAALOptions->arrOptions['editunit']);					
@@ -686,6 +677,8 @@ class AmazonAutoLinks_Admin_ {
 			$this->oAALOptions->arrOptions['editunit'] = $this->oAALOptions->arrOptions['units'][$strUnitLabel];
 			update_option($this->pluginkey, $this->oAALOptions->arrOptions);	
 
+			// schedule prefetch; the parameter is empty, which means prefetch the root pages.
+			$this->oAALCatCache->schedule_prefetch();
 // categories are okey at here
 // $this->oAALfuncs->print_r( $this->oAALOptions->arrOptions['editunit'], 'edit->submit changes, Check the categories element if they are present.');				
 		}
