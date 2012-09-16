@@ -33,7 +33,7 @@ The features include:
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Go to Settings -> Amazon Auto Link -> New Unit.
 1. Configure the options and select categories.
-1. After saving the unit option, go to 'Manage Units' to get the shortcode or if you check one of the insert option, the links will automatically appear in posts or feeds depending on your choice. Or if you check the widget option, the unit is registered as a widget so you find it in Appearance -> Widgets. 
+1. After saving the unit option, go to 'Manage Units' to get the shortcode or if you check one of the insert option, the links will automatically appear in posts or feeds depending on your choice. 
 
 == Frequently asked questions ==
 
