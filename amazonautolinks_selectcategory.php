@@ -118,10 +118,6 @@
 	$arrLinks = $oAALOptions->get_category_links($mode);
 	$numImageWidth = $oAALOptions->arrOptions[$mode]['imagesize'];
 	
-// print_r(get_declared_classes());	
-// $oAALfuncs->print_r($oAALOptions->arrOptions['events']);	<-- 'events' is moved to $option['amazonautolinks_events']
-// AmazonAutoLinks_CacheCategory();
-
 ?>
 <html>
 	<head>
@@ -142,21 +138,40 @@
 
 		// first check the $_GET array
 		$url = isset($_GET['href']) ? $oAALfuncs->urldecrypt($_GET['href']) : $oAALOptions->arrOptions[$mode]['countryurl'];
-				
-		// create dom document object
-		$doc = $oAALSelectCategories->load_dom($url, $oAALOptions->arrOptions[$mode]['mblang']);
-		if (!doc) {
-			echo '<div class="error" style="padding:10px; margin:10px;">' . __('Could not load categories. Please consult the plugin developer.', 'amazonautolinks') . '</div>';
+		
+		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when a trailing slash is missing.
+		// e.g. http://www.amazon.ca/Bestsellers-generic/zgbs won't open but http://www.amazon.ca/Bestsellers-generic/zgbs/ does.
+		// Note taht this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
+		$url = preg_replace("/[^\/]$/i", "$0/", $url);		// addes since v1.0.4
+
+		// create a dom document object			
+		$doc = $oAALSelectCategories->load_dom_from_url($url);
+		if (!doc) 
+			exit('<div class="error" style="padding:10px; margin:10px;">' . __('Could not load categories. Please consult the plugin developer.', 'amazonautolinks') . '</div>');
+			
+		// Edit the href attribute to add the query.
+		$bModifiedHref = $oAALSelectCategories->modify_href($doc, array('abspath' => $oAALfuncs->urlencrypt($abspath), 'mode' => $_GET['mode']));
+		if(!$bModifiedHref) {
+		
+			// if the category block could not be read, try renewing the cache 
+			$oAALCatCache->renew_category_cache($url);
+			echo '<!-- ' . __('Warning: renewing category cache.', 'amazonautolinks') . ' : ' . $url . ' -->' . PHP_EOL;
+			$doc = $oAALSelectCategories->load_dom_from_url($url);
+			$bModifiedHref = $oAALSelectCategories->modify_href($doc, array('abspath' => $oAALfuncs->urlencrypt($abspath), 'mode' => $_GET['mode']));
+			if(!$bModifiedHref) {
+				echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazonautolinks') . ' : ' . $url . '</div>';
+				echo htmlspecialchars($doc->saveXML($doc->getElementsByTagName('body')->item(0)));
+				Exit;
+			}
 		}
 		
 		// extract the rss for the category
-		$strRssLink = $oAALSelectCategories->get_rss_link($doc);
-
-		/* Edit the href attribute to add the query */
-		$oAALSelectCategories->modify_href($doc, array('abspath' => $oAALfuncs->urlencrypt($abspath), 'mode' => $_GET['mode']));
-			
+		$strRssLink = $oAALSelectCategories->get_rss_link($doc);	
+	
 		/* Stylize the list (WordPress Admin CSS forces the list to have no left margin ) */
-		$domleftCol = $doc->getElementById('zg_browseRoot');
+		$xPath = new DOMXPath($doc); 	// since getElementByID constantly returned false for unknow reasons, use DOMXPath
+		$domleftCol = $xPath->query("//*[@id='zg_browseRoot']")->item(0);			
+		// $domleftCol = $doc->getElementById('zg_browseRoot');
 		$oAALSelectCategories->set_attributes_by_tagname($domleftCol, 'ul', 'style', 'margin-left:1em; list-style-type: none;');
 		$oAALSelectCategories->set_attributes_by_tagname($domleftCol, 'li', 'style', 'margin-left:1em; list-style-type: none;');
 
@@ -240,4 +255,4 @@
 	// schedule pre-fetch sub-category links
 	$oAALCatCache->schedule_prefetch($url);
 	
-?>	
+?>

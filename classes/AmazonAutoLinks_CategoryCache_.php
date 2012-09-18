@@ -7,14 +7,14 @@ class AmazonAutoLinks_CategoryCache {
 		The methods are called in a run-once scheduled event prior to user's opening the page.
 		It is like link prefetching functionality.
 		
-		This class uses the 'amazonautolinks_events' key for the option which is separated from
+		This class uses the 'amazonautolinks_catcache_events' key for the option which is separated from
 		the plugin main option key, 'amazonautolinks' because cron tasks constantly updates the 
 		option in the background, it should not affect other processes using the main option and
 		vice versa.
 */
 	protected $pluginname = 'Amazon Auto Links';
 	protected $pluginkey = 'amazonautolinks';
-	protected $eventoptionkey = 'amazonautolinks_events';
+	protected $eventoptionkey = 'amazonautolinks_catcache_events';
 	protected $pageslug = 'amazonautolinks';
 	protected $textdomain = 'amazonautolinks';	
 	protected $arrCountryURLs = array(
@@ -45,7 +45,7 @@ class AmazonAutoLinks_CategoryCache {
 			
 		// set up properties
 		$this->pluginkey = $pluginkey;
-		// $this->eventoptionkey = $pluginkey . '_events';
+		// $this->eventoptionkey = $pluginkey . 'catcache_events';
 		// set up classes
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
 		
@@ -53,31 +53,31 @@ class AmazonAutoLinks_CategoryCache {
 		$this->formatoption();
 	}
 	function formatoption() {
-		$arrEventOptions = get_option('amazonautolinks_events');
-		$arrEventOptions = array_merge(array('events' => array()), is_array($arrEventOptions) ? $arrEventOptions : array());
-		update_option('amazonautolinks_events', $arrEventOptions);
+		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
+		$arrCatCacheEvents = array_merge(array(), is_array($arrCatCacheEvents) ? $arrCatCacheEvents : array());
+		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);
 	}	
 	function eventkey($strURL) {
 		return 'aal_' . sha1($strURL);
 	}
 	function schedule_prefetch($strURL='') {
 		echo '<!-- Amazon Auto Links: The prefetch function is called. Deciding whether prefetch tasks should be created. -->';		
-		// save urls in the option key, ['events'], with the key name of 'aal_' . sha1($strURL), 
+		// save urls in the option key with the key name of 'aal_' . sha1($strURL), 
 		// which is used as the event action name
 		// if the $strURL is empty, it means county urls (the root page) will be inserted
 	
 		// to check if the url is already scheduled
-		$arrEventOptions = get_option('amazonautolinks_events');
+		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 	
 		// if $strURL has a value, it means the url is specified, then pre-fetch only the url contents.
 		if ($strURL != '') {	
 			$strURL = preg_replace('/ref=.+$/i', '', $strURL);	// http://amazon.com/..../ref=nnn/1832-39087  to http://amazon.com/..../
-			$this->schedule_prefetch_from_url_array($this->get_subcategories_from_url($strURL), $arrEventOptions['events']);
+			$this->schedule_prefetch_from_url_array($this->get_subcategories_from_url($strURL), $arrCatCacheEvents);
 			return;
 		} 
 	
 		// otherwise, fetch root pages.
-		$this->schedule_prefetch_from_url_array($this->arrCountryURLs, $arrEventOptions['events']);		
+		$this->schedule_prefetch_from_url_array($this->arrCountryURLs, $arrCatCacheEvents);		
 	}
 	function is_exec_enabled() {
 		$arrDisabled = explode(', ', ini_get('disable_functions'));
@@ -88,18 +88,17 @@ class AmazonAutoLinks_CategoryCache {
 			AmazonAutoLinks_Log('Could not run a background process since the server disabled the shell_exec function.', __FUNCTION__ );
 			return;
 		}
-		AmazonAutoLinks_Log('shell_exec is enabled. Keep it going.', __FUNCTION__ );
-						
+		AmazonAutoLinks_Log('shell_exec is enabled. Keep going.', __FUNCTION__ );					
 		$strDump = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? 'NUL &' : '/dev/null 2>/dev/null &';
-		// $strDump = '2>&1';	// use this for debugging
+		// $strDump = '2>&1';	// use this for debugging to see the output
 		$strBakePie = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? '&' : ';';
 		$strPHPPath = 'php';
-					
-		$output = shell_exec("cd " . escapeshellarg(ABSPATH) . $strBakePie . " " . $strPHPPath . ' index.php ' . $strDump);
-
+		
+		$output = shell_exec('cd ' . escapeshellarg(ABSPATH) . $strBakePie . ' ' . $strPHPPath . ' index.php ' . $strDump);
 		echo '<!-- ' . __FUNCTION__ . ': ' . $strMsg . ' -->';
 		AmazonAutoLinks_Log($strMsg, __FUNCTION__ );
 		if ($strDump == '2>&1') AmazonAutoLinks_Log('$output: ' . mb_substr ( strip_tags($output) , 0, 200), ABSPATH );
+		AmazonAutoLinks_Log('end of function.', __FUNCTION__ );
 	}	
 	function schedule_prefetch_from_url_array($arrURLs, $arrEvents) {
 		$i = 0;
@@ -130,64 +129,114 @@ class AmazonAutoLinks_CategoryCache {
 		
 		echo '<!-- ' . $i . ' url(s) are scheduled to pre-fetch. -->';
 		AmazonAutoLinks_Log($i . ' url(s) are scheduled to pre-fetch.', __FUNCTION__ );
-		if ($i == 0) 
+		if ($i == 0) {
+			AmazonAutoLinks_Log('Not calling a background process because 0 event is scheduled.', __FUNCTION__ );
 			return;
+		}
 
 		// run the WordPress Cron silently before the user loads another page.
-AmazonAutoLinks_Log('Line befeore run_in_background.', __FUNCTION__ );
+		AmazonAutoLinks_Log('Line befeore run_in_background.', __FUNCTION__ );
 		$this->run_in_background('run the WordPress Cron silently before the user loads another page.', __FUNCTION__);
-AmazonAutoLinks_Log('Line after run_in_background.', __FUNCTION__ );		
+		AmazonAutoLinks_Log('Line after run_in_background.', __FUNCTION__ );		
 	}
 	function schedule_prefetch_event_now($strURL) {
 		
 		$this->set_catcache_url($strURL);		// save the action name in the option.
 		$strKey = $this->eventkey($strURL);		// define the action name
 		
-		// Without this add_action(), events won't fire eventhough this plugin loasds saved action names at the beginning. 
+		// Without this add_action(), the event won't fire even though this plugin loasds saved action names at the beginning. 
 		// $strKey holds the action name for the event. The second paramer is the function name defined in amazonautolinks.php
 		add_action($strKey, 'AmazonAutoLinks_CacheCategory');	
 		
-		// the value in the first parameter means do it right away. But actually it will be executed in the next page load.
+		// the value in the first parameter, time(), means do it right away. But actually it will be executed in the next page load.
 		wp_schedule_single_event(time(), $strKey);	
-		AmazonAutoLinks_Log('prefetch task is scheduled just now.', __FUNCTION__ );
+		AmazonAutoLinks_Log('prefetch task scheduled: ' . $strKey . ': ' . $strURL, __FUNCTION__ );
 		echo '<!-- Amazon Auto Links: the prefetch task is scheduled just now: ' . $strKey . ': ' . $strURL . ' -->'; 
 	}
 	function set_catcache_url($strURL) {
 	
 		// saves the event option. The event option is managed separately from the other option
 		// since events occur sort of asyncronomously 
-		$arrEventOptions = get_option('amazonautolinks_events');
-		$arrEventOptions['events'][$this->eventkey($strURL)] = $strURL;	// add the new item to the event option array
-
-// echo 'updated: ' . $this->eventkey($strURL) . ' : ' . $strURL . '<br />';
-		update_option('amazonautolinks_events', $arrEventOptions);
-// $arrEventOptions = get_option('amazonautolinks_events');
-// echo count($arrEventOptions['events']) . ' of events are now saved.<br />';		
+		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
+		$arrCatCacheEvents[$this->eventkey($strURL)] = $strURL;	// add the new item to the event option array
+		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);	
 	}
-	function cache_html($strURL) {
+	function cache_category($strURL) {
+	
+		// this method is similar to cahce_html() expect this caches modified html code while the other one cache the entire code 
+		// this is for displaying category and leave the feed url to be retrieved. Other parts of the page will be discarded.
 		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
-			echo '<!-- ' . __FUNCTION__ . ': page cache already exists: ' . $strTransient . ' : ' . $strURL . ' -->';
-			$this->log('page cache already exists: ' . $strTransient . ' : ' . $strURL, __FUNCTION__);		
+			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+			$this->unset_event($strURL);
+			return false;
+		}		
+		
+		// if the cache is empty
+		$html = $this->extract_necessary_parts_for_category($strURL);
+		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
+		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+		$this->unset_event($strURL);
+		return true;		
+	}
+	function extract_necessary_parts_for_category($strURL) {
+		$doc = $this->load_dom_from_url($strURL);
+		$html = $this->get_htmltext_from_id($doc, 'zg_browseRoot');	// zg_browseRoot is the id attribute for categories
+		$html .= $this->get_htmltext_from_id($doc, 'zg_rssLinks');	// zg_rssLinks is the id attribute for the rss url
+		return $html;
+	}
+	function load_dom_from_url($strURL) {
+	
+		// loads the dom object from a given url.
+		mb_language($this->detect_lang($strURL)); 
+		$html = $this->oAALfuncs->get_html($strURL);
+		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
+		$doc = new DOMDocument();	
+		@$doc->loadHTML($html);		
+		return $doc;
+	}	
+	function get_htmltext_from_id($doc, $strID) {
+		$nodeID = $doc->getElementById($strID);
+		if (!$nodeID) {
+			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __FUNCTION__);
+			return;				
+		}
+		return trim($doc->saveXML($nodeID));
+	}
+	function renew_category_cache($strURL) {
+	
+		// called from amazonautolinks_selectcategory.php to renew the cache when it fails to load the category block
+		AmazonAutoLinks_Log('renewing cache: ' . $strURL , __FUNCTION__);
+		$strTransient = $this->eventkey($strURL);
+		delete_transient($strTransient);
+		$html = $this->extract_necessary_parts_for_category($strURL);
+		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
+	}
+	function cache_html($strURL) {
+	
+		// as of v1.0.4 this method is not used but leave it there in case there is a change to use it.
+		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
+		$html = get_transient($strTransient);	
+		if( $html ) { // if cache is available, do nothing
+			// echo '<!-- ' . __FUNCTION__ . ': page cache already exists: ' . $strTransient . ' : ' . $strURL . ' -->';
+			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+			$this->unset_event($strURL);
 			return false;
 		}
 		
 		// if the cache is empty
 		$html = $this->oAALfuncs->get_html($strURL);
-		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*12 );
+		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
 		echo '<!-- ' . __FUNCTION__ . ': page is cached: ' . $strTransient . ' : ' . $strURL . ' -->';
-		$this->log('page is cached: ' . $strTransient . ' : ' . $strURL , __FUNCTION__);		
+		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+		$this->unset_event($strURL);
 		return true;
 	} 
-	function log($strMsg, $strFunc='') {
-		AmazonAutoLinks_Log($strMsg, $strFunc);
-		return;
-		// for debugging
-/* 		if ($strFunc=='') $strFunc = __FUNCTION__;
-		$file = dirname(__DIR__) . '/log.html';
-		$strLog = date('l jS \of F Y h:i:s A') . ': ' . $strFunc . ': ' . $strMsg . '<br />';
-		file_put_contents($file, $strLog, FILE_APPEND); */
+	function unset_event($strURL) {
+		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
+		unset($arrCatCacheEvents[$this->eventkey($strURL)]);
+		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);
 	}
 	function get_html($strURL) {
 	
@@ -205,7 +254,7 @@ AmazonAutoLinks_Log('Line after run_in_background.', __FUNCTION__ );
 			*/
 			
 			$html = $this->oAALfuncs->get_html($strURL);
-			set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*24 );	// the storing data must be encrypted; otherwise, the data gets sanitized by WordPress and crrupts the cache
+			set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// the storing data must be encrypted; otherwise, the data gets sanitized by WordPress and crrupts the cache
 			echo '<!-- Transient is now saved: ' . $strTransient . ' -->' ;
 			AmazonAutoLinks_Log('Transient is now saved: ' . $strTransient , __FUNCTION__ );
 			return $html;

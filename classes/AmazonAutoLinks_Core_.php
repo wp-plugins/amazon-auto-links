@@ -85,7 +85,7 @@ class AmazonAutoLinks_Core_
 			foreach ($this->feed->get_items(0, 0) as $item) {
 									
 				/* DOM Object for description */
-				$dom = $this->load_dom($item->get_description(), $this->arrUnitOptions['mblang']);
+				$dom = $this->load_dom_from_htmltext($item->get_description(), $this->arrUnitOptions['mblang']);
 
 				/* Div Node */
 				$nodeDiv = $dom->getElementsByTagName('div')->item(0);		// the first depth div tag. If SimplePie is used outside of WordPress it should be the second depth which contains the description including images
@@ -193,7 +193,7 @@ class AmazonAutoLinks_Core_
 		// $this->feed->handle_content_type();		// <-- this breaks XML validation when the feed items are fetched and displayed in a feed such as used in the the_content_feed filter.
 			
 	}	
-	function load_dom($rawdescription, $lang) {
+	function load_dom_from_htmltext($rawdescription, $lang) {
 		$dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;

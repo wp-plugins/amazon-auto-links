@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.3
+	Version: 1.0.4
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -14,6 +14,9 @@
 // Define constants
 define("AMAZONAUTOLINKSKEY", "amazonautolinks");
 define("AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links");
+
+// Embed Plugin Settings Link
+add_filter("plugin_action_links_" . plugin_basename(__FILE__), 'AmazonAutoLinks_SettingsLink' );
 
 // Load actions to hook events for Cron jobs
 add_action('init', 'AmazonAutoLinks_LoadActions');
@@ -31,15 +34,14 @@ add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoL
 add_action('admin_head', 'AmazonAutoLinks_CustomCSS');
 
 // Widgets
-// add_action('widgets_init', 'AmazonAutoLinks_Widgets');
+// add_action('widgets_init', 'AmazonAutoLinks_Widgets'); // this is disabled until the blank page issue gets resolved.
 
 // uncomment the following function to clear all options and initialize to the default.
 // AmazonAutoLinks_CleanOptions();
 
 function AmazonAutoLinks_CleanOptions($key='') {
 	delete_option( AMAZONAUTOLINKSKEY );
-	delete_option( AMAZONAUTOLINKSKEY . '_events');
-
+	delete_option('amazonautolinks_catcache_events');
 	
 	$arr = array();
 	if ($key != '') {
@@ -52,86 +54,82 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
 	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
 	
-	// $wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_%')" );
-	
+	// $wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_feed_%')" );	// this is for feed cache 
 }
 
 // Caches
 function AmazonAutoLinks_LoadActions() {
 
-	// since this function has to be called prior to other hooks including the class registration process,
-	// retrieve options manually
-	// the event option uses a separate option key since cron jobs runs and updates options asyncronomously, 
-	// it should not affect or get affected by other processes.
-	$arrEventOptions = get_option('amazonautolinks_events');
-	if (!is_array($arrEventOptions)) {
-		$arrEventOptions = array('events' => array());
-		update_option('amazonautolinks_events', $arrEventOptions);
+	// Since this function has to be called prior to other hooks including the class registration process, retrieve the options manually.
+	// The event option uses a separate option key since cron jobs runs and updates options asyncronomously, 
+	// It should not affect or get affected by other processes.
+	$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
+	if (!is_array($arrCatCacheEvents)) {
+		update_option('amazonautolinks_catcache_events', array());
 		return;
 	}
 	
 	// register actions 
 	$i = 0;
-	foreach($arrEventOptions['events'] as $strActionName => $strURL) {
+	foreach($arrCatCacheEvents as $strActionName => $strURL) {
 		$i++;
 		add_action($strActionName,'AmazonAutoLinks_CacheCategory');		// the first parameter is the action name to be registered
 	}	
 	
-	// this is mostly for debugging. This message can be viewed at http://[site-address]/wp-admin/options.php
-	// update_option('amazonautolinks_actionhook_notice', date("M d Y H:i:s", time() + 9*3600) . ': ' . $i . ' of actions is hooked.');
-	AmazonAutoLinks_Log(date("M d Y H:i:s", time() + 9*3600) . ': ' . $i . ' of action(s) is hooked.', __FUNCTION__);
+	// this is mostly for debugging.
+	AmazonAutoLinks_Log( $i . ' action(s) is(are) hooked.', __FUNCTION__);
 }	
 function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 
-	return; // if you like to see the plugin workings, comment out this line and you'll find a log file in the plugin directory.
-	if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) 
+	return; // if you like to see the plugin workings, comment out this line and the below two lines and you'll find a log file in the plugin directory.
+	if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) // if the access is not from localhost, do not process.
 		return;	
 
 	// for debugging
 	if ($strFunc=='') $strFunc = __FUNCTION__;
 	$strPath = __DIR__ . '/' . $strFileName;
 	if (!file_exists($strPath)) file_put_contents($strPath, '');	// create a file if not exist
-	$strLog = date('l jS \of F Y h:i:s A') . ': ' . $strFunc . ': ' . $strMsg . '<br />' . PHP_EOL;
+	$strLog = date('Y m d h:i:s A') . ': ' . $strFunc . ': ' . $strMsg . '<br />' . PHP_EOL;
 	$arrLines = file($strPath);
 	$arrLines = array_reverse($arrLines);
 	array_push($arrLines, $strLog);
 	$arrLines = array_reverse($arrLines);
-	$arrLines = array_splice($arrLines, 0, 100);   // extract last 20 elements
+	$arrLines = array_splice($arrLines, 0, 100);   // extract the first 100 elements
 	file_put_contents($strPath, implode('', $arrLines));	
 }
 function AmazonAutoLinks_CacheCategory() {
-	AmazonAutoLinks_Log(' called.', __FUNCTION__);
+	
 	// This function is triggered by the run-off shcedule event.
 	// It builds caches for only one url per call since this function is assigned by all pre-fetch events.
+	AmazonAutoLinks_Log(' called.', __FUNCTION__);
 	
-	// instanciate class objects
+	// Instantiate class objects
 	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY);
-	$arrEventOptions = get_option(AMAZONAUTOLINKSKEY . '_events');
+	$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 	
-	// extract the first entry; the oldest job 
-	$arrEvent = array_splice($arrEventOptions['events'], 0, 3);   // take out 3 elements from the beggining of the array
+	// extract the first entry; the oldest jobs from the begginning
+	$arrEvent = array_splice($arrCatCacheEvents, 0, 10);   // take out 5 elements from the beggining of the array
 	if (count($arrEvent) == 0)	{
-		echo '<!-- Amazon Auto Links: no events are scheduled. Returning. -->';
+		// echo '<!-- Amazon Auto Links: no events are scheduled. Returning. -->';
+		AmazonAutoLinks_Log('No events are scheduled. Returning.', __FUNCTION__);
 		return; // if nothing extracted, return
 	}
 		
 	// build cache for this url; this array, $arrEvent only holds one element with a key of the action name and the value of url
 	$i = 0;
 	foreach($arrEvent as $strURL) 
-		if ($oAALCatCache->cache_html($strURL)) $i++;
+		if ($oAALCatCache->cache_category($strURL)) $i++;
 	
 	echo '<!-- ' . __FUNCTION__ . ': ' . $i . ' number of page(s) are cached: -->';
 	AmazonAutoLinks_Log($i . ' number of page(s) are cached', __FUNCTION__);
-	
-	// update the option since the oldest task is removed
-	update_option(AMAZONAUTOLINKSKEY . '_events', $arrEventOptions);
-	
-	// this is mostly for debugging. This message can be viewed at http://[site-address]/wp-admin/options.php
-	update_option('amazonautolinks_cronjob_notice', date("M d Y H:i:s", time() + 9*3600) . ': the cron job, ' . $strActionKey . ' is called.');
+
+	// Do not update the option! Since the process can be stopped by any reason and do not complete caching.
+	// So let cache_html() update the option when the passed url is cached.
+	// update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);
 	
 	// if there are remaining tasks, continue executing in the background
-	if ( count($arrEventOptions['events']) > 0 ) 
-		$oAALCatCache->run_in_background('Background Process: Keep fetching!');
+	if ( count($arrCatCacheEvents) > 0 ) 
+		$oAALCatCache->run_in_background('Background Process: There are '. count($arrCatCacheEvents) .' remaining events. Keep fetching!');
 	else 
 		AmazonAutoLinks_Log('All done!', __FUNCTION__);
 }
@@ -335,5 +333,11 @@ function AmazonAutoLinks_Widgets() {
 		register_widget($strWidgetID);	
 	}	
 
+}
+
+function AmazonAutoLinks_SettingsLink($arrLinks) { 
+	$settings_link = '<a href="options-general.php?page=' . AMAZONAUTOLINKSKEY . '">' . __('Settings', AMAZONAUTOLINKSKEY) . '</a>'; 
+	array_unshift($arrLinks, $settings_link); 
+	return $arrLinks; 
 }
 ?>

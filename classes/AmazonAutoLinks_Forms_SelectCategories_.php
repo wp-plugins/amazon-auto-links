@@ -7,6 +7,30 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	*/
 	
 	public $classver = 'standard';
+	public $arrCountryLang = array(
+		'AT'	=> 'uni',
+		'CA'	=> 'uni',
+		'CN'	=> 'uni',
+		'FR'	=> 'uni',
+		'DE'	=> 'uni',
+		'IT'	=> 'uni',
+		'JP'	=> 'ja',
+		'UK'	=> 'en',
+		'ES'	=> 'uni',
+		'US'	=> 'en',	
+	);		
+	protected $arrCountryURLs = array(
+		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
+		'CA'	=> 'http://www.amazon.ca/gp/bestsellers/',
+		'CN'	=> 'http://www.amazon.cn/gp/bestsellers/',
+		'FR'	=> 'http://www.amazon.fr/gp/bestsellers/',
+		'DE'	=> 'http://www.amazon.de/gp/bestsellers/',
+		'IT'	=> 'http://www.amazon.it/gp/bestsellers/',
+		'JP'	=> 'http://www.amazon.co.jp/gp/bestsellers/',
+		'UK'	=> 'http://www.amazon.co.uk/gp/bestsellers/',
+		'ES'	=> 'http://www.amazon.es/gp/bestsellers/',
+		'US'	=> 'http://www.amazon.com/gp/bestsellers/',
+	);	
 	function __construct($pluginkey) {
 	
 		// Include helper classes
@@ -54,19 +78,34 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	}
 	
 	/* methods for inline frame page */
-	function load_dom($strURL, $lang) {
+	function load_dom_from_url($strURL) {
 	
 		// create a dom document object
-		mb_language(empty($lang) ? 'uni' : $lang); // <-- without this, the characters get broken
+		mb_language($this->detect_lang($strURL)); // <-- without this, the characters get broken	
 		$html = $this->oAALCatCache->get_html($strURL);
-		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
+		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');		
 		$doc = new DOMDocument();
+		$dom->validateOnParse = true;
 		$doc->preserveWhiteSpace = false;
 		$doc->formatOutput = true;
 		@$doc->loadHTML($html);	
 		return $doc;
 	}
-
+	function detect_lang($strURL) {
+	
+		// store the checking domain into $arrThisURL['host']
+		$arrThisURL = parse_url($strURL);
+		
+		// parse through the county urls stored in this class property to find the match
+		foreach($this->arrCountryURLs as $strID => $strCountryURL) {
+			$arrCountryURL = parse_url($strCountryURL);
+			if ($arrThisURL['host'] == $arrCountryURL['host']) 	// matched
+				return $this->arrCountryLang[$strID];
+		}
+		
+		// this line should not be reached because it means it did not match any but just in case
+		return 'uni'; // let's set the default to uni, which likely work in most cases
+	}	
 	function get_rss_link($doc) {
 		
 		// the parameter must be a dom object
@@ -74,16 +113,20 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		$strRssLink = '';
 		$id_rss = 'zg_rssLinks';
 		$domRssLinks = $doc->getElementById($id_rss);
-		if ($domRssLinks) {		// the root category does not provide a rss link
-	
-			// remove the first h3 tag
-			$nodeH3 = $domRssLinks->getElementsByTagName('h3')->item(0);
-			$domRssLinks->removeChild($nodeH3);
-			$nodeA1 = $domRssLinks->getElementsByTagName('a')->item(0);
-			$strRssLink = $nodeA1->getAttribute('href');
-			$arrURL = explode("ref=", $strRssLink, 2);
-			$strRssLink = $arrURL[0];			
-		}	
+		if (!$domRssLinks) {
+			
+			// the root category does not provide a rss link, so return silently
+			echo '<!-- ' . __FUNCTION__ . ': "zg_rssLinks" ID could not be found. -->';
+			return;
+		}
+
+		// remove the first h3 tag
+		$nodeH3 = $domRssLinks->getElementsByTagName('h3')->item(0);
+		$domRssLinks->removeChild($nodeH3);
+		$nodeA1 = $domRssLinks->getElementsByTagName('a')->item(0);
+		$strRssLink = $nodeA1->getAttribute('href');
+		$arrURL = explode("ref=", $strRssLink, 2);
+		$strRssLink = $arrURL[0];
 		return $strRssLink;
 	}
 	function modify_href($doc, $arrQueries="") {	
@@ -99,13 +142,13 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		$strQueries = "";
 		ForEach ($arrQueries as $key => $value) {
 			$strQueries .= '&' . $key . '=' . $value;		//'&abspath=' . $this->oAALfuncs->urlencrypt($abspath)
-		}
-		$id_sidebar = 'zg_browseRoot';
-		$domleftCol = $doc->getElementById($id_sidebar);
+		}	
+		$xPath = new DOMXPath($doc); 	// since getElementByID constantly returned false for unknow reason, use xpath
+		$domleftCol = $xPath->query("//*[@id='zg_browseRoot']")->item(0);		
+		// $domleftCol = $doc->getElementById('zg_browseRoot');
 		if (!$domleftCol) {
-			echo 'Categories not found. Plaese consult the plugin developer.<br />';
-			htmlspecialchars(print_r($doc->saveXML($doc)));
-			Exit;
+			echo '<!-- ' . __('Categories not found. Plaese consult the plugin developer.', 'amazonautolinks') . ' -->' . PHP_EOL;
+			return false;
 		}
 		ForEach( $domleftCol->getElementsByTagName('a') as $nodeA) {
 			$href = $nodeA->getAttribute('href');
@@ -122,6 +165,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 			$strNewLink = $strSelfURL . '?href=' . $this->oAALfuncs->urlencrypt($href) . $strQueries;	
 			$nodeA->setAttribute('href', $strNewLink);
 		}	
+		return true;
 	}
 	function set_attributes_by_tagname($oNode, $strTagName, $strAtr, $strNewValue) {
 		Foreach( $oNode->getElementsByTagName($strTagName) as $node) { 

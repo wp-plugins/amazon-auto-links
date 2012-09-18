@@ -97,8 +97,17 @@ class AmazonAutoLinks_Helper_Functions_
 		else
 			return false;
 	}	
+	function get_html_wpapi($strURL) {
+		$html = wp_remote_get($strURL); 
+		if (is_wp_error( $html ))
+			 return false;
+		return $html['body'];
+	}
 	function get_html($strURL) {
-		if ($this->iscurlon()) 
+		$html = $this->get_html_wpapi($strURL);
+		if ($html)
+			return $html;
+		else if ($this->iscurlon()) 
 			return $this->file_get_contents_curl($strURL);
 		else
 			return file_get_contents($strURL);

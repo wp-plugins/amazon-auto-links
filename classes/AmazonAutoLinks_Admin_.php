@@ -187,7 +187,7 @@ class AmazonAutoLinks_Admin_ {
 			?>
 		</div> <!-- end the admin page wrapper -->
 		<?php 
-// print_r(get_option('amazonautolinks_events'));		
+// print_r(get_option('amazonautolinks_catcache_events'));		
 	} 	// admin_page() end
 	/* ------------------------------------------ Tab 100 : Create Unit --------------------------------------------- */
 	function IsReachedLimitNumUnits($num=3) {
@@ -303,13 +303,12 @@ class AmazonAutoLinks_Admin_ {
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
-// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['events']);	<-- 'events' is moved to $option['amazonautolinks_events']
 		$this->oAALforms_selectcategories->form_selectcategories(101, $this->oAALOptions->arrOptions['newunit']);
 	} // end of tab101
 
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
-// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['units']);	
+
 		/* POST Data : Delete Units */
 		// verify nonce
 		if (!$this->oAALforms->verifynonce_in_tab($numTabNum, $this->pluginkey, 'nonce'))
@@ -381,7 +380,7 @@ class AmazonAutoLinks_Admin_ {
 		}	
 		
 		// check if the number of units is valid
-		// it could be a cese that a user downgrade the version from pro. So let them be.
+		// it could be a cese that a user downgrades the version from pro. So leave them as they are.
 /* 		if ($this->IsReachedLimitNumUnits(4)) {
 			do {
 				array_pop($this->oAALOptions->arrOptions['units']);

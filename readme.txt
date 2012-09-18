@@ -48,9 +48,13 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 == Changelog ==
 
+= 1.0.4 =
+* Added: the settings link in the plugin list page of the administration panel.
+* Improved: the browsing speed in the category selection page by reducing the cache elements.
+
 = 1.0.3 =
 * Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
-* Improved: the browsing speed of the category selection page with caches.
+* Improved: the browsing speed in the category selection page with caches.
 * Removed: the widget functionality since it produces a blank page in some systems and the cause and solution have not been discovered.
 
 = 1.0.2 =
