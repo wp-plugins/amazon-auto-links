@@ -85,20 +85,22 @@ class AmazonAutoLinks_CategoryCache {
 	}	
 	function run_in_background($strMsg='called a php process in the background') {
 		if (!$this->is_exec_enabled()) {
-			AmazonAutoLinks_Log('Could not run a background process since the server disabled the shell_exec function.', __FUNCTION__ );
+			AmazonAutoLinks_Log('Could not run a background process since the server disabled the shell_exec function.', __METHOD__ );
 			return;
 		}
-		AmazonAutoLinks_Log('shell_exec is enabled. Keep going.', __FUNCTION__ );					
-		$strDump = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? 'NUL &' : '/dev/null 2>/dev/null &';
+		AmazonAutoLinks_Log('shell_exec is enabled. Keep going.', __METHOD__ );		
+		$bIsWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? True : False;
+		$strDump = ($bIsWin) ? 'NUL &' : '/dev/null 2>/dev/null &';
 		// $strDump = '2>&1';	// use this for debugging to see the output
-		$strBakePie = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? '&' : ';';
-		$strPHPPath = 'php';
-		
+		$strBakePie = ($bIsWin) ? '&' : ';';
+		$strPHPExe = ($bIsWin) ? 'php.exe' : 'php';
+		$strPHPPath = (defined('PHP_BINARY')) ? '"' . PHP_BINARY . '"' : (defined('PHP_BIN_DIR')) ? '"' . PHP_BIN_DIR . '/' . $strPHPExe . '"' : 'php';
+
 		$output = shell_exec('cd ' . escapeshellarg(ABSPATH) . $strBakePie . ' ' . $strPHPPath . ' index.php ' . $strDump);
-		echo '<!-- ' . __FUNCTION__ . ': ' . $strMsg . ' -->';
-		AmazonAutoLinks_Log($strMsg, __FUNCTION__ );
+		echo '<!-- ' . __METHOD__ . ': ' . $strMsg . ' -->';
+		AmazonAutoLinks_Log($strMsg, __METHOD__ );
 		if ($strDump == '2>&1') AmazonAutoLinks_Log('$output: ' . mb_substr ( strip_tags($output) , 0, 200), ABSPATH );
-		AmazonAutoLinks_Log('end of function.', __FUNCTION__ );
+		AmazonAutoLinks_Log('end of function.', __METHOD__ );
 	}	
 	function schedule_prefetch_from_url_array($arrURLs, $arrEvents) {
 		$i = 0;
@@ -109,14 +111,14 @@ class AmazonAutoLinks_CategoryCache {
 			if ( $html ) {
 			// if( false !== $html ) {		// if ( true === ( $value = get_transient( $this->eventkey($strURL) ) ) ) <-- not sure this doesn't work
 				echo '<!-- The transient for the url already exists, not scheduling prefetch. : ' . $this->eventkey($strURL) . ' : ' .  $strURL . ' -->';
-				// AmazonAutoLinks_Log('Transient already exists, not scheduling prefetch : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __FUNCTION__ );
+				// AmazonAutoLinks_Log('Transient already exists, not scheduling prefetch : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
 				continue;
 			}
 		
 			// if the url is being scheduled now, skip it 
 			if (in_array($strURL, $arrEvents)) {
 				echo '<!-- The transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL . ' -->';
-				// AmazonAutoLinks_Log('transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __FUNCTION__ );
+				// AmazonAutoLinks_Log('transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
 				continue;
 			}
 				
@@ -128,16 +130,16 @@ class AmazonAutoLinks_CategoryCache {
 		}
 		
 		echo '<!-- ' . $i . ' url(s) are scheduled to pre-fetch. -->';
-		AmazonAutoLinks_Log($i . ' url(s) are scheduled to pre-fetch.', __FUNCTION__ );
+		AmazonAutoLinks_Log($i . ' url(s) are scheduled to pre-fetch.', __METHOD__ );
 		if ($i == 0) {
-			AmazonAutoLinks_Log('Not calling a background process because 0 event is scheduled.', __FUNCTION__ );
+			AmazonAutoLinks_Log('Not calling a background process because 0 event is scheduled.', __METHOD__ );
 			return;
 		}
 
 		// run the WordPress Cron silently before the user loads another page.
-		AmazonAutoLinks_Log('Line befeore run_in_background.', __FUNCTION__ );
-		$this->run_in_background('run the WordPress Cron silently before the user loads another page.', __FUNCTION__);
-		AmazonAutoLinks_Log('Line after run_in_background.', __FUNCTION__ );		
+		AmazonAutoLinks_Log('Line befeore run_in_background.', __METHOD__ );
+		$this->run_in_background('run the WordPress Cron silently before the user loads another page.', __METHOD__);
+		AmazonAutoLinks_Log('Line after run_in_background.', __METHOD__ );		
 	}
 	function schedule_prefetch_event_now($strURL) {
 		
@@ -150,7 +152,7 @@ class AmazonAutoLinks_CategoryCache {
 		
 		// the value in the first parameter, time(), means do it right away. But actually it will be executed in the next page load.
 		wp_schedule_single_event(time(), $strKey);	
-		AmazonAutoLinks_Log('prefetch task scheduled: ' . $strKey . ': ' . $strURL, __FUNCTION__ );
+		AmazonAutoLinks_Log('prefetch task scheduled: ' . $strKey . ': ' . $strURL, __METHOD__ );
 		echo '<!-- Amazon Auto Links: the prefetch task is scheduled just now: ' . $strKey . ': ' . $strURL . ' -->'; 
 	}
 	function set_catcache_url($strURL) {
@@ -168,7 +170,7 @@ class AmazonAutoLinks_CategoryCache {
 		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
-			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __METHOD__);
 			$this->unset_event($strURL);
 			return false;
 		}		
@@ -176,7 +178,7 @@ class AmazonAutoLinks_CategoryCache {
 		// if the cache is empty
 		$html = $this->extract_necessary_parts_for_category($strURL);
 		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
-		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __METHOD__);
 		$this->unset_event($strURL);
 		return true;		
 	}
@@ -197,9 +199,11 @@ class AmazonAutoLinks_CategoryCache {
 		return $doc;
 	}	
 	function get_htmltext_from_id($doc, $strID) {
-		$nodeID = $doc->getElementById($strID);
+		$xPath = new DOMXPath($doc); 	// since getElementByID constantly returned false for unknow reason, use xpath
+		$nodeID = $xPath->query("//*[@id='" . $strID . "']")->item(0);
+		// $nodeID = $doc->getElementById($strID);
 		if (!$nodeID) {
-			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __FUNCTION__);
+			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __METHOD__);
 			return;				
 		}
 		return trim($doc->saveXML($nodeID));
@@ -207,7 +211,7 @@ class AmazonAutoLinks_CategoryCache {
 	function renew_category_cache($strURL) {
 	
 		// called from amazonautolinks_selectcategory.php to renew the cache when it fails to load the category block
-		AmazonAutoLinks_Log('renewing cache: ' . $strURL , __FUNCTION__);
+		AmazonAutoLinks_Log('renewing cache: ' . $strURL , __METHOD__);
 		$strTransient = $this->eventkey($strURL);
 		delete_transient($strTransient);
 		$html = $this->extract_necessary_parts_for_category($strURL);
@@ -219,8 +223,8 @@ class AmazonAutoLinks_CategoryCache {
 		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
-			// echo '<!-- ' . __FUNCTION__ . ': page cache already exists: ' . $strTransient . ' : ' . $strURL . ' -->';
-			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+			// echo '<!-- ' . __METHOD__ . ': page cache already exists: ' . $strTransient . ' : ' . $strURL . ' -->';
+			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __METHOD__);
 			$this->unset_event($strURL);
 			return false;
 		}
@@ -228,8 +232,8 @@ class AmazonAutoLinks_CategoryCache {
 		// if the cache is empty
 		$html = $this->oAALfuncs->get_html($strURL);
 		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
-		echo '<!-- ' . __FUNCTION__ . ': page is cached: ' . $strTransient . ' : ' . $strURL . ' -->';
-		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __FUNCTION__);
+		echo '<!-- ' . __METHOD__ . ': page is cached: ' . $strTransient . ' : ' . $strURL . ' -->';
+		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __METHOD__);
 		$this->unset_event($strURL);
 		return true;
 	} 
@@ -244,7 +248,7 @@ class AmazonAutoLinks_CategoryCache {
 		$strTransient = $this->eventkey($strURL);	// the char lengths for the transient key must be within 45. sha1() generates 40 length caracters.
 		$html = get_transient($strTransient);		// retrieve the data from cache
 		if( false === $html ) {	// if the cache is empty
-			echo '<!-- ' . __FUNCTION__ . ' : transient is not used: ' . $strTransient . ': ' . $strURL . ' -->';	
+			echo '<!-- ' . __METHOD__ . ' : transient is not used: ' . $strTransient . ': ' . $strURL . ' -->';	
 			
 			/*
 				wp_remote_get() somehow breaks the href strings passed as a url query. 
@@ -256,11 +260,11 @@ class AmazonAutoLinks_CategoryCache {
 			$html = $this->oAALfuncs->get_html($strURL);
 			set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// the storing data must be encrypted; otherwise, the data gets sanitized by WordPress and crrupts the cache
 			echo '<!-- Transient is now saved: ' . $strTransient . ' -->' ;
-			AmazonAutoLinks_Log('Transient is now saved: ' . $strTransient , __FUNCTION__ );
+			AmazonAutoLinks_Log('Transient is now saved: ' . $strTransient , __METHOD__ );
 			return $html;
 		}
 		echo '<!-- Amazon Auto Links : transient is used: ' . $strURL . ' -->';	
-		AmazonAutoLinks_Log('Transient is used: ' . $strURL , __FUNCTION__ );		
+		AmazonAutoLinks_Log('Transient is used: ' . $strURL , __METHOD__ );		
 		return $this->oAALfuncs->decrypt($html);	
 	}
 	function get_subcategories_from_url($strURL) {
@@ -277,8 +281,9 @@ class AmazonAutoLinks_CategoryCache {
 		return $this->get_subcategories_from_dom($doc);
 	}
 	function get_subcategories_from_dom($doc) {
-		
-		$domleftCol = $doc->getElementById('zg_browseRoot');	// zg_browseRoot is the id of the tag containing the list of sub categories
+		$xPath = new DOMXPath($doc); 	// since getElementByID constantly returned false for unknow reason, use xpath
+		$domleftCol = $xPath->query("//*[@id='zg_browseRoot']")->item(0);
+		// $domleftCol = $doc->getElementById('zg_browseRoot');	// zg_browseRoot is the id of the tag containing the list of sub categories
 		if (!$domleftCol)
 			return;
 		$arrURLs = array();

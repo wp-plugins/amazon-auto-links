@@ -20,7 +20,7 @@ class AmazonAutoLinks_Core_
 	protected $oAALOptions = array();
 	
 	/* Constructor */
-	function __construct($arrUnitOptions, $arrGeneralOptions) {
+	function __construct($arrUnitOptionsOrstrUnitLabel, $arrGeneralOptions='') {
 		$this->feed = new AmazonAutoLinks_SimplePie();		// this means class-simplepie.php must be included prior to instantiating this class
 	
 		// Setup Caches
@@ -29,20 +29,21 @@ class AmazonAutoLinks_Core_
 		$this->feed->set_file_class('WP_SimplePie_File');
 
 		$this->feed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']
-		$this->arrUnitOptions = $arrUnitOptions;
-		$this->arrGeneralOptions = $arrGeneralOptions;
+
+		// options
+		$this->oAALOptions = new AmazonAutoLinks_Options($this->pluginkey);		
+		$this->arrUnitOptions = is_array($arrUnitOptionsOrstrUnitLabel) ? $arrUnitOptionsOrstrUnitLabel : $this->oAALOptions->arrOptions['units'][$arrUnitOptionsOrstrUnitLabel];
+		$this->arrGeneralOptions = $arrGeneralOptions ? $arrGeneralOptions : $this->oAALOptions->arrOptions['general'];
 		
-		// todo: use this option class instead of the parameters so that the method can be called by only specifying the unit label.
-		// $this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);
-		$this->oAALOptions = new AmazonAutoLinks_Options($this->pluginkey);
 	}
-	/* Method Reset */
-	function reset() {
-		// when using the same class instance and re-fetch from other RSS sources, use this method; otherwise, the previous SimplePie instance is alive
-		// that means the fetched items become together with the previously fetched items.
-		$this->feed = new AmazonAutoLinks_SimplePie();
-		// $this->feed->set_cache_location(ABSPATH . '/cache');
-		$this->feed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']
+
+	function cache_rebuild() {
+		
+		// since v1.0.5
+		$arrLinks = $this->UrlsFromUnitLabel($this->arrUnitOptions['unitlabel'], $this->oAALOptions->arrOptions);
+		$urls = $this->set_urls($arrLinks);
+		$this->set_feed($urls, 0);	// set 0 for the second parameter to rebuild the caches. SimplePie compares the cache modified date with the current time + this value, then it renews the cache.
+		
 	}
 	/* Method Fetch */
     function fetch($arrRssUrls) {
@@ -57,7 +58,9 @@ class AmazonAutoLinks_Core_
 			$this->arrUnitOptions['adtypes']
 			$this->arrUnitOptions['associateid']
 			$this->arrUnitOptions['itemlimit']
-			$this->arrUnitOptions['cacheexpiration']
+			$this->arrUnitOptions['cacheexpiration']	// for cache rebuild scheduling
+			$this->arrUnitOptions['unitlabel']			// for cache rebuild scheduling
+			$this->arrUnitOptions['IsPreview']			// for cache rebuild scheduling
 			$this->arrUnitOptions['numitems']
 			$this->arrUnitOptions['mblang']
 			$this->arrUnitOptions['country']
@@ -73,8 +76,10 @@ class AmazonAutoLinks_Core_
 			/* Setup urls */
 			$urls = $this->set_urls($arrRssUrls);
 			
-			/* Setup SimplePie instance */
-			$this->set_feed($urls);
+			/* Setup the SimplePie instance */
+			// set the life time longer since now the background cache renew crawling functionality has been implemented as of v1.0.5.
+			// $this->set_feed($urls, $this->arrUnitOptions['cacheexpiration'] * 2);	// parameter 1: fetching urls 2: expiration lifetime
+			$this->set_feed($urls, 999999999);	// set -1 for the expiration time so that it does not renew the cache in this load
 
 			/* Prepare blacklis */
 			$arrASINs = $this->blacklist();	// for checking duplicated items
@@ -89,8 +94,7 @@ class AmazonAutoLinks_Core_
 
 				/* Div Node */
 				$nodeDiv = $dom->getElementsByTagName('div')->item(0);		// the first depth div tag. If SimplePie is used outside of WordPress it should be the second depth which contains the description including images
-				if (!$nodeDiv) 
-					continue;		// sometimes this happens when unavailable feed is passed, such as Top Rated, which is not supported in some countries.
+				if (!$nodeDiv) continue;		// sometimes this happens when unavailable feed is passed, such as Top Rated, which is not supported in some countries.
 	
 				/* Image */
 				$strImgURL = $this->get_image($dom, $this->arrUnitOptions['imagesize']);
@@ -102,16 +106,13 @@ class AmazonAutoLinks_Core_
 				$strASIN = $this->get_ASIN($lnk);
 						
 				/* Remove Duplicates with ASIN -- $arrASINs should be merged with black list array prior to it */
-				if (in_array($strASIN, $arrASINs))
-					continue;	// if the parsing item has been already processed, skip it.
-				else 
-					array_push($arrASINs, $strASIN);				
+				if (in_array($strASIN, $arrASINs)) continue;	// if the parsing item has been already processed, skip it.
+				array_push($arrASINs, $strASIN);				
 			
 				/* Title */
 				$title = $this->fix_title($item->get_title());
-				if (!$title)
-					continue;		//occasionally this happens that empty title is given. 	
-				
+				if (!$title) continue;		//occasionally this happens that empty title is given. 	
+									
 				/* Description (creates $htmldescription and $textdescription) */ 
 				$this->removeNodeByTagAndClass($nodeDiv, 'span', 'riRssTitle');
 	
@@ -126,40 +127,64 @@ class AmazonAutoLinks_Core_
 							
 				// format image -- if the image size is set to 0, $strImgURL is empty.
 				$strImgTag = $strImgURL ? $this->format_image(array($lnk, $strImgURL, $title, $textdescription)) : "";
-// echo htmlspecialchars($strImgTag);	
+
 				// item format
 				$output .= $this->format_item(array($lnk, $title, $htmldescription, $textdescription, $strImgTag));
-// echo htmlspecialchars($output);								
+						
 				// Max Number of Items 
 				if (++$this->i >= $this->arrUnitOptions['numitems']) break;
 			} 	
 		} catch (Exception $e) { $this->i = 0; }
+		
+		// schedule a background cache renewal event
+		if (empty($this->arrUnitOptions['IsPreview'])) $this->schedule_cache_rebuild();
+		
+		// end the function by returning the result
 		return $this->format_output($output);
     }
+	function schedule_cache_rebuild() {
+	
+		// since v1.0.5
+		if (!$this->arrUnitOptions['unitlabel']) return;	// if the option has no unit label, it's a previw unit, so do nothing
+		$numSceduledTime = wp_next_scheduled('aal_feed_' . md5($this->arrUnitOptions['unitlabel']));
+		$bIsScheduled = !empty($numSceduledTime);
+		$numExpirationTime = time() + $this->arrUnitOptions['cacheexpiration'];
+		if ($bIsScheduled && ($numSceduledTime < $numExpirationTime))	// already scheduled
+		{
+			AmazonAutoLinks_Log( '"' . $this->arrUnitOptions['unitlabel'] . '" is already schaduled. Returning. $numSceduledTime: ' . date('Y m d h:i:s A', $numSceduledTime) . ' $numExpirationTime: ' . date('Y m d h:i:s A', $numExpirationTime) , __METHOD__);
+			return;	//  if the event has been already scheduled, do nothing
+		}
+		
+		// instanciate the event object
+		$oAALEvents = new AmazonAutoLinks_Events(True);	// passing True to the class constructor means that it is instanciated manually so the saved events won't be automatically loaded
+		
+		if (!$bIsScheduled)		// means there is no schedule for this unit to renew its cache
+			$oAALEvents->schedule_feed_cache_rebuild($this->arrUnitOptions['unitlabel'], 0);	// the second parameter means do it in the next page load
+		else 	//if ($numSceduledTime > time() + $this->arrUnitOptions['cacheexpiration'])		// this means that the scheduled time is set incorrectly; in other words, the cache expiration option has been changed by the user.
+			$oAALEvents->reschedule_feed_cache_rebuild($numSceduledTime, $this->arrUnitOptions['unitlabel'], $this->arrUnitOptions['cacheexpiration']);	// delete the previous schedule and add a new schedule
+			
+	}
 	function set_urls($arrRssUrls) {
-		$urls = array();
+		$arrURLs = array();
 		foreach ($arrRssUrls as $i => $strRssUrl) {			
-			foreach ($this->arrUnitOptions['adtypes'] as $adtype) {
+			foreach ($this->arrUnitOptions['adtypes'] as $adtype) {		// it is assumed that this class is instanciated per a unit
 				if ($adtype['check']) {
 					// http://www.amazon.co.jp/gp/rss/bestsellers/sports/ -> http://www.amazon.co.jp/gp/rss/bestsellers/sports/?tag=michaeluno-22
-					array_push($urls, str_replace("/gp/rss/bestsellers/", "/gp/rss/" . $adtype['slug'] . "/", $strRssUrl . '?tag=' . $this->arrUnitOptions['associateid'] ));
+					array_push($arrURLs, str_replace("/gp/rss/bestsellers/", "/gp/rss/" . $adtype['slug'] . "/", $strRssUrl . '?tag=' . $this->arrUnitOptions['associateid'] ));
 				}
 			}	
 		}
 		$numRssUrls = count($arrRssUrls);
-		if ($numRssUrls == 0)
-			throw new Exception("");	// get out of there
-			
+		if ($numRssUrls == 0) throw new Exception("");	// get out of there
+						
 		// set the `itemlimit` option
 		$this->arrUnitOptions['itemlimit'] = ceil($this->arrUnitOptions['numitems'] / $numRssUrls);
-		return $urls;
+		return $arrURLs;
 	}	
 	function blacklist() {
-		$strBlacklist = trim($this->arrGeneralOptions['blacklist']);
-		$arrBlacklist = explode(",", $strBlacklist);
-		return $arrBlacklist;
+		return explode(",", trim($this->arrGeneralOptions['blacklist']));	// return as array
 	}
-	function set_feed($urls) {
+	function set_feed($urls, $numLifetime) {
 	
 		// Set Sort Order
 		$this->feed->set_sortorder($this->arrUnitOptions['sortorder']);
@@ -170,28 +195,15 @@ class AmazonAutoLinks_Core_
 		// Set the number of items to display per feed
 		if (isset($this->arrUnitOptions['itemlimit'])) 
 			$this->feed->set_item_limit($this->arrUnitOptions['itemlimit']);
-			
-		// Set Cache Duration
-		// these methods are defined by WordPress. 
-		// WordPress has an excellent caching system called tansient and let's use it
-		// $this->feed->set_cache_class('WP_Feed_Cache');
-		// $this->feed->set_file_class('WP_SimplePie_File');
-		
+					
 		// this should be set after defineing $urls
-		$this->feed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', $this->arrUnitOptions['cacheexpiration'], $urls));
+		$this->feed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', $numLifetime, $urls));
 	
-		// Optimize it
-		
 		$this->feed->set_stupidly_fast(true);
-		// $feed->force_feed(true);
-		// $feed->remove_div(true);
-		// $feed->force_fsockopen(true);
-		// $feed->strip_htmltags(false);
 		$this->feed->init();
 			
 		// Character Encodings etc.
-		// $this->feed->handle_content_type();		// <-- this breaks XML validation when the feed items are fetched and displayed in a feed such as used in the the_content_feed filter.
-			
+		// $this->feed->handle_content_type();		// <-- this breaks XML validation when the feed items are fetched and displayed as XML such as used in the the_content_feed filter.			
 	}	
 	function load_dom_from_htmltext($rawdescription, $lang) {
 		$dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
@@ -227,6 +239,7 @@ class AmazonAutoLinks_Core_
 	}	
 	function fix_title($title) {
 		$title = strip_tags($title);
+		
 		// removes the heading numbering. e.g. #3: Product Name -> Product Name
 		// Do not use "substr($title, strpos($title, ' '))" since some title contains double-quotes and they mess up html formats
 		$title = trim(preg_replace('/#\d+?:\s?/i', '', $title));
@@ -279,27 +292,30 @@ class AmazonAutoLinks_Core_
 		return $strURL;
 	}
 	function does_occur_in($numPercentage) {
-		if (mt_rand(1, 100) <= $numPercentage)
-			return true;
-		else
-			return false;
+		if (mt_rand(1, 100) <= $numPercentage) return true;			
+		return false;
 	}		
 	function get_htmldescription($node) {
-		// Add markings to text node which later contet to a whitespace because by itself elements don't have white spaces between each other.
+	
+		// Add markings to text node which later convert to a whitespace because by itself elements don't have white spaces between each other.
 		foreach( $node->childNodes as $_node ) {
 			if ($_node->nodeType == 3) {		// nodeType:3 TEXT_NODE
 				$_node->nodeValue = '[identical_replacement_string]' . $_node->nodeValue . '[identical_replacement_string]';
 			}
 		}
+		
 		// AAL_DOMInnerHTML extracts intter html code, meaning the outer div tag won't be with it
 		$strDescription = $this->DOMInnerHTML($node);
 		$strDescription = str_replace('[identical_replacement_string]', '<br>', $strDescription);
+		
 		// omit the text 'visit blah blah blah for more information'
 		if (preg_match('/<span.+class=["\']price["\'].+span>/i', $strDescription)) {
+		
 			// $arrDescription = preg_split('/<span.+class=["\']price["\'].+span>\K/i', $strDescription);  // this works above PHP v5.2.4
 			$arrDescription = preg_split('/(<span.+class=["\']price["\'].+span>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
 			
 		} else {
+		
 			// $arrDescription = preg_split('/<font.+color=["\']#990000["\'].+font>\K/i', $strDescription);	 // this works above PHP v5.2.4
 			$arrDescription = preg_split('/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
 		}	
@@ -319,16 +335,8 @@ class AmazonAutoLinks_Core_
 	}				
 	function format_output($output) {
 		$strOutput = str_replace("%items%", $output, $this->arrUnitOptions['containerformat'])
-		 . '<!-- generated by Amazon Auto Links powered by michaelunosoft. http://michaeluno.jp -->';
-		// $strOutput = $this->arrUnitOptions['containerformat'];
-// $strOutput = 'TEST OUTPUT';
-		return $strOutput;
-		// return wp_filter_post_kses( $strOutput );
-		// return stripslashes(wp_filter_post_kses(addslashes($strOutput)));
-		// sanitize the output
-		// $dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
-		// @$dom->loadhtml( $strOutput );
-		
+		 . '<!-- generated by Amazon Auto Links powered by miunosoft. http://michaeluno.jp -->';
+		return $strOutput;		
 	}	
 	function UrlsFromUnitLabel($unitlabel, $options=False) {
 		if (!$options || !is_array($options))

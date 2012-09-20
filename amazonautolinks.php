@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.4
+	Version: 1.0.5
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -14,24 +14,19 @@
 // Define constants
 define("AMAZONAUTOLINKSKEY", "amazonautolinks");
 define("AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links");
-
-// Embed Plugin Settings Link
-add_filter("plugin_action_links_" . plugin_basename(__FILE__), 'AmazonAutoLinks_SettingsLink' );
-
-// Load actions to hook events for Cron jobs
-add_action('init', 'AmazonAutoLinks_LoadActions');
-
-// Plugin Requirements
-add_action('admin_init', 'AmazonAutoLinks_Requirements');
+define("AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename(__FILE__));
 
 // Register Classes
 add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
 
-// Admin Page
+// Admin Pages
 add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoLinks_Admin;' ) );
 
-// Custom Admin CSS
-add_action('admin_head', 'AmazonAutoLinks_CustomCSS');
+// Load actions to hook events for Cron jobs
+add_action('init', create_function( '', '$oAALEvents = new AmazonAutoLinks_Events;' ));
+
+// Plugin Requirements
+add_action('admin_init', 'AmazonAutoLinks_Requirements');
 
 // Widgets
 // add_action('widgets_init', 'AmazonAutoLinks_Widgets'); // this is disabled until the blank page issue gets resolved.
@@ -57,33 +52,10 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	// $wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_feed_%')" );	// this is for feed cache 
 }
 
-// Caches
-function AmazonAutoLinks_LoadActions() {
-
-	// Since this function has to be called prior to other hooks including the class registration process, retrieve the options manually.
-	// The event option uses a separate option key since cron jobs runs and updates options asyncronomously, 
-	// It should not affect or get affected by other processes.
-	$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
-	if (!is_array($arrCatCacheEvents)) {
-		update_option('amazonautolinks_catcache_events', array());
-		return;
-	}
-	
-	// register actions 
-	$i = 0;
-	foreach($arrCatCacheEvents as $strActionName => $strURL) {
-		$i++;
-		add_action($strActionName,'AmazonAutoLinks_CacheCategory');		// the first parameter is the action name to be registered
-	}	
-	
-	// this is mostly for debugging.
-	AmazonAutoLinks_Log( $i . ' action(s) is(are) hooked.', __FUNCTION__);
-}	
 function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 
-	return; // if you like to see the plugin workings, comment out this line and the below two lines and you'll find a log file in the plugin directory.
-	if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) // if the access is not from localhost, do not process.
-		return;	
+	return; // if you like to see the plugin workings, comment out this line and the below line and you'll find a log file in the plugin directory.
+	if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) return;	// if the access is not from localhost, do not process.
 
 	// for debugging
 	if ($strFunc=='') $strFunc = __FUNCTION__;
@@ -96,79 +68,6 @@ function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 	$arrLines = array_reverse($arrLines);
 	$arrLines = array_splice($arrLines, 0, 100);   // extract the first 100 elements
 	file_put_contents($strPath, implode('', $arrLines));	
-}
-function AmazonAutoLinks_CacheCategory() {
-	
-	// This function is triggered by the run-off shcedule event.
-	// It builds caches for only one url per call since this function is assigned by all pre-fetch events.
-	AmazonAutoLinks_Log(' called.', __FUNCTION__);
-	
-	// Instantiate class objects
-	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY);
-	$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
-	
-	// extract the first entry; the oldest jobs from the begginning
-	$arrEvent = array_splice($arrCatCacheEvents, 0, 10);   // take out 5 elements from the beggining of the array
-	if (count($arrEvent) == 0)	{
-		// echo '<!-- Amazon Auto Links: no events are scheduled. Returning. -->';
-		AmazonAutoLinks_Log('No events are scheduled. Returning.', __FUNCTION__);
-		return; // if nothing extracted, return
-	}
-		
-	// build cache for this url; this array, $arrEvent only holds one element with a key of the action name and the value of url
-	$i = 0;
-	foreach($arrEvent as $strURL) 
-		if ($oAALCatCache->cache_category($strURL)) $i++;
-	
-	echo '<!-- ' . __FUNCTION__ . ': ' . $i . ' number of page(s) are cached: -->';
-	AmazonAutoLinks_Log($i . ' number of page(s) are cached', __FUNCTION__);
-
-	// Do not update the option! Since the process can be stopped by any reason and do not complete caching.
-	// So let cache_html() update the option when the passed url is cached.
-	// update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);
-	
-	// if there are remaining tasks, continue executing in the background
-	if ( count($arrCatCacheEvents) > 0 ) 
-		$oAALCatCache->run_in_background('Background Process: There are '. count($arrCatCacheEvents) .' remaining events. Keep fetching!');
-	else 
-		AmazonAutoLinks_Log('All done!', __FUNCTION__);
-}
-
-
-// for the plugin admin panel theming
-function AmazonAutoLinks_CustomCSS() {
-	global $wp_version;
-
-	if ($_GET['page'] != AMAZONAUTOLINKSKEY)
-		return;
-		
-	// if the option page of this plugin is loaded
-	if (IsSet($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) || IsSet($_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton'])) {
-
-				$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
-				$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
-				$numIframeWidth =  $numImageSize * 2 + 480;		// $strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]'		
-	
-			if ( version_compare($wp_version, '3.1.9', "<" ) )  // if the WordPress version is below 3.2 
-				$strIframeWidth = $numIframeWidth < 1180 ? 'width:100%;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
-			else 				// if the WordPress version is above 3.2
-				$strIframeWidth = $numIframeWidth < 1180 ? 'width:1180px;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
-
-			echo '<style type="text/css">
-				#wpcontent {
-					height:100%;
-					' . $strIframeWidth . '
-				}
-				#footer {
-					' . $strIframeWidth . '
-					color: #777;
-					border-color: #DFDFDF;
-				}    					
-				</style>';				
-
-	} else if ($_GET['tab'] == 400) 	// for the upgrading to pro tab; the table needs additional styles
-		echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', __FILE__). '">';
-	
 }
 
 // the function used to embed the Amazon products unit in a theme
@@ -193,25 +92,37 @@ function AmazonAutoLinks_RegisterClasses() {
 		This function should be trigered with the plugins_loaded() function; otherwise, the "header already sent" error may occur during 
 		the plugin activation.
 	*/
-	global $strAALDirPath, $arrAALPHPfiles;		// needs to be global since the following create_function() needs the values.
-	
-	// Register classes
+
+	// Register standard classes
 	$strAALDirPath = dirname(__FILE__) . '/classes/';
 	$arrAALPHPfiles = array_map(create_function( '$a', 'return basename($a, ".php");' ), glob($strAALDirPath . '*.php'));
 	spl_autoload_register(
 		create_function('$class_name', '
-			global $arrAALPHPfiles, $strAALDirPath;
-			if (in_array($class_name, $arrAALPHPfiles)) 
-				include($strAALDirPath . $class_name . ".php");' )
+			if (in_array($class_name, ' . var_export($arrAALPHPfiles, true) . ')) 
+				include(' . var_export($strAALDirPath, true) . ' . $class_name . ".php");
+		')
 	);
-	 
+
+	// Register pro classes
+	$strAALDirPathPro = dirname(__FILE__) . '/classes_pro/';
+	if (file_exists($strAALDirPathPro)) {
+		$arrAALPHPfilesPro = array_map(create_function( '$a', 'return basename($a, ".php");' ), glob($strAALDirPathPro . '*.php'));
+		spl_autoload_register(
+			create_function('$class_name', '
+				if (in_array($class_name, ' . var_export($arrAALPHPfilesPro, true) . ')) 
+					include(' . var_export($strAALDirPathPro, true) . ' . $class_name . ".php");
+			')
+		);
+		$arrAALPHPfiles = array_merge($arrAALPHPfiles, $arrAALPHPfilesPro);
+	}
+	
 	// Define classes 
 	$strClassNamePrefix = 'AmazonAutoLinks_';	// define a prefix of file name to avoid executing harmful code in file names.
 	foreach ($arrAALPHPfiles as $strFileName) {
 		
 		// apply security filters
 		if (substr($strFileName, 0, strlen($strClassNamePrefix)) != $strClassNamePrefix)
-			continue;	// filter out files whhch don't start with the prefix
+			continue;	// filter out files which don't start with the prefix
 		if (preg_match("/[#;\(\){}]/", $strFileName))
 			continue;	// if the file name contains characters looking like PHP code, skip it
 			
@@ -335,9 +246,4 @@ function AmazonAutoLinks_Widgets() {
 
 }
 
-function AmazonAutoLinks_SettingsLink($arrLinks) { 
-	$settings_link = '<a href="options-general.php?page=' . AMAZONAUTOLINKSKEY . '">' . __('Settings', AMAZONAUTOLINKSKEY) . '</a>'; 
-	array_unshift($arrLinks, $settings_link); 
-	return $arrLinks; 
-}
 ?>

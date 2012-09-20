@@ -33,8 +33,14 @@ class AmazonAutoLinks_Admin_ {
 		// localize hook only for admin page (admin_init). if all page load should be hooked, use 'init' instead
 		add_action('admin_init', array(&$this, 'localize'));
 		
+		// Embed Plugin Settings Link in the plugin listing page
+		add_filter("plugin_action_links_" . AMAZONAUTOLINKSPLUGINFILEBASENAME, array(&$this, 'embed_settings_link') );
+
 		// admin menu
 		add_action('admin_menu', array(&$this, 'admin_menu'));
+		
+		// admin custom CSS
+		add_action('admin_head', array(&$this, 'admin_custom_css'));
 		
 		// Create Shortcode
 		add_shortcode($this->pluginkey, array(&$this, 'shortcode'));
@@ -54,6 +60,9 @@ class AmazonAutoLinks_Admin_ {
 		
 		// cache class
 		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
+		
+		// properties
+		$this->wp_version = & $GLOBALS["wp_version"];
 	}
 	function localize() {
 		// $loaded = load_plugin_textdomain( $this->textdomain, false, dirname(  __FILE__  ) . '/lang/');		// modified the last parameter <-- needs to examin if it works
@@ -66,6 +75,11 @@ class AmazonAutoLinks_Admin_ {
 			</div>';
 			add_action( 'admin_notices', create_function( '', 'echo "' . addcslashes( $msg, '"' ) . '";' ) );
 		}	
+	}
+	function embed_settings_link($arrLinks) {
+		$settings_link = '<a href="options-general.php?page=' . $this->pageslug . '">' . __('Settings', 'amazonautolinks') . '</a>'; 
+		array_unshift($arrLinks, $settings_link); 
+		return $arrLinks; 	
 	}
 	function shortcode($atts) {
 	
@@ -152,6 +166,40 @@ class AmazonAutoLinks_Admin_ {
 	}
 	
 	/* ------------------------------------------ Admin Page --------------------------------------------- */
+	function admin_custom_css() {
+		
+		// for the plugin admin panel theming
+		if ($_GET['page'] != AMAZONAUTOLINKSKEY)
+			return;
+			
+		// if the option page of this plugin is loaded
+		if (IsSet($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) || IsSet($_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton'])) {
+
+					$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
+					$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
+					$numIframeWidth =  $numImageSize * 2 + 480;		// $strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]'		
+		
+				if ( version_compare($this->wp_version, '3.1.9', "<" ) )  // if the WordPress version is below 3.2 
+					$strIframeWidth = $numIframeWidth < 1180 ? 'width:100%;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+				else 				// if the WordPress version is above 3.2
+					$strIframeWidth = $numIframeWidth < 1180 ? 'width:1180px;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+
+				echo '<style type="text/css">
+					#wpcontent {
+						height:100%;
+						' . $strIframeWidth . '
+					}
+					#footer {
+						' . $strIframeWidth . '
+						color: #777;
+						border-color: #DFDFDF;
+					}    					
+					</style>';				
+
+		} else if ($_GET['tab'] == 400) 	// for the upgrading to pro tab; the table needs additional styles
+			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', __FILE__). '">';
+			
+	}
 	function adminpage() {
 
 		// define the page name for each tab

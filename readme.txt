@@ -48,6 +48,9 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 == Changelog ==
 
+= 1.0.5 =
+* Improved: the caching method. Now the caches of links are renewed in the background.
+
 = 1.0.4 =
 * Added: the settings link in the plugin list page of the administration panel.
 * Improved: the browsing speed in the category selection page by reducing the cache elements.

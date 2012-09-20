@@ -31,7 +31,7 @@
 	$cssurl_colorsfresh = admin_url('/css/colors-fresh.css') . '?ver=' . get_bloginfo( 'version' );
 	$cssurl_catselect = plugins_url('/css/amazonautolinks_catselect.css', __FILE__);
 		
-	// Load SimplePie in the WordPress  // be aware that WordPress SimplePie works differently than the original one
+	// Load SimplePie in the WordPress  // be aware that WordPress SimplePie works slight differently than the original SimplePie
 	// require_once (ABSPATH . WPINC . '/class-simplepie.php');
 		 
 	// AmazonAutoLinks Admin Class 
@@ -43,9 +43,6 @@
 	// AmazonAutoLinks Category Cache Class
 	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY);
 	
-	/* Retrieve Options from Database*/
-	// $oAALOptions->arrOptions = get_option(AMAZONAUTOLINKSKEY);
-
 	// check the $_GET array to determine if it is a new unit or editing an existing unit.
 	if (IsSet($_GET['mode']) && $_GET['mode'] == 'new' ) {		
 		$mode = 'newunit';
@@ -56,18 +53,11 @@
 		echo 'The page is loaded in the wrong way.';
 		return;
 	} 
-	
-	// Amazon Auto Links Class
-	// require_once(dirname(__FILE__) . '/amazonautolinks_classes.php');
-	$oAALCatPreview = new AmazonAutoLinks_Core($oAALOptions->arrOptions[$mode], $oAALOptions->arrOptions['general']);		// instantiate after setting the $mode variable
-	$oAALUnitPreview = new AmazonAutoLinks_Core($oAALOptions->arrOptions[$mode], $oAALOptions->arrOptions['general']);
-	
+		
 	// for the initial array components
 	// $oAALOptions->arrOptions[$mode] must be an array from the previous page (the caller page of the iframe)
 	if (!is_array($oAALOptions->arrOptions[$mode]['categories'])) 
 		$oAALOptions->arrOptions[$mode]['categories'] = array();
-
-// $oAALfuncs->print_r($oAALOptions->arrOptions[$mode]);		
 		
 	/* POST Data */
 	// Verify nonce 
@@ -109,15 +99,20 @@
 			$_POST[AMAZONAUTOLINKSKEY][$mode]['categories']	//	array holding the category names to delete
 		);
 	}
-	else {
+	// new landing, just count the number of categories
+	else 	
+		$numSelectedCategories = count($oAALOptions->arrOptions[$mode]['categories']); 
 		
-		// new landing, do nothing
-		// just count the number of categories
-		$numSelectedCategories = count($oAALOptions->arrOptions[$mode]['categories']);
-	}
 	$arrLinks = $oAALOptions->get_category_links($mode);
 	$numImageWidth = $oAALOptions->arrOptions[$mode]['imagesize'];
-	
+		
+	// Amazon Auto Links Class
+	// require_once(dirname(__FILE__) . '/amazonautolinks_classes.php');	
+	// insert the IsPreview flag so that it won't trigger background cache renewal events.
+	$oAALOptions->arrOptions[$mode]['IsPreview'] = True;	// this won't be saved unless update_option() is used after this line, so the actual unit option won't have this value
+	$oAALCatPreview = new AmazonAutoLinks_Core($oAALOptions->arrOptions[$mode], $oAALOptions->arrOptions['general']);		// instantiate after setting the $mode variable
+	$oAALUnitPreview = new AmazonAutoLinks_Core($oAALOptions->arrOptions[$mode], $oAALOptions->arrOptions['general']);
+		
 ?>
 <html>
 	<head>
@@ -146,8 +141,7 @@
 
 		// create a dom document object			
 		$doc = $oAALSelectCategories->load_dom_from_url($url);
-		if (!doc) 
-			exit('<div class="error" style="padding:10px; margin:10px;">' . __('Could not load categories. Please consult the plugin developer.', 'amazonautolinks') . '</div>');
+		if (!doc) exit('<div class="error" style="padding:10px; margin:10px;">' . __('Could not load categories. Please consult the plugin developer.', 'amazonautolinks') . '</div>');
 			
 		// Edit the href attribute to add the query.
 		$bModifiedHref = $oAALSelectCategories->modify_href($doc, array('abspath' => $oAALfuncs->urlencrypt($abspath), 'mode' => $_GET['mode']));
@@ -171,7 +165,7 @@
 		/* Stylize the list (WordPress Admin CSS forces the list to have no left margin ) */
 		$xPath = new DOMXPath($doc); 	// since getElementByID constantly returned false for unknow reasons, use DOMXPath
 		$domleftCol = $xPath->query("//*[@id='zg_browseRoot']")->item(0);			
-		// $domleftCol = $doc->getElementById('zg_browseRoot');
+		// $domleftCol = $doc->getElementById('zg_browseRoot'); // this has started not working after using wp_remote_get() or removing unnecessary cache elements.
 		$oAALSelectCategories->set_attributes_by_tagname($domleftCol, 'ul', 'style', 'margin-left:1em; list-style-type: none;');
 		$oAALSelectCategories->set_attributes_by_tagname($domleftCol, 'li', 'style', 'margin-left:1em; list-style-type: none;');
 
