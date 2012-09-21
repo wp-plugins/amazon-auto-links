@@ -49,6 +49,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 1. Setting Page (Overview)
 2. Setting Page (Selecting Categories)
+3. Sample Embedding Links below Post
 
 == Changelog ==
 
