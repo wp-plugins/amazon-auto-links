@@ -1,10 +1,10 @@
 === Amazon Auto Links ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
-Tags: amazon, affiliate
+Tags: amazon, affiliate, miunosoft, links, ads
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 3.4.1
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,10 @@ The features include:
 = Do I need Amazon Associate ID to use this plug-in? =
 
 Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Amazon Associates](https://affiliate-program.amazon.com/).  
+
+= What would be the benefit to upgrade to the pro version? =
+
+With the pro version, unlimited numbers of units can be created. Also the number of categories to be added per unit, the number of items to show in a unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format.
 
 == Screenshots ==
 
