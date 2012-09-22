@@ -1,5 +1,5 @@
 <?php
-class AmazonAutoLinks_CategoryCache {
+class AmazonAutoLinks_CategoryCache_ {
 /*
 	Since: v1.0.3
 	Description:

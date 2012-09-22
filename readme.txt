@@ -43,7 +43,7 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 = What would be the benefit to upgrade to the pro version? =
 
-With the pro version, unlimited numbers of units can be created. Also the number of categories to be added per unit, the number of items to show in a unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format.
+With the pro version, unlimited numbers of units can be created. Also the number of categories to be added per unit, the number of items to show in a unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)
 
 == Screenshots ==
 
@@ -52,6 +52,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 3. Sample Embedding Links below Post
 
 == Changelog ==
+
+= 1.0.6 =
+* Re-Added: the widget. Now it is able to add units easily on the sidebar.
 
 = 1.0.5 =
 * Improved: the caching method. Now the caches of links are renewed in the background.
@@ -73,3 +76,23 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 = 1.0.0 =
 * Initial Release
+
+== Upgrade Notice ==
+
+= 1.0.6 =
+In this version, finally the widget is back. But testers are needed. Please report if you get any issue when placing the widget.
+
+= 1.0.5 =
+In this version, the caches are renewed with WordPress Cron API instead of renewing them when the visitor loads the page. So this prevents the visitors from too slow page loads.
+
+= 1.0.4 =
+This version started using a better caching mechanism for the category selection page; the borwsing speed is dramatically improved.
+
+= 1.0.3 =
+This version fixes an issue for users using PHP v5.2.4 or below that the links in the Manage Units page were not accessible.
+
+= 1.0.2 =
+This version fixes an issue for users using WordPress v3.1x, which some area of the plugin setting page does not appear propery.
+
+= 1.0.1 =
+This previous version could cause the site to get a blank white page after enabling the widget option. So please do not use v1.0.0.

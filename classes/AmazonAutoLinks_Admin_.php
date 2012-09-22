@@ -94,20 +94,18 @@ class AmazonAutoLinks_Admin_ {
 			_e('Error: No such unit label exists.', 'amazonautolinks');
 			return;
 		}
-		$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label], $this->oAALOptions->arrOptions['general']);
-		
-		// First parameter: link array, Secound parameter: option array
-		return $oAAL->fetch( $oAAL->UrlsFromUnitLabel($label, $this->oAALOptions->arrOptions) , $this->oAALOptions->arrOptions['units'][$label]);
+		$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
+		return $oAAL->fetch();
 	}
 	function insertinpost($content) {
 		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['postabove']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions)) . $content;
+			if ($arrUnitOptions['insert']['postabove']) {			
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['postbelow']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $content . $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions));
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $content . $oAAL->fetch();
 			}
 		}
 		return trim($content);
@@ -115,26 +113,25 @@ class AmazonAutoLinks_Admin_ {
 	function insertinexcerpt($content){
 		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['excerptabove']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions)) . $content;
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['excerptbelow']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $content . $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions));
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $content . $oAAL->fetch();
 			}
 		}	
 		return trim($content);
 	}
 	function insertincontentfeed($content) {
-	// return $content . 'TEST';
 		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedabove']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions)) . $content;
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['feedbelow']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $content . $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions));
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $content . $oAAL->fetch();
 			}
 		}	
 		return trim($content);
@@ -143,12 +140,12 @@ class AmazonAutoLinks_Admin_ {
 
 		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedexcerptabove']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions)) . $content;
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['feedexcerptbelow']) {
-				$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oAALOptions->arrOptions['general']);
-				$content = $content . $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $this->oAALOptions->arrOptions));
+				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $content . $oAAL->fetch();
 			}
 		}	
 		return trim($content);
@@ -448,7 +445,7 @@ class AmazonAutoLinks_Admin_ {
 					if (!$unitname)	// this happened somehow when debugging. It shouldn't happen.
 						continue;		
 					echo '<tr>';
-					for ($i=0; $i <= 12; $i++) {
+					for ($i=0; $i <= 11; $i++) {
 						if ($i==0) 
 							echo '<td align="center" valign="middle" class="check-column">' . '<input type="checkbox" name="' . $this->pluginkey . '[tab200][delete][' . $unit['unitlabel'] . ']" value="1" >' . '</td>';
 						else if ($i==1)
@@ -475,13 +472,8 @@ class AmazonAutoLinks_Admin_ {
 							echo '<td>';
 							echo $unit['nosim'] ? __('On', 'amazonautolinks') : __('Off', 'amazonautolinks');
 							echo '</td>';			
-						}
-						else if ($i==8) {
-							echo '<td>';
-							echo $unit['widget'] ? __('Enable', 'amazonautolinks') : __('Disable', 'amazonautolinks');
-							echo '</td>';			
 						}							
-						else if ($i==9) {
+						else if ($i==8) {
 							echo '<td>';
 							if (is_array($unit['insert'])) {
 								ForEach($unit['insert'] as $key => $value) {
@@ -491,10 +483,10 @@ class AmazonAutoLinks_Admin_ {
 							}
 							echo '</td>';
 						}						
-						else if ($i==10)
+						else if ($i==9)
 							echo '<td>' . '[amazonautolinks label="' . $unit['unitlabel'] . '"]<br />' 
 							. '&lt;?php AmazonAutoLinks("' . $unit['unitlabel'] . '"); ?&gt;</td>';
-						else if ($i==11) {
+						else if ($i==10) {
 							echo '<td>';
 							if (is_array($unit['categories'])) {
 								ForEach($unit['categories'] as $catname => $catinfo) {
@@ -503,7 +495,7 @@ class AmazonAutoLinks_Admin_ {
 							}
 							echo '</td>';
 						}
-						else if ($i==12)
+						else if ($i==11)
 							echo '<td>'
 								. $this->custom_a_tag(__('Edit', 'amazonautolinks'), 202, array('edit' => $this->oAALfuncs->urlencrypt($unit['unitlabel'])))
 								. ' | '
@@ -608,8 +600,8 @@ class AmazonAutoLinks_Admin_ {
 		<h4><?php _e('Preview', 'amazonautolinks'); ?>: <?php echo $strLabel; ?></h4>
 		<div style="padding: 2em 3em 2em 3em;">
 			<?php		
-			$oAAL = new AmazonAutoLinks_Core( $this->oAALOptions->arrOptions['units'][$strLabel], $this->oAALOptions->arrOptions['general']);
-			echo $oAAL->fetch( $oAAL->UrlsFromUnitLabel($strLabel, $this->oAALOptions->arrOptions));
+			$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$strLabel]);
+			echo $oAAL->fetch();
 			?>
 		</div>
 		<div style="float:right; margin-bottom: 20px;" >
@@ -828,36 +820,36 @@ class AmazonAutoLinks_Admin_ {
 					</tr>
 					<tr>
 						<td><?php _e('Image Size', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Black List', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Sort Order', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Direct Link Bonus', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Insert in Posts and Feeds', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Widget', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('HTML Formatting', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Cache Expiration Time', 'amazonautolinks'); ?></td>
-						<td><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
-						<td><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
 					<tr>
 						<td><?php _e('Max Number of Items to Show', 'amazonautolinks'); ?></td>
 						<td align="center">10</td>
@@ -982,10 +974,7 @@ class AmazonAutoLinks_Admin_ {
 			</th>
 			<th scope="col" id="refnosim" class="manage-column column-comments num " style="">
 				<?php _e('Nosim', 'amazonautolinks'); ?>
-			</th>			
-			<th scope="col" id="widget" class="manage-column column-date" style="">
-				<?php _e('Widget', 'amazonautolinks'); ?>
-			</th>						
+			</th>								
 			<th scope="col" id="insertion" class="manage-column column-date" style="">
 				<?php _e('Insertions', 'amazonautolinks'); ?>
 			</th>			

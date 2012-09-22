@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.5
+	Version: 1.0.6
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -30,6 +30,7 @@ add_action('admin_init', 'AmazonAutoLinks_Requirements');
 
 // Widgets
 // add_action('widgets_init', 'AmazonAutoLinks_Widgets'); // this is disabled until the blank page issue gets resolved.
+add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
 // uncomment the following function to clear all options and initialize to the default.
 // AmazonAutoLinks_CleanOptions();
@@ -78,8 +79,8 @@ function AmazonAutoLinks($unitlabel) {
 		_e('Error: No such unit label exists.', 'amazonautolinks');
 		return;
 	}	
-	$oAAL = new AmazonAutoLinks_Core($options['units'][$unitlabel], $options['general']);
-	echo $oAAL->fetch( $oAAL->UrlsFromUnitLabel($unitlabel, $options));
+	$oAAL = new AmazonAutoLinks_Core($options['units'][$unitlabel]);
+	echo $oAAL->fetch();
 }
 
 function AmazonAutoLinks_RegisterClasses() {
@@ -173,77 +174,4 @@ function AmazonAutoLinks_Requirements() {
 	}
 	
 }
-
-function AmazonAutoLinks_Widgets() {
-
-	// prepare widgets
-	$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
-	$i = 0;
-	foreach($oAALOptions->arrOptions['units'] as $strUnitLabel => $arrUnitOptions) {
-		if (empty($arrUnitOptions['widget'])) 
-			continue;
-					
-		// if (empty($arrUnitOptions['id']))		// for backward compatibility. The earlier version of the plugin does not have this key.
-			// $arrUnitOptions['id'] = uniqid();		
-			
-		// if the widget option is true, create a widget for the unit.
-		// $strWidgetID =  'AmazonAutoLinks_Widget_' . $arrUnitOptions['id'];
-		$strWidgetID =  'aal_' . sha1($strUnitLabel);
-		$strDescription = $strUnitLabel;
-		$strWidgetTitle = AMAZONAUTOLINKSPLUGINNAME . ': ' . $strUnitLabel;
-
-		/*	
-			Currently in the eval() code below, in order to show the unit contents, it instanciates the option class and then passes them to the fetch() method.
-			I'm not sure if it is faster to fetch the output before the eval() statement. In this case the option class is already instanciated.
-			So no need to instantiate the option object again but may fetch the contents even when the widget is not called, such as in a single view.
-			
-			// $oAALinWidget = new AmazonAutoLinks_Core($oAALOptions->arrOptions['units'][$strUnitLabel], $oAALOptions->arrOptions["general"]);
-			// $strOutput = $oAALinWidget->fetch( $oAALinWidget->UrlsFromUnitLabel($strUnitLabel, $oAALOptions->arrOptions));
-		*/
-
-		eval('
-			class '  . $strWidgetID . ' extends WP_Widget {
-			
-				function ' . $strWidgetID . '() {
-					$widget_ops = array("classname" => "' . $strWidgetID . '"
-										, "description" => "' . $strDescription . '" );
-					$this->WP_Widget("' . $strWidgetID . '", "' . $strWidgetTitle . '", $widget_ops);			
-				}
-
-				function form($instance) {
-					$instance = wp_parse_args( (array) $instance, array( "title" => "" ) );
-					$title = $instance["title"];
-					echo "<p><label for=\"" . $this->get_field_id("title") . "\">Title: <input class=\"widefat\" id=\"";
-					echo $this->get_field_id("title") . "\" name=\"" . $this->get_field_name("title") . "\" type=\"text\" value=\"" . attribute_escape($title) . "\" /></label></p>";
-				}
-	 
-				function update($new_instance, $old_instance) {
-					$instance = $old_instance;
-					$instance["title"] = $new_instance["title"];
-					return $instance;
-				}
-
-				function widget($args, $instance) {
-					extract($args, EXTR_SKIP);
-
-					echo $before_widget;
-					$title = empty($instance["title"]) ? " " : apply_filters("widget_title", $instance["title"]);
-
-					if (!empty($title))
-						echo $before_title . $title . $after_title;
-
-					// WIDGET CODE GOES HERE
-					$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
-					$oAALinWidget = new AmazonAutoLinks_Core($oAALOptions->arrOptions["units"][' . $strUnitLabel . '], $oAALOptions->arrOptions["general"]);
-					echo $oAALinWidget->fetch( $oAALinWidget->UrlsFromUnitLabel(' . $strUnitLabel . ', $oAALOptions->arrOptions));
-					
-					echo $after_widget;
-				}			
-			}
-		');
-		register_widget($strWidgetID);	
-	}	
-
-}
-
 ?>
