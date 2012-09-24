@@ -13,10 +13,10 @@ class AmazonAutoLinks_Options_ {
 	protected $textdomain = 'amazonautolinks';	
 	public $unitdefaultoptions = array(
 		'unitlabel' 		=> '',
-		'country' 			=> 'US', // <--- this should be dynamic depanding to the user's locale or the previous input value
+		'country' 			=> 'US', // <--- this should be dynamic corresponding to the user's locale or the previous input value
 		'associateid' 		=> '',	 // <--  needs to investigate a way to remember user's previous input
 		'containerformat'	=> '<div class="amazon-auto-links">%items%</div>',
-		'itemformat' 		=> '<a href="%link%" title="%title%: %textdescription%">%img%</a><h5><a href="%link%" title="%title%: %textdescription%">%title%</a></h5><p>%htmldescription%</p>',
+		'itemformat' 		=> '<a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><h5><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a></h5><p>%htmldescription%</p>',
 		'imgformat'			=> '<img src="%imgurl%" alt="%textdescription%" />',
 		'imagesize' 		=> 160,
 		'sortorder' 		=> 'random',

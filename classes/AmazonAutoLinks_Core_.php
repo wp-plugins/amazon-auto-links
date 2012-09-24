@@ -130,7 +130,7 @@ class AmazonAutoLinks_Core_
 				// $textdescription -- although $htmldescription has the same routine, the below <a> tag modification needs text description for the title attribute
 				$textdescription = $this->get_textdescription($nodeDiv);		// needs to be done before modifying links
 				
-				// Modify links in descriptions -- sets attribute and inserts ref=nosim
+				// Modify links in descriptions -- sets attributes and inserts ref=nosim
 				$this->modify_links($nodeDiv, $title . ': ' . $textdescription);
 
 				// $htmldescription  - this needs to be done again since it's modified
@@ -274,8 +274,10 @@ class AmazonAutoLinks_Core_
 	function modify_links($node, $titleattribute) {
 		foreach ($node->getElementsByTagName('a') as $nodeA) {
 			$strHref = $nodeA->getAttribute('href');
+			if (empty($strHref)) continue;
 			$strHref = $this->modify_url($strHref);
-			if ($strHref) $nodeA->setAttribute('href', $strHref);
+			$nodeA->setAttribute('href', $strHref);
+			$nodeA->setAttribute('rel', 'nofollow');
 			$nodeA->setAttribute('title', $titleattribute);
 		}
 	}	

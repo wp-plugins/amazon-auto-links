@@ -1,10 +1,10 @@
 === Amazon Auto Links ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
-Tags: amazon, affiliate, miunosoft, links, ads
+Tags: amazon, affiliate, miunosoft, link, links, ads, widget
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,8 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 The features include:
 
 * Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
-* Automatic insertion in posts and feeds. You just check the checkboxes where you want the links to appear.
+* Automatic insertion in posts and feeds. You just check the checkboxes where you want the product links to appear.
+* Widget. Just put it in the sidebar and select the unit you created. The product links will appear in where you wanted.
 * Image Size. The size of thumbnails can be specified. It supports up to 500 pixel large with a clean resolution.
 * Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will not show up to them. But this one works.
 * Random/Title/Date sort order. It's totally possible to show links in random order. 
@@ -54,6 +55,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 == Changelog ==
 
 = 1.0.6 =
+* Added: the rel attribute, rel="nofollow", in the a tag of product links.
 * Re-Added: the widget. Now it is able to add units easily on the sidebar.
 
 = 1.0.5 =
@@ -80,7 +82,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 == Upgrade Notice ==
 
 = 1.0.6 =
-In this version, finally the widget is back. But testers are needed. Please report if you get any issue when placing the widget.
+In this version, finally the widget is back. Now it is easier to embed product links on the sidebar. Also in order to reflect the additional attirube rel="nofollow" existing units may need to be recreated.
 
 = 1.0.5 =
 In this version, the caches are renewed with WordPress Cron API instead of renewing them when the visitor loads the page. So this prevents the visitors from too slow page loads.
