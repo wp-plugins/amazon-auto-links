@@ -4,7 +4,7 @@ Donate link: http://michaeluno.jp/en/donate
 Tags: amazon, affiliate, miunosoft, link, links, ads, widget
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.0.6
+Stable tag: 1.0.61
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
