@@ -50,7 +50,8 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 1. Setting Page (Creating New Unit)
 2. Setting Page (Selecting Categories)
-3. Sample Embedding Links below Post
+3. Embedding Links below Post
+4. Widget Sample
 
 == Changelog ==
 
