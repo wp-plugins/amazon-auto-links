@@ -68,14 +68,12 @@
 	if (IsSet($_POST[AMAZONAUTOLINKSKEY][$mode]['save'])) {
 	
 		// if the unit label is changed, delete the old unit label options and save the submitted data to a new label element
-		if ($mode == 'editunit' && $oAALOptions->arrOptions['editunit']['prior_unitlabel'] != $oAALOptions->arrOptions['editunit']['unitlabel'])
-			unset($oAALOptions->arrOptions['units'][$oAALOptions->arrOptions['editunit']['prior_unitlabel']]);
+		// if ($mode == 'editunit' && $oAALOptions->arrOptions['editunit']['prior_unitlabel'] != $oAALOptions->arrOptions['editunit']['unitlabel'])
+			// unset($oAALOptions->arrOptions['units'][$oAALOptions->arrOptions['editunit']['prior_unitlabel']]);
 		
 		// insert the options with the key name of the unit label
-		if (empty($oAALOptions->arrOptions[$mode]['unitlabel']['id']))
-			$oAALOptions->arrOptions[$mode]['unitlabel']['id'] = uniqid();	// sets an id if there isn't --- the check is for backward-compatibility when widget is not supported; widget uses this identifier to declare the class
-		$oAALOptions->update_unit($oAALOptions->arrOptions[$mode]['unitlabel'], $mode);
-		$oAALOptions->arrOptions['tab1']['creatednewunit'] = true;		// set a flag value	//<-- needs a comment which indicates where this flag is used
+		if (empty($oAALOptions->arrOptions[$mode]['id'])) $oAALOptions->arrOptions[$mode]['id'] = uniqid();	// sets an id if there isn't --- the check is for backward-compatibility when widget is not supported; widget uses this identifier to declare the class
+		$oAALOptions->insert_unit($oAALOptions->arrOptions[$mode]['id'], $mode);
 		$fCreatedNewUnit = True;		
 	}
 	// check if the "Add Current Category" button is pressed

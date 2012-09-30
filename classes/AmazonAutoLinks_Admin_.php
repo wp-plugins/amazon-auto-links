@@ -33,9 +33,12 @@ class AmazonAutoLinks_Admin_ {
 		// localize hook only for admin page (admin_init). if all page load should be hooked, use 'init' instead
 		add_action('admin_init', array(&$this, 'localize'));
 		
-		// Embed Plugin Settings Link in the plugin listing page
+		// embed Plugin Settings Link in the plugin listing page
 		add_filter("plugin_action_links_" . AMAZONAUTOLINKSPLUGINFILEBASENAME, array(&$this, 'embed_settings_link') );
 
+		// embed donation link lin the plugin listing page
+		add_filter('plugin_row_meta', array(&$this, 'embed_donate_link'), 10, 2);
+		
 		// admin menu
 		add_action('admin_menu', array(&$this, 'admin_menu'));
 		
@@ -57,7 +60,7 @@ class AmazonAutoLinks_Admin_ {
 		// Include AmazonAutoLinks_Forms class
 		$this->oAALforms = new AmazonAutoLinks_Forms($this->pluginkey);		
 		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories($this->pluginkey);
-		
+	
 		// cache class
 		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
 		
@@ -81,24 +84,32 @@ class AmazonAutoLinks_Admin_ {
 		array_unshift($arrLinks, $settings_link); 
 		return $arrLinks; 	
 	}
+	function embed_donate_link($links, $file) {
+		if ($file == AMAZONAUTOLINKSPLUGINFILEBASENAME) {
+			$donate_link = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __('Donate', 'amazonautolinks') . '</a>';
+			$links[] = $donate_link;
+		}
+		return $links;
+	}  		
 	function shortcode($atts) {
 	
 		// reload the option since the timing of this function call depends and the options can have not be updated
-		// $this->oAALOptions->arrOptions = get_option( $this->pluginkey );
 		extract(shortcode_atts(array(
 			'label' => '',
 			// 'numitems' => 10,
 		), $atts));
-		if (!IsSet($this->oAALOptions->arrOptions['units'][$label])) {
+		$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($label, $arrOptions='');
+		if (!$strUnitID) {
 			echo $this->pluginname . ' ';
 			_e('Error: No such unit label exists.', 'amazonautolinks');
-			return;
+			return;		
 		}
+		
 		$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
-		return $oAAL->fetch();
+		return $oAAL->fetch();			
 	}
 	function insertinpost($content) {
-		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
+		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['postabove']) {			
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -111,7 +122,7 @@ class AmazonAutoLinks_Admin_ {
 		return trim($content);
 	}
 	function insertinexcerpt($content){
-		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
+		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['excerptabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -124,7 +135,7 @@ class AmazonAutoLinks_Admin_ {
 		return trim($content);
 	}
 	function insertincontentfeed($content) {
-		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
+		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -138,7 +149,7 @@ class AmazonAutoLinks_Admin_ {
 	}
 	function insertinexcerptrss($content) {
 
-		foreach($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrUnitOptions) {
+		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedexcerptabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -166,8 +177,7 @@ class AmazonAutoLinks_Admin_ {
 	function admin_custom_css() {
 		
 		// for the plugin admin panel theming
-		if ($_GET['page'] != AMAZONAUTOLINKSKEY)
-			return;
+		if ($_GET['page'] != AMAZONAUTOLINKSKEY) return;
 			
 		// if the option page of this plugin is loaded
 		if (IsSet($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) || IsSet($_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton'])) {
@@ -231,15 +241,14 @@ class AmazonAutoLinks_Admin_ {
 			} // end switch for tabs		
 			?>
 		</div> <!-- end the admin page wrapper -->
-		<?php 
-// print_r(get_option('amazonautolinks_catcache_events'));		
+		<?php 	
 	} 	// admin_page() end
 	/* ------------------------------------------ Tab 100 : Create Unit --------------------------------------------- */
 	function IsReachedLimitNumUnits($num=3) {
-		if (count($this->oAALOptions->arrOptions['units']) >= $num)
-			return true;
-		else
-			return false;	
+		if (count($this->oAALOptions->arrOptions['units']) >= $num) return true;
+		
+		// else
+		return false;	
 	}
 	function admin_tab100($numTabNum=100) {
 	
@@ -267,7 +276,7 @@ class AmazonAutoLinks_Admin_ {
 			// if the Go Back button is pressed. ('tab101_submitted' is sent together)
 			if (IsSet($_POST[$this->pluginkey]['tab101']['gobackbutton'])) {
 				$this->oAALOptions->arrOptions['tab101']['cameback'] = true;	// this flag is used for pseudo session.
-				update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+				$this->oAALOptions->update();
 				$numTabNum = 100;		
 			}
 		} else {
@@ -306,45 +315,41 @@ class AmazonAutoLinks_Admin_ {
 		// validate the sent form data 
 		$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab100'];	
 		$this->oAALOptions->arrOptions['tab100']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues);
+		
+		// check if a validation error occured
 		if ($this->oAALOptions->arrOptions['tab100']['errors']) {
-			
+					
 			// Show a warning Message
 			echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
 					
 			// Update the option values as preview to refill the submitted values
-			$this->oAALOptions->arrOptions['newunit'] = $arrSubmittedFormValues;
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);			
+			$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
+			$this->oAALOptions->set_newunit($arrSubmittedFormValues);	// does update_option() 
 			
 			// set the flag to indicate that repeat the page again. Do not go into the next page.
-			return 100;		// returns the tab numeber to go.
+			return 100;		// returns the tab numeber to go next.
 			
-		} else {
+		}
 
-// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['newunit']);		
-// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['tab101']);
-
-			// overwrite the option values so that previous values will be gone.
-			// needs to merge with the previous ones because if the user comes from the proceeding page and has some seleceted categories,
-			// those category info should be preserved so that when the user proceeds the settings again, he/she will have the previously seleceted categories
-			if (!is_array($this->oAALOptions->arrOptions['newunit']))
-				$this->oAALOptions->arrOptions['newunit'] = array();
-			// if the user returning from the proceeding page, restore the previous values
-			if ($this->oAALOptions->arrOptions['tab101']['cameback'])	{
-				$this->oAALOptions->arrOptions['newunit'] = array_merge($this->oAALOptions->arrOptions['newunit'], $_POST[$this->pluginkey]['tab100']);		
-// echo 'came back<br>';			
-			} else 
-				// $this->oAALOptions->set_new_unit($_POST[$this->pluginkey]['tab100']);
+		// the submitted options are valid; overwrite the option values so that previous values will be gone.
 		
-				$this->oAALOptions->arrOptions['newunit'] = $_POST[$this->pluginkey]['tab100'];
-			$this->oAALOptions->arrOptions['newunit'] = $this->oAALforms->clean_unitoptions($this->oAALOptions->arrOptions['newunit']);
-			$this->oAALOptions->arrOptions['newunit'] = $this->oAALforms->changecountyinfo_unitoptions($this->oAALOptions->arrOptions['newunit']);					
-			$this->oAALOptions->arrOptions['newunit'] = $this->oAALforms->addadtype_unitoptions($this->oAALOptions->arrOptions['newunit']);					
+		// needs to merge with the previous ones because if the user comes from the proceeding page and has some seleceted categories,
+		// those category info should be preserved so that when the user proceeds the settings again, he/she will have the previously seleceted categories
 			
-			// Update the option values as preview and proceed to the next
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+		// if the user is returning from the proceeding page, restore the previous values
+		if (!is_array($this->oAALOptions->arrOptions['newunit'])) $this->oAALOptions->arrOptions['newunit'] = array();
+		// if ($this->oAALOptions->arrOptions['tab101']['cameback'])	
+
+		$this->oAALOptions->arrOptions['newunit'] = array_merge($this->oAALOptions->arrOptions['newunit'], $arrSubmittedFormValues);
+	
+		// $this->oAALOptions->arrOptions['newunit'] = $_POST[$this->pluginkey]['tab100'];
+		$this->oAALOptions->arrOptions['newunit'] = $this->oAALforms->setup_unitoption($this->oAALOptions->arrOptions['newunit']);
 		
-			return 101;	// returns the tab number to go next.
-		}							
+		// Update the option values as preview and proceed to the next
+		$this->oAALOptions->update();
+	
+		return 101;	// returns the tab number to go next.
+							
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
@@ -353,41 +358,38 @@ class AmazonAutoLinks_Admin_ {
 
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
-
+// print_r($this->oAALOptions->arrOptions['units']);
 		/* POST Data : Delete Units */
 		// verify nonce
-		if (!$this->oAALforms->verifynonce_in_tab($numTabNum, $this->pluginkey, 'nonce'))
-			return;	// do nothing	
+		if (!$this->oAALforms->verifynonce_in_tab($numTabNum, $this->pluginkey, 'nonce')) return;	// do nothing	
 		
 		// Clear Cache
 		if (isset($_POST[$this->pluginkey]['tab200']['tab200_submitted']) && isset($_POST[$this->pluginkey]['tab200']['clearcache'])) {
+		
+			// remove feed caches
 			add_filter( 'wp_feed_cache_transient_lifetime', create_function( '$a', 'return 0;' ) );	
 			global $wpdb;
 			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_feed_%')" );
+			
+			// remove category caches
+			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
+			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
+			
+			// remove events
+			delete_option('amazonautolinks_catcache_events');
+			
 			echo '<div class="updated"><p>' . __('Caches are cleared. Please make sure the browser cache is also cleared if the unit items are still shown.', 'amazonautolinks') . '</p></div>';
 		}
 		
 		// Delete Units
 		if (isset($_POST[$this->pluginkey]['tab200']['tab200_submitted']) && isset($_POST[$this->pluginkey]['tab200']['deleteselectedunits'])) {
-			if (Is_Array($_POST[$this->pluginkey]['tab200']['delete'])) {
-				ForEach( $_POST[$this->pluginkey]['tab200']['delete'] as $unitlabel => $value) {
-					unset($this->oAALOptions->arrOptions['units'][$unitlabel]);
-				}
-				echo '<div class="updated"><p>' . __('Deleted the selected units.', 'amazonautolinks') . '</p></div>';
-			} 
-			// also clean broken units
-			$bNormal = True;
-			foreach ($this->oAALOptions->arrOptions['units'] as $unitlabel => $arrOptions) {
-				if (!$arrOptions['unitlabel']) {
-					unset($this->oAALOptions->arrOptions['units'][$unitlabel]);
-					$bNormal = False;
-				}
-			}
-			if (!$bNormal) {
-				echo '<div class="error settings-error"><p>' . __('There was a broken unit and deleted.', 'amazonautolinks') . '</p></div>';
-			}  
-				
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+
+			// Delete units of the submitted unit keys
+			if ($this->oAALOptions->delete_units($_POST[$this->pluginkey]['tab200']['delete'])) echo '<div class="updated"><p>' . __('Deleted the selected units.', 'amazonautolinks') . '</p></div>';
+			
+			// also clean broken units (remove unlabeled units)
+			if ($this->oAALOptions->clean_unlabeled_units()) echo '<div class="error settings-error"><p>' . __('There was a broken unit and deleted.', 'amazonautolinks') . '</p></div>';
+
 		}
 		?>
 		<h3><?php echo $this->tabcaptions[2]; ?></h3>		
@@ -416,23 +418,21 @@ class AmazonAutoLinks_Admin_ {
 		<?
 	}	// end of tab200 --------------------------------------------------------------------
 	function admin_tab200_unittable() {
-	
+		
 		// in case unnamed unit is injected in a process of misoperations, delete it. 
 		// This should not happen but it occured once while debugging.
-		if (array_key_exists('', $this->oAALOptions->arrOptions['units'])) {
-			unset($this->oAALOptions->arrOptions['units']['']);	
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);
-		}	
-		
+		$this->oAALOptions->delete_unnamed_key('units');	// does update_option()
+
 		// check if the number of units is valid
-		// it could be a cese that a user downgrades the version from pro. So leave them as they are.
-/* 		if ($this->IsReachedLimitNumUnits(4)) {
+		// there could be a case that the user downgrades the version from pro. So leave them as they are.
+		/* 		
+		if ($this->IsReachedLimitNumUnits(4)) {
 			do {
 				array_pop($this->oAALOptions->arrOptions['units']);
 			} While (count($stack) > 3);
 			update_option($this->pluginkey, $this->oAALOptions->arrOptions);
 		} */
-		
+
 		?>
 		<table class="wp-list-table widefat fixed posts" cellspacing="0">
 			<thead><?php $this->manage_units_table_header();?></thead>
@@ -441,15 +441,14 @@ class AmazonAutoLinks_Admin_ {
 				<?php 
 
 				$numUnit = count($this->oAALOptions->arrOptions['units']);
-				foreach( $this->oAALOptions->arrOptions['units'] as $unitname => $unit ) {
-					if (!$unitname)	// this happened somehow when debugging. It shouldn't happen.
-						continue;		
+				foreach( $this->oAALOptions->arrOptions['units'] as $strUnitID => $unit ) {
+					if (!$strUnitID) continue;	// this happened somehow when debugging. It shouldn't happen though.
 					echo '<tr>';
 					for ($i=0; $i <= 11; $i++) {
 						if ($i==0) 
-							echo '<td align="center" valign="middle" class="check-column">' . '<input type="checkbox" name="' . $this->pluginkey . '[tab200][delete][' . $unit['unitlabel'] . ']" value="1" >' . '</td>';
+							echo '<td align="center" valign="middle" class="check-column">' . '<input type="checkbox" name="' . $this->pluginkey . '[tab200][delete][' . $strUnitID . ']" value="1" ></td>';
 						else if ($i==1)
-							echo '<td>' . $unit['unitlabel'] . '</td>';
+							echo '<td>' . $unit['unitlabel'] . '</td>';		//. ': ' . $unit['id']
 						else if ($i==2)
 							echo '<td>' . $unit['associateid'] . '</td>';
 						else if ($i==3)
@@ -590,17 +589,16 @@ class AmazonAutoLinks_Admin_ {
 			$this->admin_tab200();
 			return;	// do not continue 
 		}	
-		$strLabel = $this->oAALfuncs->urldecrypt($_GET['view']);
+		$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['view']);
 	?>
 		<h3><?php echo $this->tabcaptions[2]; ?></h3>
 		<div style="float:right; margin-bottom: 20px;" >
 			<?php $this->oAALforms->form_submitbutton(200, 'preview', __('Go Back', 'amazonautolinks')); ?>
-<?php // echo 'classver: ' . $this->oAALforms->classver . '<--<br />'; ?>
 		</div>		
-		<h4><?php _e('Preview', 'amazonautolinks'); ?>: <?php echo $strLabel; ?></h4>
+		<h4><?php _e('Preview', 'amazonautolinks'); ?>: <?php echo $strUnitLabel; ?></h4>
 		<div style="padding: 2em 3em 2em 3em;">
 			<?php		
-			$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$strLabel]);
+			$oAAL = new AmazonAutoLinks_Core($strUnitLabel);
 			echo $oAAL->fetch();
 			?>
 		</div>
@@ -625,7 +623,7 @@ class AmazonAutoLinks_Admin_ {
 			return;	// do not continue 
 		}	
 
-		// if the proceed button is pressed
+		// if the 'Proceed' button is pressed
 		if (IsSet($_POST[$this->pluginkey]['tab202']['proceedbutton'])) {
 		
 			// validate the submitted values
@@ -639,30 +637,29 @@ class AmazonAutoLinks_Admin_ {
 						
 				// Update the option values as preview to refill the submitted values
 				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories
-				// $this->oAALOptions->arrOptions['editunit'] = $arrSubmittedFormValues;
+				$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
 				$this->oAALOptions->arrOptions['editunit'] = array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues);
-				update_option($this->pluginkey, $this->oAALOptions->arrOptions);							
-				$numTabNum = 202;	// do it again
+				$this->oAALOptions->update();
+				
+				// do it again, redirect to this page 
+				$numTabNum = 202;	
+				
 			} else {	// if the submitted option values are valid
 
 				// okey, save options and go to the next page, category selection.
-				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories
-				$this->oAALOptions->arrOptions['editunit'] = array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues);
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->clean_unitoptions($this->oAALOptions->arrOptions['editunit']);
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->changecountyinfo_unitoptions($this->oAALOptions->arrOptions['editunit']);					
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->addadtype_unitoptions($this->oAALOptions->arrOptions['editunit']);
+				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories			 
+				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->setup_unitoption(array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues));
+				$this->oAALOptions->update();
 
-// $this->oAALfuncs->print_r( $this->oAALOptions->arrOptions['editunit'], 'edit->submit changes, Check the categories element if they are present.');								
-				update_option($this->pluginkey, $this->oAALOptions->arrOptions);			
-				$numTabNum = 203;	// go to the next page.
+				// go to the next page, which is the page to select categories
+				$numTabNum = 203;	
 			}
 		}
 		// if the save button is pressed
 		else if (IsSet($_POST[$this->pluginkey]['tab202']['savebutton'])) {
 		
 			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];
-// AmazonAutoLinks_Helper_Functions::print_r($arrSubmittedFormValues, 'submitted values tab202');			
-// AmazonAutoLinks_Helper_Functions::print_r($_REQUEST, 'submitted values tab202');			
+	
 			// validate the sumitted values and if it's okey, save the options to the database and go to Tab 200.
 			$this->oAALOptions->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
 			if ($this->oAALOptions->arrOptions['tab202']['errors']) {	// if it's invalid
@@ -671,65 +668,31 @@ class AmazonAutoLinks_Admin_ {
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
 						
 				// Update the option values as preview to refill the submitted values
-				$this->oAALOptions->arrOptions['editunit'] = $arrSubmittedFormValues;
-				update_option($this->pluginkey, $this->oAALOptions->arrOptions);			
+				$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
+				$this->oAALOptions->update_editunit($arrSubmittedFormValues);	// does update_option()
 				
-				$numTabNum = 202;	// do it again
+				// do it again
+				$numTabNum = 202;	
 			} else {
-
-				
-				// the prior unit label has to be retrieved before overwriting options['editunit'] by the submitted values.
-				// $strPriorUnitLabel = trim($this->oAALOptions->arrOptions['editunit']['prior_unitlabel']);
 			
 				// okey, all done. Save options and go back to Manage Unit
-				$this->oAALOptions->arrOptions['editunit'] = $arrSubmittedFormValues;
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->clean_unitoptions($this->oAALOptions->arrOptions['editunit']);
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->changecountyinfo_unitoptions($this->oAALOptions->arrOptions['editunit']);					
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->addadtype_unitoptions($this->oAALOptions->arrOptions['editunit']);
-				
-				// has to merge with the previous options because they have data which the submitted ones don't have such as categories
-				$strPriorUnitLabel = $this->oAALOptions->arrOptions['editunit']['prior_unitlabel'];
-				$arrTmp = array_merge($this->oAALOptions->arrOptions['units'][$strPriorUnitLabel], $this->oAALOptions->arrOptions['editunit']);
-				
-				// if the unit label is changed, delete the old unit label options and save the submitted data to a new label element
-				if ($strPriorUnitLabel != $this->oAALOptions->arrOptions['editunit']['unitlabel'])
-					unset($this->oAALOptions->arrOptions['units'][$strPriorUnitLabel]);
-				
-				// check if the 'id' element is set; otherwise, set it.
-				if (empty($arrTmp['id']))
-					$arrTmp['id'] = uniqid();
-					
-				// overwrite/set the options
-				$this->oAALOptions->arrOptions['units'][$this->oAALOptions->arrOptions['editunit']['unitlabel']] = $arrTmp;
-			
-				// save it
-				update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+				$arrSubmittedFormValues = $this->oAALforms->setup_unitoption($arrSubmittedFormValues);
+				$this->oAALOptions->save_submitted_unitoption_edit($arrSubmittedFormValues);	// this method include update_option()	
 				echo '<div class="updated"><p>' . __('Updated the options.', 'amazonautolinks') . '</p></div>';
 				$this->admin_tab200(200);
 				return; // do not continue			
 			}
 		} else {
+		
 			// no button is pressed, meaning new landing
-			// store the temporary editing data in the options['editunit'] array.
-			// the user modifies this temprorary copied data and saves it if it is validated after pressing the form submit button.
-			$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['edit']);
-			$this->oAALOptions->arrOptions['editunit'] = $this->oAALOptions->arrOptions['units'][$strUnitLabel];
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);	
-
+			$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['edit']);	// note that the unit label is passed , not ID
+			
+			// this stores the temporary unit option in 'editunit' option key; the user modifies it and it will be used to update the unit option
+			$this->oAALOptions->store_temporary_editunit_option($strUnitLabel);	// this method includes update_option()
+			
 			// schedule prefetch; the parameter is empty, which means prefetch the root pages.
 			$this->oAALCatCache->schedule_prefetch();
-// categories are okey at here
-// $this->oAALfuncs->print_r( $this->oAALOptions->arrOptions['editunit'], 'edit->submit changes, Check the categories element if they are present.');				
 		}
-		
-		// add an ['prior_unitlabel'] in case the user changes the name so that it can be compared when checking the changing name is a dupilicate
-/* this won't be necessary since the hidden input field is embedded with the name, prior_unitlabel
-		$this->oAALOptions->arrOptions['units'][$strUnitLabel]['prior_unitlabel'] = $strUnitLabel;
-*/
-// echo $strUnitLabel . '<br>';
-
-// $this->oAALfuncs->print_r($arrSubmittedFormValues, 'edit->submit changes, before displaying the category selection page. ');
-// $this->oAALfuncs->print_r($this->oAALOptions->arrOptions['editunit'], "This is before going to edit: inside of editunit");		
 		?>
 		
 		<!-- Go Back Button -->
@@ -752,12 +715,10 @@ class AmazonAutoLinks_Admin_ {
 		<?php	
 		
 		// delete the unnecessry data
-		unset($this->oAALOptions->arrOptions['tab202']['errors']);
-		update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+		$this->oAALOptions->unset_error_flags(202);	// uses update_option()
+		
 	}
 	function admin_tab203($numTab=203) {
-// categories get lost at this stage	
-// $this->oAALfuncs->print_r( $this->oAALOptions->arrOptions['editunit'], 'edit->submit changes, before displaying the category selection page. Check the categories element if they are present.');	
 		$this->oAALforms_selectcategories->form_selectcategories($numTab, $this->oAALOptions->arrOptions['editunit']);
 	}
 	/* ------------------------------------------ Tab 300: General Settings --------------------------------------------- */
@@ -873,8 +834,6 @@ class AmazonAutoLinks_Admin_ {
 		<p><?php _e('You can set more flexible timeout for the cached files.', 'amazonautolinks'); ?></p>		
 		<h4><?php _e('Max Number of Items to Show', 'amazonautolinks'); ?></h4>
 		<p><?php _e('Get pro for unlimited items to show.', 'amazonautolinks'); ?></p>		
-		<h4><?php _e('Max Number of Items to Show', 'amazonautolinks'); ?></h4>
-		<p><?php _e('Get pro for unlimited items to show!', 'amazonautolinks'); ?></p>		
 		<h4><?php _e('Max Number of Categories Per Unit', 'amazonautolinks'); ?></h4>
 		<p><?php _e('Get pro for unlimited categories to set up!', 'amazonautolinks'); ?></p>		
 		<h4><?php _e('Max Number of Units', 'amazonautolinks'); ?></h4>
@@ -894,7 +853,19 @@ class AmazonAutoLinks_Admin_ {
 
 		<h3><?php _e('Bug Report' , 'amazonautolinks'); ?></h3>
 		<p><?php _e('If you find the plugin not working or having issues, please report it via the <a href="http://michaeluno.jp/en/bug-report">bug report form</a>.' , 'amazonautolinks'); ?></p>
+		
+		<?php $this->donation_info(); ?>
 	<?php
+	}
+	function donation_info() {
+	
+		// since v1.0.7
+		$donate_link = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __('Paypal', 'amazonautolinks') . '</a>';
+		?>
+		<h3><?php _e('Donation' , 'amazonautolinks'); ?></h3>
+		<p><?php _e('Donations are always appreciated. If you like to donate to the developer, please do so via ' . $donate_link , 'amazonautolinks'); ?>.</p>
+		<?php
+	
 	}
 	/* Methods for $this->admin_page() */
 	function define_tab_captions() {
@@ -911,12 +882,17 @@ class AmazonAutoLinks_Admin_ {
 	function page_header() {
 	
 		// called from $this->admin_page()
+				
 		// icon
 		$this->screen_icon();
+
+		// user ad
+		$oUserAd = new AmazonAutoLinks_UserAds($this->pluginkey);
+		$oUserAd->show_top_banner();
 		
 		// page header title
 		$strClassVer = $this->classver == 'pro' ? ' Pro' : '';
-		echo '<h2>' . $this->pluginname . $strClassVer . '</h2>';
+		echo '<h2 style="height:1.8em;">' . $this->pluginname . $strClassVer . '</h2>';
 		
 		// tab menu
 		$this->tab_menu();	// the property, $this->current_tab, is set there	
@@ -1024,7 +1000,7 @@ class AmazonAutoLinks_Admin_ {
 		
 		// save the data
 		$this->oAALOptions->arrOptions[$strOption] = $_POST[$this->pluginkey]['tab' . $numTab];
-		update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+		$this->oAALOptions->update();
 		return true;
 	}
 	function validate_options($numTab) {

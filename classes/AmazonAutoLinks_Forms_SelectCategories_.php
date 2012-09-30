@@ -76,7 +76,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		<div class="widthfixer" style="width:<?php echo $numIframeWidth; ?>px;  border-bottom:1px solid #FFF;"></div>
 		<?php		
 	}
-	
+
 	/* methods for inline frame page */
 	function load_dom_from_url($strURL) {
 	

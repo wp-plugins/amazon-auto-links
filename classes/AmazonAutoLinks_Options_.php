@@ -12,14 +12,15 @@ class AmazonAutoLinks_Options_ {
 	protected $pageslug = 'amazonautolinks';
 	protected $textdomain = 'amazonautolinks';	
 	public $unitdefaultoptions = array(
-		'unitlabel' 		=> '',
+		'id'		 		=> '',	 // uniqid() will be inserted when creating the unit. This is the save value as the key string of the unit option element.
+		'unitlabel' 		=> '',	 // this is used with the main function, shortcode, and background events in order to fetch feeds.
 		'country' 			=> 'US', // <--- this should be dynamic corresponding to the user's locale or the previous input value
 		'associateid' 		=> '',	 // <--  needs to investigate a way to remember user's previous input
 		'containerformat'	=> '<div class="amazon-auto-links">%items%</div>',
 		'itemformat' 		=> '<a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><h5><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a></h5><p>%htmldescription%</p>',
 		'imgformat'			=> '<img src="%imgurl%" alt="%textdescription%" />',
-		'imagesize' 		=> 160,
-		'sortorder' 		=> 'random',
+		'imagesize' 		=> 160,  // up to 500. 0 means no image.
+		'sortorder' 		=> 'random',	// random / title / date
 		'feedtypes' 		=> array(	'bestsellers' => True, 
 										'hotnewreleases' => False,
 										'moverandshakers' => False,
@@ -79,8 +80,9 @@ class AmazonAutoLinks_Options_ {
 	);
 	function __construct($pluginkey) {
 	
-		// Include helper classes
+		// Include classes
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
+			
 		
 		// set up properties
 		$this->pluginkey = $pluginkey;
@@ -129,9 +131,9 @@ class AmazonAutoLinks_Options_ {
 	}	
 	
 	/* Used in the Category Selection Page */
-	function update_unit($strUnitLabel, $NewOrEdit) {	
-		$this->arrOptions['units'][$strUnitLabel] = $this->arrOptions[$NewOrEdit];
-		$fSuccess = update_option($this->pluginkey, $this->arrOptions);
+	function insert_unit($strUnitID, $NewOrEdit) {		// since v1.0.7 $strUnitLabel was changed to $strUnitID
+		$this->arrOptions['units'][$strUnitID] = $this->arrOptions[$NewOrEdit];
+		return $this->update();
 	}
 	function add_category($NewOrEdit, $strCatName, $arrCatInfo) {
 	
@@ -170,18 +172,135 @@ class AmazonAutoLinks_Options_ {
 		return $arrLinks;
 	}
 
+	/* New Unit */
+	function set_newunit($arrUnitOptions) {
+		
+		//since v1.0.7, migrated from the AmazonAutoLinks_Admin_ class
+		$this->arrOptions['newunit'] = $arrUnitOptions;
+		$this->update();
+	}	
+	
+	/* Edit Unit -- used in admin page to save edited unit options */
+	function update_editunit($arrUnitOptions) {
+	
+		// since v1.0.7
+		$this->arrOptions['editunit'] = $arrUnitOptions;
+		$this->update();
+	}
+	
+	function save_submitted_unitoption_edit($arrSubmittedFormValues) {
+		
+		// since v1.0.7
+		
+		// get the Unit ID
+		if (empty($this->arrOptions['editunit']['id'])) $this->arrOptions['editunit']['id'] = uniqid(); //for backward compatiblity for v1.0.6 or below
+		$strUnitID = $this->arrOptions['editunit']['id'];
+		
+		// backward compatibility for v1.0.6 or below; in case the unit option key is not saved as its ID 
+		if (!is_array($this->arrOptions['units'][$strUnitID])) $this->arrOptions['units'][$strUnitID] = array(); 
+		
+		// has to merge with the previous options because they have data which the submitted ones don't have such as categories
+		$this->arrOptions['units'][$strUnitID] = array_merge($this->arrOptions['units'][$strUnitID], $this->arrOptions['editunit'], $arrSubmittedFormValues);
+		
+		// for backward compatiblity for v1.0.6 or below, delete the option key of unit label since it is saved as ID in the above line
+		$strUnitLabel = $this->arrOptions['units'][$strUnitID]['unitlabel'];
+		if (is_array($this->arrOptions['units'][$strUnitLabel])) unset($this->arrOptions['units'][$strUnitLabel]);				
+	
+		// save it
+		$this->update();
+	}	
+
+	function store_temporary_editunit_option($strUnitLabel) {
+	
+		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		// called from the AmazonAutoLinks_Admin class to store the temporay editing data in the options['editunit'] array.
+		// the user modifies this temprorary copied data and saves it if it is validated after pressing the form submit button.
+	
+		if (is_array($this->arrOptions['units'][$strUnitLabel])) 
+			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitLabel];	// backward compatibility for v1.0.6 or below
+		else {
+			$strUnitID = $this->get_unitid_from_unitlabel($strUnitLabel);
+			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitID];
+		}
+		$this->update();
+		
+	}	
+	function delete_unnamed_key($strOptionKey) { 
+		
+		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		// deleted unnamed key element from the given option element
+		if (array_key_exists('', $this->arrOptions[$strOptionKey])) {	 // if empty key element exists, remove it
+			unset($this->arrOptions[$strOptionKey]['']);	
+			$this->update();
+		}	
+	}
+	function unset_error_flags($numTab) {
+	
+		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		unset($this->arrOptions['tab' . $numTab]['errors']);
+		$this->update();
+	}
+	
+	/* Delete Units at Manage Option */
+	function delete_units($arrUnitIDs) {
+		
+		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		// the passed array has to have key names as the unit option key e.g. Array ( [506382d8377bd] => 1 )
+		if (!is_array($arrUnitIDs)) return false;
+		
+		$i = 0;
+		ForEach( $arrUnitIDs as $strUnitID => $v) {			
+			unset($this->arrOptions['units'][$strUnitID]);
+			$i++;
+		}
+	
+		if ($i > 0) $this->update();
+		return $i;
+	}
+	function clean_unlabeled_units() {
+	
+		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		// deletes units with no labels; this occured a few times in debbuging.
+		
+		$i = 0;
+		foreach ($this->arrOptions['units'] as $strUnitID => $arrOptions) {
+			if (!$arrOptions['unitlabel']) {
+				unset($this->arrOptions['units'][$strUnitID]);
+				$i++;
+			}
+		}
+		
+		if ($i > 0) $this->update();
+		return $i;
+	}		
+	
 	/* for general usage */		
-	function set_id($strUnitLabel) {
-		if (empty($this->arrOptions['units'][$strUnitLabel]['id']))
-			$this->arrOptions['units'][$strUnitLabel]['id'] = uniqid();
+	function set_id($strUnitID) {
+		if (empty($this->arrOptions['units'][$strUnitID]['id'])) $this->arrOptions['units'][$strUnitID]['id'] = uniqid();
 		$this->update();
 	}
 	function update() {
 	
 		// wrap the WordPress function so that this method can be called outside the class
-		update_option($this->pluginkey, $this->arrOptions);	
+		return update_option($this->pluginkey, $this->arrOptions);	
 	}
 	
+	function get_unitid_from_unitlabel($strUnitLabel, $arrOptions='') {
+		
+		// since v1.0.7, retrieves the unit option id from the given unit label.
+		if (empty($arrOptions)) $arrOptions = $this->arrOptions;
+		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) 
+			if ($arrUnitOption['unitlabel'] == $strUnitLabel) return $strUnitID;
+			
+		// this line is read when there is no ID retrieved
+		/*
+		$arrDebug = array();
+		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) {
 
+			$arrDebug[$strUnitID] = $arrUnitOption['id'];
+		}
+		print_r($arrDebug);
+		*/
+	}
 }
 ?>

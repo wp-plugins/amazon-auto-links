@@ -94,8 +94,9 @@ class AmazonAutoLinks_Forms_ {
 			// no need to check because the unit label is not edited.
 		} else {
 		// otherwise, check if the same unit label already exists
-			$rootOptions = get_option($this->pluginkey);
-			foreach($rootOptions['units'] as $unitlabel => $unit) {
+			$arrRootOptions = get_option($this->pluginkey);
+			foreach($arrRootOptions['units'] as $strUnitID => $arrUnitOption) {
+				$unitlabel = $arrUnitOption['unitlabel'];
 				if ($unitlabel == $arrOptions['unitlabel']) {
 					$arrErrors['unitlabel'] .= trim(' ' . __('The unit label already exists:', 'amazonautolinks') . $unitlabel) . ' ' ; 
 					$bInvalid = true;
@@ -179,6 +180,13 @@ class AmazonAutoLinks_Forms_ {
 		
 		return $arrUnitOptions;	
 	}
+	function setup_unitoption($arrUnitOptions) {	
+		// v1.0.7
+		$arrUnitOptions = $this->clean_unitoptions($arrUnitOptions);
+		$arrUnitOptions = $this->changecountyinfo_unitoptions($arrUnitOptions);					
+		$arrUnitOptions = $this->addadtype_unitoptions($arrUnitOptions);
+		return $arrUnitOptions;
+	}	
 	function get_pro_description() {
 		$strCurrURL = preg_replace('/(?<=tab=)\d+/i', '400', $this->oAALfuncs->selfURL());	// the url specifying the tab number, 400, which is for the pro version info page. // the pattern is replaced from '/tab\=\K\d+/i' since \K is avaiable above PHP 5.2.4
 	?>	
@@ -645,6 +653,6 @@ class AmazonAutoLinks_Forms_ {
 			</td>
 		</tr>
 		<?php
-	}	
+	}
 }
 ?>

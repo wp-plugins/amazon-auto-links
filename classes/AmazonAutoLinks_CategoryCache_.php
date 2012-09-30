@@ -48,7 +48,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		// $this->eventoptionkey = $pluginkey . 'catcache_events';
 		// set up classes
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
-		
+	
 		// format the event option
 		$this->formatoption();
 	}
@@ -61,6 +61,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		return 'aal_' . sha1($strURL);
 	}
 	function schedule_prefetch($strURL='') {
+	
 		echo '<!-- Amazon Auto Links: The prefetch function is called. Deciding whether prefetch tasks should be created. -->';		
 		// save urls in the option key with the key name of 'aal_' . sha1($strURL), 
 		// which is used as the event action name
@@ -79,34 +80,23 @@ class AmazonAutoLinks_CategoryCache_ {
 		// otherwise, fetch root pages.
 		$this->schedule_prefetch_from_url_array($this->arrCountryURLs, $arrCatCacheEvents);		
 	}
-	function is_exec_enabled() {
-		$arrDisabled = explode(', ', ini_get('disable_functions'));
-		return (!(in_array('exec', $arrDisabled) || in_array('shell_exec', $arrDisabled)));
-	}	
 	function run_in_background($strMsg='called a php process in the background') {
-		if (!$this->is_exec_enabled()) {
-			AmazonAutoLinks_Log('Could not run a background process since the server disabled the shell_exec function.', __METHOD__ );
-			return;
-		}
-		AmazonAutoLinks_Log('shell_exec is enabled. Keep going.', __METHOD__ );		
-		$bIsWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? True : False;
-		$strDump = ($bIsWin) ? 'NUL &' : '/dev/null 2>/dev/null &';
-		// $strDump = '2>&1';	// use this for debugging to see the output
-		$strBakePie = ($bIsWin) ? '&' : ';';
-		$strPHPExe = ($bIsWin) ? 'php.exe' : 'php';
-		$strPHPPath = (defined('PHP_BINARY')) ? '"' . PHP_BINARY . '"' : (defined('PHP_BIN_DIR')) ? '"' . PHP_BIN_DIR . '/' . $strPHPExe . '"' : 'php';
-
-		$output = shell_exec('cd ' . escapeshellarg(ABSPATH) . $strBakePie . ' ' . $strPHPPath . ' index.php ' . $strDump);
+	
+		// this triggers the WP Cron API and runs the scheduled task
+		$cron_url = site_url('?amazonautolinks_cache=category');	// $cron_url = site_url('wp-cron.php?doing_wp_cron=0');
+        wp_remote_post( $cron_url, array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
 		echo '<!-- ' . __METHOD__ . ': ' . $strMsg . ' -->';
-		AmazonAutoLinks_Log($strMsg, __METHOD__ );
-		if ($strDump == '2>&1') AmazonAutoLinks_Log('$output: ' . mb_substr ( strip_tags($output) , 0, 200), ABSPATH );
-		AmazonAutoLinks_Log('end of function.', __METHOD__ );
+		AmazonAutoLinks_Log($strMsg, __METHOD__ );	
+		
 	}	
 	function schedule_prefetch_from_url_array($arrURLs, $arrEvents) {
 		$i = 0;
 		foreach($arrURLs as $strURL) {
 		
-			// if the transient for this url already exists, skip it
+			// make sure the urls ends with a trailing slash
+			$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);
+		
+			// if the transient for this url already exists, skip it			
 			$html = get_transient( $this->eventkey($strURL) ) ;
 			if ( $html ) {
 			// if( false !== $html ) {		// if ( true === ( $value = get_transient( $this->eventkey($strURL) ) ) ) <-- not sure this doesn't work
@@ -164,9 +154,13 @@ class AmazonAutoLinks_CategoryCache_ {
 		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);	
 	}
 	function cache_category($strURL) {
-	
+
 		// this method is similar to cahce_html() expect this caches modified html code while the other one cache the entire code 
 		// this is for displaying category and leave the feed url to be retrieved. Other parts of the page will be discarded.
+
+		// make sure the urls ends with trailing slash
+		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);
+		
 		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
@@ -192,7 +186,8 @@ class AmazonAutoLinks_CategoryCache_ {
 	
 		// loads the dom object from a given url.
 		mb_language($this->detect_lang($strURL)); 
-		$html = $this->oAALfuncs->get_html($strURL);
+		// $html = $this->oAALfuncs->get_html($strURL);	//<-- not sure why it was using non caching method
+		$html = $this->get_html($strURL);
 		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
 		$doc = new DOMDocument();	
 		@$doc->loadHTML($html);		
@@ -240,6 +235,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	function unset_event($strURL) {
 		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 		unset($arrCatCacheEvents[$this->eventkey($strURL)]);
+		unset($arrCatCacheEvents[$this->eventkey(rtrim($strURL,"/"))]);	// for backward compatibility v1.0.6 or below
 		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);
 	}
 	function get_html($strURL) {
@@ -274,7 +270,8 @@ class AmazonAutoLinks_CategoryCache_ {
 		// Without spcifying the encoding with mb_language(), the characters get broken.
 		// I don't know if there are other workarounds. Let me know if anybody finds a solution for this, please contact to Michael Uno: michael@michaeluno.jp
 		mb_language($this->detect_lang($strURL)); 
-		$html = $this->oAALfuncs->get_html($strURL);
+		// $html = $this->oAALfuncs->get_html($strURL);	//<-- not sure why it was using the non-caching method
+		$html = $this->get_html($strURL);
 		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
 		$doc = new DOMDocument();	
 		@$doc->loadHTML($html);	
@@ -308,6 +305,55 @@ class AmazonAutoLinks_CategoryCache_ {
 		// this line should not be reached because it means it did not match any but just in case
 		return 'uni'; // let's set the default to uni, which likely work in most cases
 	}
+	/* Added in v1.0.7 */
+	function get_rsslink_from_urls($arrURLs) {
+		
+		// since v1.0.7
+		// creates and returns an array containing feed urls retrieved from the given category urls passed as an array.
+		$arrFeedURLs = array();
+		foreach($arrURLs as $strURL) {
+			$strRssURL = $this->get_rsslink_from_url($strURL);
+			if ($strRssURL) array_push($arrFeedURLs, $strRssURL);
+		}
+		if (count($arrFeedURLs) > 0) return $arrFeedURLs;
+		return;
+	}
+	function get_rsslink_from_url($strURL) {
+		
+		// since v1.0.7
+		// finds the feed url from the given category url. 
+		$doc = $this->load_dom_from_url($strURL);
+		if (!$doc) return;
+		$nodeRssLinks = $this->get_node_from_id($doc, 'zg_rssLinks');	// zg_rssLinks is the id attribute for the rss url
+		if (!$nodeRssLinks) return;
+		return $this->get_feed_url_from_dom($nodeRssLinks);	// if failed, returns nothing.
+	}
+	function get_node_from_id($doc, $strID) {
+		
+		// sinve v1.0.7
+		// since getElementByID constantly returned false for unknow reason, use xpath
+		$xPath = new DOMXPath($doc); 	
+		$nodeID = $xPath->query("//*[@id='" . $strID . "']")->item(0);
+		if (!$nodeID) {
+			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __METHOD__);
+			return;				
+		}
+		return $nodeID;
+	}
+	function get_feed_url_from_dom($domRssLinks) {
 
+		// sinve v1.0.7
+		// this method is similar to the get_rss_link() method defined in AmazonAutoLinks_Forms_SelectCategories
+		
+		$nodeH3 = $domRssLinks->getElementsByTagName('h3')->item(0); // remove the first h3 tag
+		if (!$nodeH3) return;
+		$domRssLinks->removeChild($nodeH3);
+		$nodeA1 = $domRssLinks->getElementsByTagName('a')->item(0);
+		if (!$nodeA1) return;
+		$strRssLink = $nodeA1->getAttribute('href');
+		$arrURL = explode("ref=", $strRssLink, 2);
+		$strRssLink = $arrURL[0];
+		return $strRssLink;
+	}	
 }
 ?>

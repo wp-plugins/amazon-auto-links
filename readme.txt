@@ -1,7 +1,7 @@
 === Amazon Auto Links ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
-Tags: amazon, affiliate, miunosoft, link, links, ads, widget
+Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
 Tested up to: 3.4.2
 Stable tag: 1.0.6.1
@@ -16,8 +16,7 @@ Still manually searching products and pasting affiliate links? What happens if t
 
 The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazon locales and works even on JavaScript disabled browsers. Insert the ads as widget or place generated shortcode or PHP code where the links should appear.
 
-The features include:
-
+<h4>Features</h4>
 * Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the product links to appear.
 * Widget. Just put it in the sidebar and select the unit you created. The product links will appear in where you wanted.
@@ -48,12 +47,18 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 == Screenshots ==
 
-1. Setting Page (Creating New Unit)
-2. Setting Page (Selecting Categories)
-3. Embedding Links below Post
-4. Widget Sample
+1. **Setting Page** (Creating New Unit)
+2. **Setting Page** (Selecting Categories)
+3. **Embedding Links below Post**
+4. **Widget Sample**
 
 == Changelog ==
+
+= 1.0.7 =
+* Fixed: an issue that the widget gets un-associated when the unit label gets changed.
+* Fixed: an issue that category caches were saved with the wrong name which resulted on not using the cache when available.
+* Fixed: an issue that the format of the img tag gets changed when the validation fails when setting up a unit.
+* Added: a donation link in the plugin listing page.
 
 = 1.0.6 =
 * Added: the rel attribute, rel="nofollow", in the a tag of product links.

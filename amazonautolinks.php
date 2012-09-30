@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.6
+	Version: 1.0.7
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -16,7 +16,7 @@ define("AMAZONAUTOLINKSKEY", "amazonautolinks");
 define("AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links");
 define("AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename(__FILE__));
 
-// Register Classes
+// Register Classes - this must be be done before using classes defined in this plugin
 add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
 
 // Admin Pages
@@ -36,8 +36,9 @@ add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLi
 // AmazonAutoLinks_CleanOptions();
 
 function AmazonAutoLinks_CleanOptions($key='') {
-	delete_option( AMAZONAUTOLINKSKEY );
-	delete_option('amazonautolinks_catcache_events');
+	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
+	delete_option('amazonautolinks_catcache_events');	// used for category cache events
+	delete_option('amazonautolinks_userads');			// used for the user ads
 	
 	$arr = array();
 	if ($key != '') {
@@ -56,7 +57,7 @@ function AmazonAutoLinks_CleanOptions($key='') {
 function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 
 	return; // if you like to see the plugin workings, comment out this line and the below line and you'll find a log file in the plugin directory.
-	if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) return;	// if the access is not from localhost, do not process.
+	// if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) return;	// if the access is not from localhost, do not process.
 
 	// for debugging
 	if ($strFunc=='') $strFunc = __FUNCTION__;
@@ -72,15 +73,23 @@ function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 }
 
 // the function used to embed the Amazon products unit in a theme
-function AmazonAutoLinks($unitlabel) {
+function AmazonAutoLinks($strUnitLabel) {
 	$options = get_option(AMAZONAUTOLINKSKEY);
-	if (!IsSet($options['units'][$unitlabel])) {
-		echo AMAZONAUTOLINKSPLUGINNAME . ' ';
-		_e('Error: No such unit label exists.', 'amazonautolinks');
-		return;
-	}	
-	$oAAL = new AmazonAutoLinks_Core($options['units'][$unitlabel]);
-	echo $oAAL->fetch();
+	
+	// as of v1.0.7, the option key is the ID of the unit so parse them to match the 'unitlabel' element to the passed unit label
+	foreach($options['units'] as $arrUnitOption) {
+		if ($arrUnitOption['unitlabel'] == $strUnitLabel) {
+			$oAAL = new AmazonAutoLinks_Core($options['units'][$strUnitLabel]);
+			echo $oAAL->fetch();		
+			return;
+		}
+	}
+	
+	// here will be read if there is not match
+	echo AMAZONAUTOLINKSPLUGINNAME . ' ';
+	_e('Error: No such unit label exists.', 'amazonautolinks');
+	return;
+
 }
 
 function AmazonAutoLinks_RegisterClasses() {
@@ -89,8 +98,8 @@ function AmazonAutoLinks_RegisterClasses() {
 		This function reads class files in wp-include/plugins/[this-plugin-path]/classes 
 		and registers them to be auto-loaded so that require() or include() in each class file is no longer necessary.
 		After that, it defines new clesses based on the regstered class names. 
-		The class files must have a class definition with the file name without file extension.
-		This function should be trigered with the plugins_loaded() function; otherwise, the "header already sent" error may occur during 
+		The class files must have a class definition with the file name without its file extension.
+		This function should be triggered by the plugins_loaded() function; otherwise, the "header already sent" error may occur during 
 		the plugin activation.
 	*/
 
