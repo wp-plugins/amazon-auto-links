@@ -87,6 +87,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 == Upgrade Notice ==
 
+= 1.0.7 =
+In this version, in addition to some fixes, the widget is changed to load units by ID not unit labels. So users using the widget may need to re-select the unit in the widget option page.
+
 = 1.0.6 =
 In this version, finally the widget is back. Now it is easier to embed product links on the sidebar. Also in order to reflect the additional attirube rel="nofollow" existing units may need to be recreated.
 
