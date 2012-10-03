@@ -40,7 +40,11 @@ class AmazonAutoLinks_Options_ {
 										'feedbelow'			=> False,
 										'feedexcerptabove'	=> False,
 										'feedexcerptbelow'	=> False	),
-		'widget'			=> false
+		'modifieddate'		=> '',	// used in AmazonAutoLinks_UserAds to store the creation/modified date of the unit
+		'feedurls'			=> '',	// used in AmazonAutoLinks_UserAds to store temporary feed urls 
+		'titlelength'		=> -1,
+		'linkstyle'			=> 1,
+		'credit'			=> True,
 	);	
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',

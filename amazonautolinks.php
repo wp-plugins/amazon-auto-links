@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.7
+	Version: 1.0.8
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -29,7 +29,6 @@ add_action('init', create_function( '', '$oAALEvents = new AmazonAutoLinks_Event
 add_action('admin_init', 'AmazonAutoLinks_Requirements');
 
 // Widgets
-// add_action('widgets_init', 'AmazonAutoLinks_Widgets'); // this is disabled until the blank page issue gets resolved.
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
 // uncomment the following function to clear all options and initialize to the default.
@@ -72,8 +71,9 @@ function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
 	file_put_contents($strPath, implode('', $arrLines));	
 }
 
-// the function used to embed the Amazon products unit in a theme
 function AmazonAutoLinks($strUnitLabel) {
+	
+	// This function is used to embed the Amazon products unit in a theme
 	$options = get_option(AMAZONAUTOLINKSKEY);
 	
 	// as of v1.0.7, the option key is the ID of the unit so parse them to match the 'unitlabel' element to the passed unit label

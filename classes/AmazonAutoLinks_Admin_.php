@@ -105,7 +105,8 @@ class AmazonAutoLinks_Admin_ {
 			return;		
 		}
 		
-		$oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
+		// $oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
+		$oAAL = new AmazonAutoLinks_Core($label);
 		return $oAAL->fetch();			
 	}
 	function insertinpost($content) {

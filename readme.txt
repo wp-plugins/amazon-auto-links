@@ -54,6 +54,12 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 == Changelog ==
 
+= 1.0.8 =
+* Fixed: a bug that shorcode fails to display the unit saved in version 1.0.7 or later.
+* Added: the title length option.
+* Added: the link style option.
+* Added: the credit insert option.
+
 = 1.0.7 =
 * Fixed: an issue that the widget gets un-associated when the unit label gets changed.
 * Fixed: an issue that category caches were saved with the wrong name which resulted on not using the cache when available.
@@ -87,8 +93,11 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 == Upgrade Notice ==
 
+= 1.0.8 =
+In this version, the link style option is added and the format of the link url can be changed. And there is a important fix for shortcode.
+
 = 1.0.7 =
-In this version, in addition to some fixes, the widget is changed to load units by ID not unit labels. So users using the widget may need to re-select the unit in the widget option page.
+In this version, in addition to some fixes, the widget is changed to load units by ID not by unit labels. So users using the widget may need to re-select the unit in the widget option page.
 
 = 1.0.6 =
 In this version, finally the widget is back. Now it is easier to embed product links on the sidebar. Also in order to reflect the additional attirube rel="nofollow" existing units may need to be recreated.

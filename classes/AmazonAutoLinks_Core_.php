@@ -19,6 +19,7 @@ class AmazonAutoLinks_Core_
     protected $textdomain = 'amazonautolinks';
 	protected $oAALOptions = array();
 	protected $arrUnitOptions = array();
+	protected $arrASINs = array();	// stores a temporary ASIN data with the key of the product url
 	
 	/* Constructor */
 	function __construct($arrUnitOptionsOrstrUnitLabel, $arrGeneralOptions='') {
@@ -123,7 +124,7 @@ class AmazonAutoLinks_Core_
 			$this->set_feed($urls, 999999999);	// set -1 for the expiration time so that it does not renew the cache in this load
 
 			/* Prepare blacklis */
-			$arrASINs = $this->blacklist();	// for checking duplicated items
+			$arrBlackASINs = $this->blacklist();	// for checking duplicated items
 			
 			/* Fetch */
 			$output = '';
@@ -141,18 +142,18 @@ class AmazonAutoLinks_Core_
 				$strImgURL = $this->get_image($dom, $this->arrUnitOptions['imagesize']);
 	
 				/* Link (hyperlinked url) */  // + ref=nosim
-				$lnk = $this->modify_url($item->get_permalink());
+				$strPermalink = $this->modify_url($item->get_permalink());
 
 				/* ASIN - required for detecting duplicate items and for ref=nosim */
-				$strASIN = $this->get_ASIN($lnk);
+				$strASIN = $this->arrASINs[$strPermalink];		// $strASIN = $this->get_ASIN($strPermalink);
 						
 				/* Remove Duplicates with ASIN -- $arrASINs should be merged with black list array prior to it */
-				if (in_array($strASIN, $arrASINs)) continue;	// if the parsing item has been already processed, skip it.
-				array_push($arrASINs, $strASIN);				
+				if (in_array($strASIN, $arrBlackASINs)) continue;	// if the parsing item has been already processed, skip it.
+				array_push($arrBlackASINs, $strASIN);				
 			
 				/* Title */
-				$title = $this->fix_title($item->get_title());
-				if (!$title) continue;		//occasionally this happens that empty title is given. 	
+				$strTitle = $this->fix_title($item->get_title());
+				if (!$strTitle) continue;		//occasionally this happens that empty title is given. 	
 									
 				/* Description (creates $htmldescription and $textdescription) */ 
 				$this->removeNodeByTagAndClass($nodeDiv, 'span', 'riRssTitle');
@@ -160,17 +161,17 @@ class AmazonAutoLinks_Core_
 				// $textdescription -- although $htmldescription has the same routine, the below <a> tag modification needs text description for the title attribute
 				$textdescription = $this->get_textdescription($nodeDiv);		// needs to be done before modifying links
 				
-				// Modify links in descriptions -- sets attributes and inserts ref=nosim
-				$this->modify_links($nodeDiv, $title . ': ' . $textdescription);
+				// Modify links in descriptions -- sets attributes and inserts ref=nosim if the option is set
+				$this->modify_links($nodeDiv, $strTitle . ': ' . $textdescription);
 
 				// $htmldescription  - this needs to be done again since it's modified
 				$htmldescription = $this->get_htmldescription($nodeDiv);
 							
 				// format image -- if the image size is set to 0, $strImgURL is empty.
-				$strImgTag = $strImgURL ? $this->format_image(array($lnk, $strImgURL, $title, $textdescription)) : "";
+				$strImgTag = $strImgURL ? $this->format_image(array($strPermalink, $strImgURL, $strTitle, $textdescription)) : "";
 
 				// item format
-				$output .= $this->format_item(array($lnk, $title, $htmldescription, $textdescription, $strImgTag));
+				$output .= $this->format_item(array($strPermalink, $strTitle, $htmldescription, $textdescription, $strImgTag));
 						
 				// Max Number of Items 
 				if (++$this->i >= $this->arrUnitOptions['numitems']) break;
@@ -274,9 +275,14 @@ class AmazonAutoLinks_Core_
 		}
 		return $strImgURL;
 	}	
-	function get_ASIN($lnk)	{
-		preg_match('/dp\/(.\w+)\//i', $lnk, $matches);
-		return IsSet($matches[1]) ? $matches[1] : "";
+	function get_ASIN($strURL)	{
+// /http:\/\/(?:www\.|)amazon\.com\/(?:gp\/product|[^\/]+\/dp|dp)\/([^\/]+)/
+// "http://www.amazon.com/([\\w-]+/)?(dp|gp/product)/(\\w+/)?(\\w{10})"
+	
+		preg_match('/(dp|gp|e)\/(.+\/)?(\w{10})(\/|$|\?)/i', $strURL, $matches);	// \w{10} is the ASIN
+		$strASIN = IsSet($matches[3]) ? $matches[3] : "";
+// if (empty($strASIN)) echo $strURL . ': ' . $matches[2] . '<br />';
+		return $strASIN;	// if not found returns an empty string
 	}	
 	function fix_title($strTitle) {
 		$strTitle = strip_tags($strTitle);
@@ -286,8 +292,10 @@ class AmazonAutoLinks_Core_
 		$strTitle = trim(preg_replace('/#\d+?:\s?/i', '', $strTitle));
 		
 		// title character length	// since v1.0.7
-		if (isset($this->arrUnitOptions['titlelength'])) {
-			if (mb_strlen($strTitle) > $this->arrUnitOptions['titlelength'])
+		if (isset($this->arrUnitOptions['titlelength']) && $this->arrUnitOptions['titlelength'] >= 0) {
+			if ($this->arrUnitOptions['titlelength'] == 0)
+				$strTitle = '';
+			else if (mb_strlen($strTitle) > $this->arrUnitOptions['titlelength'])
 				$strTitle = mb_substr($strTitle, 0, $this->arrUnitOptions['titlelength']) . '...';
 		}	
 		return $strTitle;
@@ -313,33 +321,110 @@ class AmazonAutoLinks_Core_
 			$strHref = $nodeA->getAttribute('href');
 			if (empty($strHref)) continue;
 			$strHref = $this->modify_url($strHref);
-			$nodeA->setAttribute('href', $strHref);
+// echo 'modify_links: ' . $strHref . '<br />';			
+			$bResult = $nodeA->setAttribute('href', $strHref);
+			// if (empty($bResult)) echo "error setting the url: " . $strHref;
 			$nodeA->setAttribute('rel', 'nofollow');
 			$nodeA->setAttribute('title', $titleattribute);
 		}
 	}	
 	function modify_url($strURL) {
 		
-		// ref=nosim
-		if (!empty($this->arrUnitOptions['nosim'])) 
-			$strURL = preg_replace('/ref\=(.+?)(\?|$)/i', 'ref=nosim$2', $strURL);		
+		// link style since v1.0.8
+		$numStyle = isset($this->arrUnitOptions['linkstyle']) ? $this->arrUnitOptions['linkstyle'] : 1;
+		$strURL = $this->linkstyle($strURL, $numStyle);
+// echo 'modify_url: ' . $strURL . '<br />';	
+		return $strURL;
+	}
+	function linkstyle($strURL, $numStyle) {
+// $numStyle = 2;
+		// sinve v1.0.8 $numStyle should be 1 to 4 indicating the url style of the link		
+		switch ($numStyle) {
+			case 1: // http://www.amazon.[domain-suffix]/[product-name]/dp/[asin]/ref=[...]?tag=[associate-id]
+
+				// ref=nosim
+				if (!empty($this->arrUnitOptions['nosim'])) 
+					$strURL = preg_replace('/ref\=(.+?)(\?|$)/i', 'ref=nosim$2', $strURL);		
+				
+				// tag
+				$strTag = 'tag=' . $this->arrUnitOptions['associateid'];
+				if (stripos($strURL, $strTag) === false) 	// if the associate id is not found, add it
+					$strURL .= '?' . $strTag;			
+					
+				// tag replacement
+				$strURL = $this->alter_tag_in_url_query($strURL);
+				
+				// store ASIN of this url
+				$strASIN = $this->get_ASIN($strURL);
+// echo $strURL . '<br />';				
+				break;
+				
+			case 2: // http://www.amazon.[domain-suffix]/exec/obidos/ASIN/[asin]/[associate-id]/ref=[...]
+				
+				// create an array consisting of the url elements
+				$arrURLelem = parse_url($strURL);
+
+				// ref=nosim
+				$strRefNosim = (empty($this->arrUnitOptions['nosim'])) ? '' : '/ref=nosim';
+				
+				// get ASIN
+				$strASIN = $this->get_ASIN($arrURLelem['path']);
+// if (empty($strASIN)) echo $strURL . '<br />';
+				$strURL = $arrURLelem['scheme'] . '://' . $arrURLelem['host'] . '/exec/obidos/ASIN/' . $strASIN . '/' . $this->alter_tag($this->arrUnitOptions['associateid']) . $strRefNosim;				
+				
+				break;
+				
+			case 3:	// http://www.amazon.[domain-suffix]/gp/product/[asin]/?tag=[associate-id]&ref=[...]
+
+				// create an array consisting of the url elements
+				$arrURLelem = parse_url($strURL);
+			
+				// ref=nosim
+				$strRefNosim = (empty($this->arrUnitOptions['nosim'])) ? '' : '&ref=nosim';
+				
+				// get ASIN
+				$strASIN = $this->get_ASIN($arrURLelem['path']);
+
+				// modify the url
+				$strURL = $arrURLelem['scheme'] . '://' . $arrURLelem['host'] . '/gp/product/' . $strASIN . '/?tag=' . $this->alter_tag($this->arrUnitOptions['associateid']) . $strRefNosim;
+
+				break;
+			case 4:	// http://www.amazon.[domain-suffix]/dp/ASIN/[asin]/ref=[...]?tag=[associate-id]
+
+				// create an array consisting of the url elements
+				$arrURLelem = parse_url($strURL);
+				
+				// ref=nosim
+				$strRefNosim = (empty($this->arrUnitOptions['nosim'])) ? '' : 'ref=nosim';
+				
+				// store ASIN of this url - this would be used in the fetch() method to check black list items
+				$strASIN = $this->get_ASIN($arrURLelem['path']);
 		
-		// tag
-		$strTag = 'tag=' . $this->arrUnitOptions['associateid'];
-		if (stripos($strURL, $strTag) === false) 	// if the associate id is not found, add it
-			$strURL .= '?' . $strTag;
-		
-		return $this->alter_tag($strURL);
+				// modify the url
+				$strURL = $arrURLelem['scheme'] . '://' . $arrURLelem['host'] . '/dp/ASIN/' . $strASIN . '/' . $strRefNosim . '?tag=' . $this->alter_tag($this->arrUnitOptions['associateid']);
+
+				break;							
+		}
+
+		// store ASIN of modified url - this would be used in the fetch() method to check black list items
+		$this->arrASINs[$strURL] = $strASIN;
+
+		return $strURL;
 	}
 	function insert_ref_nosim($strURL)  {
 		return preg_replace('/ref\=(.+?)(\?|$)/i', 'ref=nosim$2', $strURL);
 	}
-	function alter_tag($strURL) {
+	function alter_tag_in_url_query($strURL) {
 		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) {
 			$strToken = $this->oAALOptions->get_token($this->arrUnitOptions['country']);
 			$strURL = preg_replace('/(?<=tag=)(.+?-\d{2,})?/i', $strToken, $strURL);	// the pattern is replaced from '/tag\=\K(.+?-\d{2,})?/i' since \K is avaiable above PHP 5.2.4
 		}
 		return $strURL;
+	}
+	function alter_tag($strString) {
+		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) 
+			return $this->oAALOptions->get_token($this->arrUnitOptions['country']);
+		return $strString;	
 	}
 	function does_occur_in($numPercentage) {
 		if (mt_rand(1, 100) <= $numPercentage) return true;			
@@ -384,9 +469,10 @@ class AmazonAutoLinks_Core_
 		return str_replace($arrRefVars, $arrReplacements, $this->arrUnitOptions['itemformat']);
 	}				
 	function format_output($output) {
-		$strOutput = str_replace("%items%", $output, $this->arrUnitOptions['containerformat'])
-		 . '<!-- generated by Amazon Auto Links powered by miunosoft. http://michaeluno.jp -->';
-		return $strOutput;		
+		$strCredit = empty($this->arrUnitOptions['credit']) ? '' : '<span> by <a href="http://michaeluno.jp/en/amazon-auto-links">Amazon Auto Links</a></span>';
+		return str_replace("%items%", $output, $this->arrUnitOptions['containerformat'])
+			. $strCredit
+			. '<!-- generated by Amazon Auto Links powered by miunosoft. http://michaeluno.jp -->';
 	}	
 	function UrlsFromUnitLabel() {
 		$arrLinks = array();

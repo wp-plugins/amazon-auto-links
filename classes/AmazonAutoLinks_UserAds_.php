@@ -69,7 +69,7 @@ class AmazonAutoLinks_UserAds_
 		
 		// get the default value
 		$arrUnitOptions = $this->oAALOptions->unitdefaultoptions;
-		$arrUnitOptions['unitdefaultoptions'] = $strCountryCode;
+		$arrUnitOptions['unitdefaultoptions'] = $strCountryCode;	//<-- this line could be deleted.
 		$arrUnitOptions['numitems'] = 1;
 		$arrUnitOptions['imagesize'] = 30;
 		$arrUnitOptions['associateid'] = $this->oAALOptions->get_token($strCountryCode);

@@ -215,7 +215,10 @@ class AmazonAutoLinks_Forms_ {
 				<?php $this->field_element_adtypes($numTabNum, $arrOptionsToDisplay['feedtypes']); ?>
 				<?php $this->field_element_nosim($numTabNum, $arrOptionsToDisplay['nosim']); ?>
 				<?php $this->field_element_insert($numTabNum, $arrOptionsToDisplay['insert']); ?>
-				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); ?>
+				<?php $this->field_element_titlelength($numTabNum, $arrOptionsToDisplay['titlelength']); ?>
+				<?php $this->field_element_linkstyle($numTabNum, $arrOptionsToDisplay['linkstyle']); ?>
+				<?php $this->field_element_credit($numTabNum, $arrOptionsToDisplay['credit']); ?>
+				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); // depricated ?>
 			</tbody>
 		</table>
 		<p class="submit">
@@ -462,6 +465,56 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 	<?php
 	}	
+	function field_element_titlelength($numTabnum, $numValue="") {
+		
+		// called from form_setunit()
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][titlelength]';	
+		$numValue = !empty($numValue) ? $numValue : $this->oAALOptions->unitdefaultoptions['titlelength'];
+	?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Title Length', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
+				&nbsp;<font color="#666"><?php _e('It is used to prevent a boken layout caused by a very long product title. Set -1 for no limit.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oAALOptions->unitdefaultoptions['titlelength']; ?></font>
+			</td>
+		</tr>	
+	<?php	
+	}
+	function field_element_linkstyle($numTabnum, $numValue="") {
+	
+		// called from form_setunit()
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][linkstyle]';	
+		$numValue = !empty($numValue) ? $numValue : $this->oAALOptions->unitdefaultoptions['linkstyle'];
+	?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Link Style', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> http://www.amazon.[domain-suffix]/[product-name]/dp/[asin]/ref=[...]?tag=[associate-id] &nbsp;(<font color="#666"><?php _e('Default', 'amazonautolinks');?></font> )<br />
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 2 ? 'Checked' : '' ?> value="2"> http://www.amazon.[domain-suffix]/exec/obidos/ASIN/[asin]/[associate-id]/ref=[...]<br />
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 3 ? 'Checked' : '' ?> value="3"> http://www.amazon.[domain-suffix]/gp/product/[asin]/?tag=[associate-id]&ref=[...]<br />
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 4 ? 'Checked' : '' ?> value="4"> http://www.amazon.[domain-suffix]/dp/ASIN/[asin]/ref=[...]?tag=[associate-id]<br />
+			</td>
+		</tr>	
+	<?php		
+	}
+	function field_element_credit($numTabnum, $bValue="") {
+	
+		// called from form_setunit()
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][credit]';	
+		$bValue = $bValue ? $bValue : $this->oAALOptions->unitdefaultoptions['credit'];
+	?>
+		<tr valign="top">
+			<th scope="row">
+				<?php _e('Credit Link', 'amazonautolinks'); ?>						
+			</th>
+			<td>
+				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
+				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> <?php _e('Inserts the credit link at the end of the unit.', 'amazonautolinks'); ?>
+			</td>
+		</tr>
+	<?php
+	}
 	function field_element_cacheexpiration($numTabnum, $numValue="") {
 	
 		// called from form_setunit()
