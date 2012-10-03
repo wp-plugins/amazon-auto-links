@@ -1,0 +1,22 @@
+table.aal-table {
+	border: 1px solid #E2E2E2;
+}
+.aal-table th,td {
+	border-top: 1px solid #E2E2E2;
+	height:	30px; 
+	width:	250px;
+	padding: 10px 20px 10px 50px;
+}
+.aal-table th {
+	border-top: 0px;
+	background-color:#F5F5F5;
+}
+.aal-table td img {
+	border-bottom: 0px;
+	border-left: 0px;
+	display: inline;
+	border-top: 0px;
+	border-right: 0px;
+	margin: 0 auto;
+	display: block;	
+}
