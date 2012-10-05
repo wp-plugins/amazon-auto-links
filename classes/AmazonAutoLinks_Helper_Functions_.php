@@ -433,5 +433,18 @@ class AmazonAutoLinks_Helper_Functions_
 		foreach ($arrCountryLang as $key => $needle) 
 			if ((stripos($strLocale, $needle)) !== false) return $key;
 	}		
+	
+	/* for fixing $_POST $_GET invaid keys */
+	function fix_request_array_key($strKey) {
+
+		// added in v1.0.9
+		// the issue is described here: http://stackoverflow.com/questions/68651/can-i-get-php-to-stop-replacing-characters-in-get-or-post-arrays
+		$search = array(chr(32), chr(46), chr(91));
+		for ($i=128; $i <= 159; $i++) {
+			array_push($search, chr($i));
+		}
+		// print_r($search);
+		return str_replace ( $search , '_', $strKey);
+	}
 }
 ?>

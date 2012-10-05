@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.0.8
+	Version: 1.0.9
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -18,6 +18,9 @@ define("AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename(__FILE__));
 
 // Register Classes - this must be be done before using classes defined in this plugin
 add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
+
+// Redirects for URL cloaking
+add_action('plugins_loaded', 'AmazonAutoLinks_Redirects');
 
 // Admin Pages
 add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoLinks_Admin;' ) );
@@ -182,5 +185,19 @@ function AmazonAutoLinks_Requirements() {
 		deactivate_plugins( $plugin );
 	}
 	
+}
+function AmazonAutoLinks_Redirects() {
+	
+	// since v1.0.9
+	// check cloak query is passed in the url
+	$arrOptions = get_option(AMAZONAUTOLINKSKEY);
+	$strCloakQuery = empty($arrOptions['general']['cloakquery']) ? 'productlink': $arrOptions['general']['cloakquery'];
+	if (isset($_GET[$strCloakQuery])) {
+
+		// if so, redirect to the actual url
+		$oAALfuncs = new AmazonAutoLinks_Helper_Functions(AMAZONAUTOLINKSKEY);
+		wp_redirect($oAALfuncs->urldecrypt($_GET[$strCloakQuery]));
+		exit;		
+	}
 }
 ?>

@@ -14,8 +14,8 @@ class AmazonAutoLinks_Options_ {
 	public $unitdefaultoptions = array(
 		'id'		 		=> '',	 // uniqid() will be inserted when creating the unit. This is the save value as the key string of the unit option element.
 		'unitlabel' 		=> '',	 // this is used with the main function, shortcode, and background events in order to fetch feeds.
-		'country' 			=> 'US', // <--- this should be dynamic corresponding to the user's locale or the previous input value
-		'associateid' 		=> '',	 // <--  needs to investigate a way to remember user's previous input
+		'country' 			=> 'US', // <--- TODO: this should be dynamic corresponding to the user's locale or the previous input value
+		'associateid' 		=> '',	 // <--  TODO: needs to investigate a way to remember user's previous input
 		'containerformat'	=> '<div class="amazon-auto-links">%items%</div>',
 		'itemformat' 		=> '<a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><h5><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a></h5><p>%htmldescription%</p>',
 		'imgformat'			=> '<img src="%imgurl%" alt="%textdescription%" />',
@@ -45,7 +45,14 @@ class AmazonAutoLinks_Options_ {
 		'titlelength'		=> -1,
 		'linkstyle'			=> 1,
 		'credit'			=> True,
+		'urlcloak'			=> False	// sinve v1.0.9
 	);	
+	public $generaldefaultoptions = array(
+		'supportrate'		=> 10,
+		'blacklist'			=> '',
+		'donate'			=> 0,
+		'cloakquery'		=> 'productlink'
+	);		
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
 		'CA'	=> 'http://www.amazon.ca/gp/bestsellers/',
@@ -104,7 +111,7 @@ class AmazonAutoLinks_Options_ {
 		// create an option array, if it is the first time of loading this plugin
 		$this->arrOptions = get_option( $this->pluginkey );	
 		$this->arrOptions = is_array($this->arrOptions) ? $this->arrOptions : array();
-		$arrOption_new = array(
+		$arrOption_default = array(
 			"tab100"	=> array(),		// for tab 100
 			"tab101"	=> array(),		// for tab 101
 			"tab200"	=> array(),		// for tab 200
@@ -115,14 +122,14 @@ class AmazonAutoLinks_Options_ {
 			"newunit" 	=> array(),		// creating unit page: tab 100, tab 101
 			"editunit" 	=> array(),		// editing unit page: tab 202, tab 203
 			"units"		=> array(),		// stores created unit info.
-			"general"	=> array()		// stores general options
+			"general"	=> $this->generaldefaultoptions,		// stores general options
 		);
-		$this->arrOptions = array_merge($arrOption_new, $this->arrOptions);
+		$this->arrOptions = array_merge($arrOption_default, $this->arrOptions);
 		$this->set_support_rate();
 		$this->update();
 	}		
 	function set_support_rate() {
-		return;
+		return;	// do nothing for the standard version
 	}
 	/* Used in Admin Pages */
 	function set_new_unit($arrOptions='') {	

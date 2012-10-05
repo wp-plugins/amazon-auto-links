@@ -995,12 +995,18 @@ class AmazonAutoLinks_Admin_ {
 			return;	
 		
 		// validate the submitted data
-		$this->oAALOptions->arrOptions[$numTab]['errors'] = $this->validate_options($numTab);
-		if ($this->oAALOptions->arrOptions[$numTab]['errors'])
-			return false;
+		$arrSubmittedOptions = $_POST[$this->pluginkey]['tab' . $numTab];
+		
+		// currently only the general option page uses this method
+		if ($strOption == 'general') {
+			$arrSubmittedOptions = $this->oAALforms->clean_generaloptions($arrSubmittedOptions);
+			$this->oAALOptions->arrOptions[$numTab]['errors'] = $this->oAALforms->validate_generaloptions($arrSubmittedOptions);
+			if ($this->oAALOptions->arrOptions[$numTab]['errors'])
+				return false;
+		}
 		
 		// save the data
-		$this->oAALOptions->arrOptions[$strOption] = $_POST[$this->pluginkey]['tab' . $numTab];
+		$this->oAALOptions->arrOptions[$strOption] = $arrSubmittedOptions;	//$_POST[$this->pluginkey]['tab' . $numTab];
 		$this->oAALOptions->update();
 		return true;
 	}

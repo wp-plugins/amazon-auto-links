@@ -32,6 +32,7 @@ class AmazonAutoLinks_Core_
 		
 		// classes
 		$this->feed = new AmazonAutoLinks_SimplePie();		// this means class-simplepie.php must be included prior to instantiating this class
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);
 	
 		// Setup Caches
 		$this->feed->enable_cache(true);
@@ -146,6 +147,9 @@ class AmazonAutoLinks_Core_
 
 				/* ASIN - required for detecting duplicate items and for ref=nosim */
 				$strASIN = $this->arrASINs[$strPermalink];		// $strASIN = $this->get_ASIN($strPermalink);
+						
+				// Cloak URL
+				$strPermalink = $this->cloak_url($strPermalink);
 						
 				/* Remove Duplicates with ASIN -- $arrASINs should be merged with black list array prior to it */
 				if (in_array($strASIN, $arrBlackASINs)) continue;	// if the parsing item has been already processed, skip it.
@@ -276,13 +280,17 @@ class AmazonAutoLinks_Core_
 		return $strImgURL;
 	}	
 	function get_ASIN($strURL)	{
-// /http:\/\/(?:www\.|)amazon\.com\/(?:gp\/product|[^\/]+\/dp|dp)\/([^\/]+)/
-// "http://www.amazon.com/([\\w-]+/)?(dp|gp/product)/(\\w+/)?(\\w{10})"
+		
+		// retrieves and returns the ASIN, 10 characters which represents the product, from the given url/string
+		
+		// example regex patterns:
+		// /http:\/\/(?:www\.|)amazon\.com\/(?:gp\/product|[^\/]+\/dp|dp)\/([^\/]+)/
+		// "http://www.amazon.com/([\\w-]+/)?(dp|gp/product)/(\\w+/)?(\\w{10})"
 	
 		preg_match('/(dp|gp|e)\/(.+\/)?(\w{10})(\/|$|\?)/i', $strURL, $matches);	// \w{10} is the ASIN
 		$strASIN = IsSet($matches[3]) ? $matches[3] : "";
-// if (empty($strASIN)) echo $strURL . ': ' . $matches[2] . '<br />';
-		return $strASIN;	// if not found returns an empty string
+
+		return $strASIN;	// if not found, it returns an empty string
 	}	
 	function fix_title($strTitle) {
 		$strTitle = strip_tags($strTitle);
@@ -321,6 +329,7 @@ class AmazonAutoLinks_Core_
 			$strHref = $nodeA->getAttribute('href');
 			if (empty($strHref)) continue;
 			$strHref = $this->modify_url($strHref);
+			$strHref = $this->cloak_url($strHref);
 // echo 'modify_links: ' . $strHref . '<br />';			
 			$bResult = $nodeA->setAttribute('href', $strHref);
 			// if (empty($bResult)) echo "error setting the url: " . $strHref;
@@ -333,11 +342,20 @@ class AmazonAutoLinks_Core_
 		// link style since v1.0.8
 		$numStyle = isset($this->arrUnitOptions['linkstyle']) ? $this->arrUnitOptions['linkstyle'] : 1;
 		$strURL = $this->linkstyle($strURL, $numStyle);
-// echo 'modify_url: ' . $strURL . '<br />';	
+
 		return $strURL;
 	}
+	function cloak_url($strURL) {
+		
+		// since v1.0.9
+		if (!array_key_exists('urlcloak', $this->arrUnitOptions)) return $strURL ;	// v1.0.8 or below does not have this option value, so return				
+		$strCloakQuery = empty($this->arrGeneralOptions['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->arrGeneralOptions['cloakquery'];
+		$strEncrypted = $this->oAALfuncs->urlencrypt($strURL);
+		return site_url('?' . rawurlencode($strCloakQuery) . '=' . $strEncrypted);
+		
+	}
 	function linkstyle($strURL, $numStyle) {
-// $numStyle = 2;
+
 		// sinve v1.0.8 $numStyle should be 1 to 4 indicating the url style of the link		
 		switch ($numStyle) {
 			case 1: // http://www.amazon.[domain-suffix]/[product-name]/dp/[asin]/ref=[...]?tag=[associate-id]
@@ -355,8 +373,8 @@ class AmazonAutoLinks_Core_
 				$strURL = $this->alter_tag_in_url_query($strURL);
 				
 				// store ASIN of this url
-				$strASIN = $this->get_ASIN($strURL);
-// echo $strURL . '<br />';				
+				$strASIN = $this->get_ASIN($strURL);	
+				
 				break;
 				
 			case 2: // http://www.amazon.[domain-suffix]/exec/obidos/ASIN/[asin]/[associate-id]/ref=[...]
@@ -369,7 +387,6 @@ class AmazonAutoLinks_Core_
 				
 				// get ASIN
 				$strASIN = $this->get_ASIN($arrURLelem['path']);
-// if (empty($strASIN)) echo $strURL . '<br />';
 				$strURL = $arrURLelem['scheme'] . '://' . $arrURLelem['host'] . '/exec/obidos/ASIN/' . $strASIN . '/' . $this->alter_tag($this->arrUnitOptions['associateid']) . $strRefNosim;				
 				
 				break;

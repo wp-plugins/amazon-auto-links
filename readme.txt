@@ -26,6 +26,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 * Shortcode to embed the ads into posts and pages. 
 * PHP function to insert in the theme.
 * Blacklist. If you want certain products not to be shown, the black list can be set by ASIN.
+* URL cloaking. You can obfuscate the link urls so it helps to prevent being bloked by browser Ad-bloking add-ons.
   
 == Installation ==
 
@@ -53,6 +54,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.0.9 =
+* Added: the link cloaking feature.
 
 = 1.0.8 =
 * Fixed: a bug that shorcode fails to display the unit saved in version 1.0.7 or later.
@@ -92,6 +96,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 * Initial Release
 
 == Upgrade Notice ==
+
+= 1.0.9 =
+In this version, URL cloaking became possible.
 
 = 1.0.8 =
 In this version, the link style option is added and the format of the link url can be changed. And there is a important fix for shortcode.

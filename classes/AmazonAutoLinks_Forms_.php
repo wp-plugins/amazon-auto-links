@@ -76,6 +76,30 @@ class AmazonAutoLinks_Forms_ {
 		if ($bFormTag)
 			echo '</form>';
 	}	
+	function clean_generaloptions($arrGeneralOptions) {
+
+		// since v1.0.9
+		// - added for the cloak query option
+		
+		// if nothing is submitted for the "cloakquery" value, set the default
+		if (strlen(trim($arrGeneralOptions['cloakquery'])) == 0)  
+			$arrGeneralOptions['cloakquery'] = $this->oAALOptions->generaldefaultoptions['cloakquery'];
+		
+		$arrGeneralOptions['cloakquery'] = $this->oAALfuncs->fix_request_array_key($arrGeneralOptions['cloakquery']);
+		// $arrGeneralOptions['cloakquery'] = rawurlencode(trim($arrGeneralOptions['cloakquery'])); //<-- do not do this since if there is a encoded invalid character, it keeps continue converting and everytime it is saved it keeps changing its value
+		return $arrGeneralOptions;
+	}
+	function validate_generaloptions($arrGeneralOptions) {
+		
+		// since v1.0.9
+		// - added for the cloak query option
+		$bInvalid = false;
+		$arrErrors = array();
+
+		// nothing to do so far
+		return false;
+	
+	}
 	function validate_unitoptions($arrOptions, $mode="new") {
 		
 		// if invalid, returns an array containing the error infomation
@@ -218,6 +242,7 @@ class AmazonAutoLinks_Forms_ {
 				<?php $this->field_element_titlelength($numTabNum, $arrOptionsToDisplay['titlelength']); ?>
 				<?php $this->field_element_linkstyle($numTabNum, $arrOptionsToDisplay['linkstyle']); ?>
 				<?php $this->field_element_credit($numTabNum, $arrOptionsToDisplay['credit']); ?>
+				<?php $this->field_element_urlcloaking($numTabNum, $arrOptionsToDisplay['urlcloaking']); ?>
 				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); // depricated ?>
 			</tbody>
 		</table>
@@ -515,6 +540,29 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 	<?php
 	}
+	function field_element_urlcloaking($numTabnum, $bValue="") {
+	
+		// called from form_setunit()
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][urlcloak]';	
+		$bValue = !empty($bValue) ? $bValue : $this->oAALOptions->unitdefaultoptions['urlcloak'];
+		$strCloakQuery = empty($this->oAALOptions->arrOptions['general']['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->oAALOptions->arrOptions['general']['cloakquery'];
+	?>
+		<tr valign="top">
+			<th scope="row">
+				<?php _e('URL Cloak', 'amazonautolinks'); ?>						
+			</th>
+			<td>
+				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
+				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> 
+				<?php 
+					_e('Obfuscates product links.', 'amazonautolinks');
+					echo ' e.g. ' . site_url('?' . rawurlencode($strCloakQuery) . '=' . $this->oAALfuncs->urlencrypt("http://www.michaeluno.jp"));
+				?>
+			</td>
+		</tr>
+	<?php	
+	}
 	function field_element_cacheexpiration($numTabnum, $numValue="") {
 	
 		// called from form_setunit()
@@ -622,18 +670,13 @@ class AmazonAutoLinks_Forms_ {
 	}	
 	
 	/*------------------------------------ General Settings ----------------------------------------*/
-	private $generaldefaultoptions = array(
-		'supportrate'	=> 10,
-		'blacklist'		=> '',
-		'donate'		=> 0
-	);	
 	function form_generaloptions($numTabNum, $arrOptionsToDisplay="", $arrErrors="") {
 	
 		// called from admin_tab300()
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
 		if (!is_array($arrOptionsToDisplay)) 
-			$arrOptionsToDisplay = $this->generaldefaultoptions;
+			$arrOptionsToDisplay = $this->oAALOptions->generaldefaultoptions;
 		if (!is_array($arrErrors)) 
 			$arrErrors = array();
 		?>	
@@ -641,6 +684,7 @@ class AmazonAutoLinks_Forms_ {
 			<tbody>
 				<?php $this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']); ?>
 				<?php $this->field_element_blacklist($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
+				<?php $this->field_element_cloakquery($numTabNum, $arrOptionsToDisplay['cloakquery']); ?>
 
 			</tbody>
 		</table>
@@ -656,7 +700,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][supportrate]';
-		$strValue = $strValue != "" ? $strValue : $this->generaldefaultoptions['supportrate'];
+		$strValue = $strValue != "" ? $strValue : $this->oAALOptions->generaldefaultoptions['supportrate'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Support Rate', 'amazonautolinks'); ?></th>
@@ -677,7 +721,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][donate]';
-		$strValue = $strValue ? $strValue : $this->generaldefaultoptions['donate'];
+		$strValue = $strValue ? $strValue : $this->oAALOptions->generaldefaultoptions['donate'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Have you donated?', 'amazonautolinks'); ?></th>
@@ -696,7 +740,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][blacklist]';
-		$strValue = $strValue ? $strValue : $this->generaldefaultoptions['blacklist'];
+		$strValue = $strValue ? $strValue : $this->oAALOptions->generaldefaultoptions['blacklist'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?></th>
@@ -706,6 +750,30 @@ class AmazonAutoLinks_Forms_ {
 			</td>
 		</tr>
 		<?php
+	}
+	function field_element_cloakquery($numTabnum, $strValue="", $strWarning="") {
+	
+		// called from form_generaloptions()
+		// since v1.0.9
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][cloakquery]';
+		$strValue = !empty($strValue) ? $strValue : $this->oAALOptions->generaldefaultoptions['cloakquery'];
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Cloak URL Query Parameter', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="text" size="20" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  />
+				<br />&nbsp;<font color="#666">( 
+				<?php _e('Define the query parameter for URL cloaking.', 'amazonautolinks'); ?>
+				&nbsp;
+				<?php
+				_e('Default: ', 'amazonautolinks'); 
+				echo $this->oAALOptions->generaldefaultoptions['cloakquery']; 
+				?>  
+				)</font>	
+			</td>
+		</tr>
+		<?php
+	
 	}
 }
 ?>
