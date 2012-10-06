@@ -1,7 +1,7 @@
 === Amazon Auto Links ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
-Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
+Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, link cloaking, cloak, cloaking, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
 Tested up to: 3.4.2
 Stable tag: 1.0.9
