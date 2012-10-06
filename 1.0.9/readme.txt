@@ -26,7 +26,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 * Shortcode to embed the ads into posts and pages. 
 * PHP function to insert in the theme.
 * Blacklist. If you want certain products not to be shown, the black list can be set by ASIN.
-* URL cloaking. You can obfuscate the link urls so it helps to prevent being bloked by browser Ad-bloking add-ons.
+* URL cloaking. You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons.
   
 == Installation ==
 
