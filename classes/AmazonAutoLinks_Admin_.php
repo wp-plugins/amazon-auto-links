@@ -110,6 +110,7 @@ class AmazonAutoLinks_Admin_ {
 		return $oAAL->fetch();			
 	}
 	function insertinpost($content) {
+		if (is_home()) return $content;
 		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['postabove']) {			
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);

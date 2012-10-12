@@ -351,6 +351,7 @@ class AmazonAutoLinks_Core_
 		if (!array_key_exists('urlcloak', $this->arrUnitOptions) || empty($this->arrUnitOptions['urlcloak'])) return $strURL ;	// v1.0.8 or below does not have this option value, so return				
 		$strCloakQuery = empty($this->arrGeneralOptions['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->arrGeneralOptions['cloakquery'];
 		$strEncrypted = $this->oAALfuncs->urlencrypt($strURL);
+// return $strURL;
 		return site_url('?' . rawurlencode($strCloakQuery) . '=' . $strEncrypted);
 		
 	}
