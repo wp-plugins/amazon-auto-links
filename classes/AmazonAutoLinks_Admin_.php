@@ -98,7 +98,7 @@ class AmazonAutoLinks_Admin_ {
 			'label' => '',
 			// 'numitems' => 10,
 		), $atts));
-		$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($label, $arrOptions='');
+		$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($label);
 		if (!$strUnitID) {
 			echo $this->pluginname . ' ';
 			_e('Error: No such unit label exists.', 'amazonautolinks');
