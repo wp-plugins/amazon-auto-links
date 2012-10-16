@@ -8,7 +8,7 @@
 	$bReachedLimit = false;
 	
 	// Include helper classes. This must be done before anything else
-	require_once(dirname(__FILE__) . '/classes/AmazonAutoLinks_Helper_Functions_.php');
+	require_once(dirname(dirname(__FILE__)) . '/classes/AmazonAutoLinks_Helper_Functions_.php');
 	$oAALfuncs = new AmazonAutoLinks_Helper_Functions_(AMAZONAUTOLINKSKEY);
 
 	// Load as a WordPress Plugin

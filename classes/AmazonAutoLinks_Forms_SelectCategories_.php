@@ -72,7 +72,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 				</td>
 			</tr>
 		</table>
-		<iframe name="inlineframe" src="<?php echo plugins_url('amazonautolinks_selectcategory.php', dirname(__FILE__)) . '?abspath=' . $this->oAALfuncs->urlencrypt(ABSPATH) ;?>&mode=<?php echo $strMode; ?>" noresize frameborder="0" scrolling="no" width="100%" height="<?php echo $numIframeHeight; ?>" style="margin: 0; padding 0;"></iframe>
+		<iframe name="inlineframe" src="<?php echo AMAZONAUTOLINKSPLUGINURL . '/inc/amazonautolinks_selectcategory.php?abspath=' . $this->oAALfuncs->urlencrypt(ABSPATH) ;?>&mode=<?php echo $strMode; ?>" noresize frameborder="0" scrolling="no" width="100%" height="<?php echo $numIframeHeight; ?>" style="margin: 0; padding 0;"></iframe>
 		<div class="widthfixer" style="width:<?php echo $numIframeWidth; ?>px;  border-bottom:1px solid #FFF;"></div>
 		<?php		
 	}
