@@ -5,7 +5,8 @@
 */
 
 // Register Classes - this must be be done before using classes defined in this plugin
-add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
+AmazonAutoLinks_RegisterClasses();
+// add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
 
 // Redirects for URL cloaking
 add_action('plugins_loaded', 'AmazonAutoLinks_Redirects');
