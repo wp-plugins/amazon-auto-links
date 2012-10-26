@@ -60,6 +60,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 * Fixed: a bug that credit option gets checked in the option page.
 * Fixed: an issue that encryption did not work on servers which disable the mcrypt extension.
 * Fixed: an issue that some form elements of the admin page did not appear on servers which disable short_open_tag.
+* Fixed: a bug that the AmazonAutoLinks() function did not retrieve the correct unit id. 
 
 = 1.0.9 =
 * Added: the link cloaking feature.

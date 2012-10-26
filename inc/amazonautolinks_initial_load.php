@@ -1,5 +1,4 @@
 <?php
-
 /*
 	this is the initial load script called from the main plugin file
 */
@@ -74,9 +73,9 @@ function AmazonAutoLinks($strUnitLabel) {
 	$options = get_option(AMAZONAUTOLINKSKEY);
 	
 	// as of v1.0.7, the option key is the ID of the unit so parse them to match the 'unitlabel' element to the passed unit label
-	foreach($options['units'] as $arrUnitOption) {
+	foreach($options['units'] as $strUnitID => $arrUnitOption) {
 		if ($arrUnitOption['unitlabel'] == $strUnitLabel) {
-			$oAAL = new AmazonAutoLinks_Core($options['units'][$strUnitLabel]);
+			$oAAL = new AmazonAutoLinks_Core($options['units'][$strUnitID]);
 			echo $oAAL->fetch();		
 			return;
 		}
