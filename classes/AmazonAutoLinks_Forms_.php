@@ -499,7 +499,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Title Length', 'amazonautolinks'); ?></th>
 			<td>
 				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666"><?php _e('It is used to prevent a boken layout caused by a very long product title. Set -1 for no limit.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oAALOptions->unitdefaultoptions['titlelength']; ?></font>
+				&nbsp;<font color="#666"><?php _e('It is used to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oAALOptions->unitdefaultoptions['titlelength']; ?></font>
 			</td>
 		</tr>	
 	<?php	
