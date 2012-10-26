@@ -20,3 +20,6 @@ define("AMAZONAUTOLINKSPLUGINDIR", dirname(__FILE__));
 define("AMAZONAUTOLINKSPLUGINURL", plugins_url('', __FILE__));
 
 include AMAZONAUTOLINKSPLUGINDIR . '/inc/amazonautolinks_initial_load.php';
+
+// uncomment the following function to clear all options and initialize to the default.
+// AmazonAutoLinks_CleanOptions();

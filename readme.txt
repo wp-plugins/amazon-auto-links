@@ -55,6 +55,12 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 == Changelog ==
 
+= 1.1.0 =
+* Fixed: a bug that url cloak option gets unchecked in the option page.
+* Fixed: a bug that credit option gets checked in the option page.
+* Fixed: an issue that encryption did not work on servers which disable the mcrypt extension.
+* Fixed: an issue that some form elements of the admin page did not appear on servers which disable short_open_tag.
+
 = 1.0.9 =
 * Added: the link cloaking feature.
 
@@ -96,6 +102,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 * Initial Release
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+In this version, there are several minor fixes.
 
 = 1.0.9 =
 In this version, URL cloaking became possible.

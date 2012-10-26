@@ -9,7 +9,6 @@ class AmazonAutoLinks_Forms_ {
 	public $classver = 'standard';
 	protected $pluginkey = 'amazonautolinks';
 
-
 	function __construct($pluginkey) {
 		$this->pluginkey = $pluginkey;
 		$this->pageslug = $pluginkey;
@@ -143,7 +142,7 @@ class AmazonAutoLinks_Forms_ {
 	}	
 	function clean_unitoptions($arrUnitOptions) {	
 	
-		// called from admin_tab100() can be called from admin_tab200
+		// called from admin_tab100() this also can be called from admin_tab200
 		// this fiexes sent form data for creating/modifing the unit information
 		
 		// just fix it to the default value	
@@ -226,7 +225,7 @@ class AmazonAutoLinks_Forms_ {
 			$arrOptionsToDisplay = $this->oAALOptions->unitdefaultoptions;
 		if (!is_array($arrErrors)) 
 			$arrErrors = array();
-// $this->oAALfuncs->print_r($arrOptionsToDisplay, 'Form SetUnit: property inherit');						
+					
 		?>	
 		<table class="form-table">
 			<tbody>
@@ -242,7 +241,7 @@ class AmazonAutoLinks_Forms_ {
 				<?php $this->field_element_titlelength($numTabNum, $arrOptionsToDisplay['titlelength']); ?>
 				<?php $this->field_element_linkstyle($numTabNum, $arrOptionsToDisplay['linkstyle']); ?>
 				<?php $this->field_element_credit($numTabNum, $arrOptionsToDisplay['credit']); ?>
-				<?php $this->field_element_urlcloaking($numTabNum, $arrOptionsToDisplay['urlcloaking']); ?>
+				<?php $this->field_element_urlcloaking($numTabNum, $arrOptionsToDisplay['urlcloak']); ?>
 				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); // depricated ?>
 			</tbody>
 		</table>
@@ -526,7 +525,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][credit]';	
-		$bValue = $bValue ? $bValue : $this->oAALOptions->unitdefaultoptions['credit'];
+		$bValue = ($bValue != '') ? $bValue : $this->oAALOptions->unitdefaultoptions['credit'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -535,7 +534,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
-				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> <?php _e('Inserts the credit link at the end of the unit.', 'amazonautolinks'); ?>
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty($bValue) ? 'Checked' : '' ?>> <?php _e('Inserts the credit link at the end of the unit.', 'amazonautolinks'); ?>
 			</td>
 		</tr>
 	<?php
@@ -544,7 +543,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][urlcloak]';	
-		$bValue = !empty($bValue) ? $bValue : $this->oAALOptions->unitdefaultoptions['urlcloak'];
+		$bValue = ($bValue != '') ? $bValue : $this->oAALOptions->unitdefaultoptions['urlcloak'];
 		$strCloakQuery = empty($this->oAALOptions->arrOptions['general']['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->oAALOptions->arrOptions['general']['cloakquery'];
 	?>
 		<tr valign="top">
@@ -554,7 +553,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
-				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> 
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty($bValue) ? 'Checked' : '' ?> /> 
 				<?php 
 					_e('Obfuscates product links.', 'amazonautolinks');
 					echo ' e.g. ' . site_url('?' . rawurlencode($strCloakQuery) . '=' . $this->oAALfuncs->urlencrypt("http://www.michaeluno.jp"));
@@ -635,7 +634,7 @@ class AmazonAutoLinks_Forms_ {
 				</div>
 			</td>
 		</tr>	
-	<?
+	<?php
 	}		
 	function field_element_imgformat($numTabnum, $strValue="") {
 	
@@ -666,7 +665,7 @@ class AmazonAutoLinks_Forms_ {
 				</div>
 			</td>
 		</tr>	
-	<?
+	<?php
 	}	
 	
 	/*------------------------------------ General Settings ----------------------------------------*/

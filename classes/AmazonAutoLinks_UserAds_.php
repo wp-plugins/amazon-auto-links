@@ -1,5 +1,4 @@
 <?php
-
 class AmazonAutoLinks_UserAds_
 {
 	/*
@@ -78,6 +77,7 @@ class AmazonAutoLinks_UserAds_
 		$arrUnitOptions['modifieddate'] = time();
 		$arrUnitOptions['id'] = uniqid();
 		$arrUnitOptions['unitlabel'] = $strCountryCode;
+		$arrUnitOptions['credit'] = 0;
 		
 		// check if the feed urls are ready
 		if (!is_array($arrUserAdsOptions[$strCountryCode]['feedurls'])) {
@@ -116,14 +116,14 @@ class AmazonAutoLinks_UserAds_
 	function show_top_banner() {
 	
 		$strCountryCode = $this->check_user_countrycode();			// if the country code cache is not ready, it will return 'US'
-		$arrUnitOptions = $this->get_unitoption($strCountryCode);	// if the cache of the user ad unit option  is not ready, it will return false
+		$arrUnitOptions = $this->get_unitoption($strCountryCode);	// if the cache of the user ad unit option is not ready, it will return false
 		if (!$arrUnitOptions)  {
 			AmazonAutoLinks_Log('The user ad is not ready: ' . $strCountryCode, __METHOD__);				
 			return;	// now it should be preparing the unit option
 		}
 		if (!is_array($arrUnitOptions['feedurls'])) {
 			AmazonAutoLinks_Log('The option is not formated correctly: ' . $strCountryCode, __METHOD__);	
-// print_r($arrUnitOptions);	
+
 			// clean the broken unit
 			$arrUserAdOptions = get_option('amazonautolinks_userads');
 			unset($arrUserAdOptions[$strCountryCode]);
@@ -166,6 +166,7 @@ class AmazonAutoLinks_UserAds_
 		$arrUnitOptions['categories'] = $arrCategories;
 		$arrUnitOptions['imagesize'] = 36;
 		$arrUnitOptions['titlelength'] = 60;
+		$arrUnitOptions['credit'] = 0;
 		$arrUnitOptions['containerformat']	= '<div style="width:70%;float:right;"><div class="amazon-auto-links-userads" style="float:right;padding:8px 0px 0px 20px; vertical-align:middle">%items%</div></div>';
 		$arrUnitOptions['itemformat'] = '<div valign="middle"><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a> %htmldescription%</div>';
 		$arrUnitOptions['imgformat'] = '<img src="%imgurl%" alt="%textdescription%" style="float:left; margin-right:8px;"/>';

@@ -85,7 +85,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		$html = $this->oAALCatCache->get_html($strURL);
 		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');		
 		$doc = new DOMDocument();
-		$dom->validateOnParse = true;
+		// $dom->validateOnParse = true;
 		$doc->preserveWhiteSpace = false;
 		$doc->formatOutput = true;
 		@$doc->loadHTML($html);	

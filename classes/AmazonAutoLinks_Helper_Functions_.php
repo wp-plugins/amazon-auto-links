@@ -43,12 +43,20 @@ class AmazonAutoLinks_Helper_Functions_
 	}
 	public function encrypt($string) {
 		// add [] because the ending character can contain = and it's not suitable for passing to a url such as a query value for the GET method.
-		return '[' . base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->key), $string, MCRYPT_MODE_CBC, md5(md5($this->key)))) . ']';
+	
+		if (function_exists('mcrypt_encrypt'))
+			return '[' . base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->key), $string, MCRYPT_MODE_CBC, md5(md5($this->key)))) . ']';
+		
+		return '[' . base64_encode($string) . ']';	// for mcrypt disabled servers	
 	}
 	public function decrypt($encryptedstring) {
 		$encryptedstring = substr($encryptedstring, 1, -1);  	// remove the outer [].
-		return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->key), base64_decode($encryptedstring), MCRYPT_MODE_CBC, md5(md5($this->key))), "\0");
-	}	 
+		
+		if (function_exists('mcrypt_encrypt'))
+			return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->key), base64_decode($encryptedstring), MCRYPT_MODE_CBC, md5(md5($this->key))), "\0");
+		
+		return rtrim(base64_decode($encryptedstring), "\0");	// for mcrypt disabled servers
+	} 
 	function fixnum($numToFix, $numDefault, $numMin="", $numMax="") {
 	
 		// checks if the passed value is a number and set it to the default if not.

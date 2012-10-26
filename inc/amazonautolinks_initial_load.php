@@ -12,19 +12,24 @@ AmazonAutoLinks_RegisterClasses();
 add_action('plugins_loaded', 'AmazonAutoLinks_Redirects');
 
 // Admin Pages
-add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoLinks_Admin;' ) );
+add_action( 'plugins_loaded', "AmazonAutoLinksAdminPage" );
+function AmazonAutoLinksAdminPage() {
+	$o = new AmazonAutoLinks_Admin;
+}
+// add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoLinks_Admin;' ) );
 
 // Load actions to hook events for Cron jobs
-add_action('init', create_function( '', '$oAALEvents = new AmazonAutoLinks_Events;' ));
+add_action('init', 'AmazonAutoLinks_Events');
+function AmazonAutoLinks_Events() {
+	$o = new AmazonAutoLinks_Events;
+}
+// add_action('init', create_function( '', '$oAALEvents = new AmazonAutoLinks_Events;' ));
 
 // Plugin Requirements
 add_action('admin_init', 'AmazonAutoLinks_Requirements');
 
 // Widgets
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
-
-// uncomment the following function to clear all options and initialize to the default.
-// AmazonAutoLinks_CleanOptions();
 
 function AmazonAutoLinks_CleanOptions($key='') {
 	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
@@ -169,11 +174,9 @@ function AmazonAutoLinks_Requirements() {
 	}
 	if (!$bSufficient && is_plugin_active($plugin)) {
 		echo '<div class="error"><p>' . $strMsg . '</p></div>';
-		$myrows = $wpdb->get_results( "SELECT * FROM wp_options WHERE option_name = 'active_plugins'" );
-		print_r($mywors);
 		deactivate_plugins( $plugin );
 	}
-	
+
 }
 function AmazonAutoLinks_Redirects() {
 	

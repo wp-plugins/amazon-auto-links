@@ -110,7 +110,7 @@ class AmazonAutoLinks_Admin_ {
 		return $oAAL->fetch();			
 	}
 	function insertinpost($content) {
-		if (is_home()) return $content;
+		// if (is_home()) return $content;
 		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['postabove']) {			
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
@@ -360,7 +360,7 @@ class AmazonAutoLinks_Admin_ {
 
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
-// print_r($this->oAALOptions->arrOptions['units']);
+
 		/* POST Data : Delete Units */
 		// verify nonce
 		if (!$this->oAALforms->verifynonce_in_tab($numTabNum, $this->pluginkey, 'nonce')) return;	// do nothing	
@@ -408,8 +408,7 @@ class AmazonAutoLinks_Admin_ {
 		$strAction = '?page=' . $this->pageslug . '&tab=' . $numTabNum ;  
 		?>
 		<form method="post" action="<?php echo $strAction;?>" >
-			<?php $this->admin_tab200_unittable(); ?>		
-			
+			<?php $this->admin_tab200_unittable(); ?>				
 			<div style="float:right; margin-top:20px;">
 				<!-- Clear Unit Cache button -->		
 				<?php $this->oAALforms->form_submitbutton(200, 'clearcache', __('Clear Unit Cache', 'amazonautolinks'), 'nonce', False); // the last parameter specifies that the form tag is not included ?>			
@@ -417,10 +416,10 @@ class AmazonAutoLinks_Admin_ {
 				<?php $this->oAALforms->form_submitbutton(200, 'deleteselectedunits', __('Delete Selected Units', 'amazonautolinks'), 'nonce', False); // the last parameter specifies that the form tag is not included ?>
 			</div>		
 		</form>
-		<?
-	}	// end of tab200 --------------------------------------------------------------------
+		<?php
+	}
 	function admin_tab200_unittable() {
-		
+	
 		// in case unnamed unit is injected in a process of misoperations, delete it. 
 		// This should not happen but it occured once while debugging.
 		$this->oAALOptions->delete_unnamed_key('units');	// does update_option()
