@@ -46,11 +46,11 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 With the pro version, unlimited numbers of units can be created. Also the number of categories per unit, the number of items to display per unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)
 
-= I selected the category but it still says *"Please select a category from the list on the left."* and no preview is shown. What should I do? =
+= I selected the category but it still says "Please select a category from the list on the left." and no preview is shown. What should I do? =
 
 It could be due to the server restriction on the simultaneous database connections. Please try setting the **Prefetch Link Categgories** option to **Off**. Also please perform **Clear Unit Cache**. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
 
-= I get the error message "*'Could not locate/load admin.php. Please consult the administrator.'*" How do I fix this? =
+= I get the error message "Could not locate/load admin.php. Please consult the administrator." How do I fix this? =
 
 Amazon Auto Links tries to load **`ABSPATH . 'wp-admin/admin.php'`** for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. I cannot tell. So please consult the site administrator.
 
