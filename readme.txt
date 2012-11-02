@@ -30,11 +30,11 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
   
 == Installation ==
 
-1. Upload `amazonautolinks.php` and other files compressed in the zip folder to the `/wp-content/plugins/` directory.
+1. Upload [b]`amazonautolinks.php`[/b] and other files compressed in the zip folder to the [b]`/wp-content/plugins/`[/b] directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-1. Go to Settings -> Amazon Auto Link -> New Unit.
+1. Go to [b]Settings[/b] -> [b]Amazon Auto Links[/b] -> [b]New Unit[/b].
 1. Configure the options and select categories.
-1. After saving the unit option, go to 'Manage Units' to get the shortcode or if you check one of the insert option, the links will automatically appear in posts or feeds depending on your choice. 
+1. After saving the unit option, go to [b]'Manage Units'[/b] to get the shortcode or if you check one of the insert option, the links will automatically appear in posts or feeds depending on your choice. The widget is avaiable in the [b]Apparence[/b] -> [b]Widgets[/b] page as well.
 
 == Frequently asked questions ==
 
@@ -46,13 +46,13 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 With the pro version, unlimited numbers of units can be created. Also the number of categories per unit, the number of items to display per unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)
 
-= I selected the category but it still says "<I>Please select a category from the list on the left.</I>" and no preview is shown. What should I do? =
+= I selected the category but it still says "[i]Please select a category from the list on the left.[/i]" and no preview is shown. What should I do? =
 
-It could be due to the server restriction on the simultaneous database connections. Please try setting the <B>Prefetch Link Categgories</B> option to <B><I>off</I></B>. Also perform <B>Clear Unit Cache</B>. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
+It could be due to the server restriction on the simultaneous database connections. Please try setting the [b]Prefetch Link Categgories[/b] option to [b][i]off[/i][/b]. Also please perform [b]Clear Unit Cache[/b]. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
 
-= I get the error message "<I>'Could not locate/load admin.php. Please consult the administrator.'</I>" How do I fix this? =
+= I get the error message "[i]'Could not locate/load admin.php. Please consult the administrator.'[/i]" How do I fix this? =
 
-Amazon Auto Links tries to load <code>ABSPATH . 'wp-admin/admin.php'</code> for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. I cannot tell. So please consult the site administrator.
+Amazon Auto Links tries to load [b]`ABSPATH . 'wp-admin/admin.php'`[/b] for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. I cannot tell. So please consult the site administrator.
 
 If you are the administrator who has applied the modification to the site and still hope that the plugin runs with your modification, please send a message to Michael Uno explaining what kind of customization you did for what and why it is necessary for you. Then the author may consider changing the design of the plugin.
 
@@ -66,7 +66,7 @@ If you are the administrator who has applied the modification to the site and st
 == Changelog ==
 
 = 1.1.1 = 
-* Added: the prefetch category links option. This helps in some servers which sets the max simultaneous database connections to be low.
+* Added: the prefetch category links option. This helps in some servers with the low max simultaneous database connections.
 
 = 1.1.0 =
 * Fixed: a bug that url cloak option gets unchecked in the option page.
