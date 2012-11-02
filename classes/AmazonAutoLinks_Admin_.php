@@ -111,14 +111,20 @@ class AmazonAutoLinks_Admin_ {
 	}
 	function insertinpost($content) {
 		// if (is_home()) return $content;
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['postabove']) {			
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $oAAL->fetch() . $content;
+		static $oAALs = array();
+		
+		foreach($this->oAALOptions->arrOptions['units'] as $strUnitID => $arrUnitOptions) {
+			if ($arrUnitOptions['insert']['postabove']) {	
+				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $oAALs[$strUnitID]->fetch() . $content;
+				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				// $content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['postbelow']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $content . $oAAL->fetch();
+				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
+				$content = $content . $oAALs[$strUnitID]->fetch();			
+				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+				// $content = $content . $oAAL->fetch();
 			}
 		}
 		return trim($content);
@@ -298,8 +304,6 @@ class AmazonAutoLinks_Admin_ {
 				
 				// schedule prefetch; the parameter is empty, which means prefetch the root pages.
 				$this->oAALCatCache->schedule_prefetch();
-			
-// AmazonAutoLinks_CacheCategory();
 				
 			} else if ($numTabNum == 101) 
 				$this->admin_tab101();
@@ -355,7 +359,7 @@ class AmazonAutoLinks_Admin_ {
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
-		$this->oAALforms_selectcategories->form_selectcategories(101, $this->oAALOptions->arrOptions['newunit']);
+		$this->oAALforms_selectcategories->form_selectcategories_iframe(101, $this->oAALOptions->arrOptions['newunit']);
 	} // end of tab101
 
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
@@ -720,7 +724,7 @@ class AmazonAutoLinks_Admin_ {
 		
 	}
 	function admin_tab203($numTab=203) {
-		$this->oAALforms_selectcategories->form_selectcategories($numTab, $this->oAALOptions->arrOptions['editunit']);
+		$this->oAALforms_selectcategories->form_selectcategories_iframe($numTab, $this->oAALOptions->arrOptions['editunit']);
 	}
 	/* ------------------------------------------ Tab 300: General Settings --------------------------------------------- */
 	function admin_tab300($numTabNum=300) {
@@ -1004,7 +1008,7 @@ class AmazonAutoLinks_Admin_ {
 			if ($this->oAALOptions->arrOptions[$numTab]['errors'])
 				return false;
 		}
-		
+// print_r($arrSubmittedOptions);		
 		// save the data
 		$this->oAALOptions->arrOptions[$strOption] = $arrSubmittedOptions;	//$_POST[$this->pluginkey]['tab' . $numTab];
 		$this->oAALOptions->update();

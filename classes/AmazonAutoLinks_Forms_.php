@@ -684,7 +684,7 @@ class AmazonAutoLinks_Forms_ {
 				<?php $this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']); ?>
 				<?php $this->field_element_blacklist($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
 				<?php $this->field_element_cloakquery($numTabNum, $arrOptionsToDisplay['cloakquery']); ?>
-
+				<?php $this->field_element_prefetch($numTabNum, $arrOptionsToDisplay['prefetch']); ?>
 			</tbody>
 		</table>
 		<p class="submit">
@@ -772,7 +772,23 @@ class AmazonAutoLinks_Forms_ {
 			</td>
 		</tr>
 		<?php
-	
 	}
+	function field_element_prefetch($numTabnum, $numValue="") {
+	
+		// called from form_generaloptions()
+		// since v1.1.1
+		// sets whether the prefetch category lists to on or off.
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][prefetch]';
+		$numValue = $numValue == "" ? $this->oAALOptions->generaldefaultoptions['prefetch'] : $numValue;
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Prefetch Category Lists', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> <?php _e('On' ,'amazonautolinks'); ?> &nbsp;&nbsp;&nbsp;
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazonautolinks'); ?>&nbsp;&nbsp;(<font color="#666"><?php _e('Default: On', 'amazonautolinks');?></font> )<br />
+			</td>
+		</tr>	
+		<?php			
+	}	
 }
 ?>

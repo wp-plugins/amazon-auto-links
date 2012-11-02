@@ -30,6 +30,9 @@ add_action('admin_init', 'AmazonAutoLinks_Requirements');
 // Widgets
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
+// for debug 
+add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
+
 function AmazonAutoLinks_CleanOptions($key='') {
 	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
 	delete_option('amazonautolinks_catcache_events');	// used for category cache events
@@ -191,3 +194,17 @@ function AmazonAutoLinks_Redirects() {
 		exit;		
 	}
 }
+
+// for debug 
+// add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
+function AmazonAutoLinks_formatBytes($size, $precision = 2)
+{
+	// by John Himmelman http://stackoverflow.com/questions/2510434/php-format-bytes-to-kilobytes-megabytes-gigabytes/2510540#2510540
+    $base = log($size) / log(1024);
+    $suffixes = array('', 'k', 'M', 'G', 'T');   
+    return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+}
+function AmazonAutoLinks_MemoryUsage() {
+	echo '<p>' . AmazonAutoLinks_formatBytes(memory_get_peak_usage(), 0) . '</p>';
+}
+?>

@@ -17,13 +17,13 @@
 		$abspath = preg_replace('/(\\\\){2,}/', '$1', $oAALfuncs->urldecrypt($_GET["abspath"]));
 		$file_admin = $abspath . 'wp-admin/admin.php' ;
 		if (!file_exists($file_admin)) {
-			echo 'Could not locate wp-admin.php. Please consult the administrator.';
+			echo 'Could not locate admin.php. Please consult the administrator.';
 			exit;
 		} 
 		require_once( $file_admin ); 
 
 	} else {
-		echo 'Could not load wp-admin.php. Please consult the administrator.';
+		echo 'Could not load admin.php. Please consult the administrator.';
 		exit;
 	}
 	// for style sheet
@@ -41,7 +41,7 @@
 	$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
 
 	// AmazonAutoLinks Category Cache Class
-	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY);
+	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY, $oAALOptions);
 	
 	// check the $_GET array to determine if it is a new unit or editing an existing unit.
 	if (IsSet($_GET['mode']) && $_GET['mode'] == 'new' ) {		

@@ -46,6 +46,16 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 With the pro version, unlimited numbers of units can be created. Also the number of categories per unit, the number of items to display per unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)
 
+= I selected the category but it still says "<I>Please select a category from the list on the left.</I>" and no preview is shown. What should I do? =
+
+It could be due to the server restriction on the simultaneous database connections. Please try setting the <B>Prefetch Link Categgories</B> option to <B><I>off</I></B>.
+
+= I get the error message "<I>'Could not locate/load admin.php. Please consult the administrator.'</I>" How do I fix this? =
+
+Amazon Auto Links tries to load <code>ABSPATH . 'wp-admin/admin.php'</code> for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. I cannot tell. So please consult the site administrator.
+
+If you are the administrator who has applied the modification to the site and still hope that the plugin runs with your modification, please send a message to Michael Uno explaining what kind of customization you did for what and why it is necessary for you. Then the author may consider changing the design of the plugin.
+
 == Screenshots ==
 
 1. **Setting Page** (Creating New Unit)
@@ -54,6 +64,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.1.1 = 
+* Added: the prefetch category links option. This helps in some servers which sets the max simultaneous database connections to be low.
 
 = 1.1.0 =
 * Fixed: a bug that url cloak option gets unchecked in the option page.
@@ -103,6 +116,9 @@ With the pro version, unlimited numbers of units can be created. Also the number
 * Initial Release
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+In this version, the prefetch link categories option was added. This is for shared servers which restrict simultaneous database connections.
 
 = 1.1.0 =
 In this version, there are several minor fixes.

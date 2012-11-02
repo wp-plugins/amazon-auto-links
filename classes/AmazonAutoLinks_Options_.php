@@ -51,7 +51,8 @@ class AmazonAutoLinks_Options_ {
 		'supportrate'		=> 10,
 		'blacklist'			=> '',
 		'donate'			=> 0,
-		'cloakquery'		=> 'productlink'
+		'cloakquery'		=> 'productlink',
+		'prefetch'			=> 1
 	);		
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
@@ -122,7 +123,7 @@ class AmazonAutoLinks_Options_ {
 			"newunit" 	=> array(),		// creating unit page: tab 100, tab 101
 			"editunit" 	=> array(),		// editing unit page: tab 202, tab 203
 			"units"		=> array(),		// stores created unit info.
-			"general"	=> $this->generaldefaultoptions,		// stores general options
+			"general"	=> $this->generaldefaultoptions,		// stores the general options
 		);
 		$this->arrOptions = array_merge($arrOption_default, $this->arrOptions);
 		$this->set_support_rate();

@@ -41,13 +41,17 @@ class AmazonAutoLinks_CategoryCache_ {
 		'ES'	=> 'uni',
 		'US'	=> 'en',	
 	);	
-	function __construct($pluginkey) {
+	function __construct($pluginkey, $oAALOptions="") {
 			
 		// set up properties
 		$this->pluginkey = $pluginkey;
 		// $this->eventoptionkey = $pluginkey . 'catcache_events';
 		// set up classes
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
+	
+		// store the options 
+		// since v1.1.1 - added the option to switch on/off the prefetch functionality
+		$this->oAALOptions = $oAALOptions;
 	
 		// format the event option
 		$this->formatoption();
@@ -61,6 +65,11 @@ class AmazonAutoLinks_CategoryCache_ {
 		return 'aal_' . sha1($strURL);
 	}
 	function schedule_prefetch($strURL='') {
+		
+		if (is_array($this->oAALOptions) && empty($this->oAALOptions->arrOptions['general']['prefetch'])) {
+			echo '<!-- Amazon Auto Links: The prefetch function is disabled.  -->';		
+			return;
+		}
 	
 		echo '<!-- Amazon Auto Links: The prefetch function is called. Deciding whether prefetch tasks should be created. -->';		
 		// save urls in the option key with the key name of 'aal_' . sha1($strURL), 
