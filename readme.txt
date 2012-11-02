@@ -48,7 +48,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 = I selected the category but it still says "<I>Please select a category from the list on the left.</I>" and no preview is shown. What should I do? =
 
-It could be due to the server restriction on the simultaneous database connections. Please try setting the <B>Prefetch Link Categgories</B> option to <B><I>off</I></B>.
+It could be due to the server restriction on the simultaneous database connections. Please try setting the <B>Prefetch Link Categgories</B> option to <B><I>off</I></B>. Also perform <B>Clear Unit Cache</B>. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
 
 = I get the error message "<I>'Could not locate/load admin.php. Please consult the administrator.'</I>" How do I fix this? =
 
