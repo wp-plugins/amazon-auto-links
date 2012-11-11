@@ -1,0 +1,1005 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Amazon Auto Links v1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-09-09 21:09:33+0000\n"
+"Last-Translator: admin <miunosoft@michaeluno.jp>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Japanese\n"
+"X-Poedit-Country: JAPAN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: amazonautolinks.php:49
+#: classes/AmazonAutoLinks_Admin_.php:98
+#@ amazonautolinks
+msgid "Error: No such unit label exists."
+msgstr "エラー：そのようなユニットラベルは存在しません。"
+
+#: amazonautolinks.php:117
+#@ amazonautolinks
+msgid "The plugin requires the following PHP version or higher:"
+msgstr "次のPHPバージョンより新しいものがが必要となります："
+
+#: amazonautolinks.php:118
+#@ amazonautolinks
+msgid "Your PHP version is:"
+msgstr "ご使用のバージョンは："
+
+#: amazonautolinks.php:119
+#: amazonautolinks.php:125
+#@ amazonautolinks
+msgid "Deactivating the plugin."
+msgstr "プラグインを停止します。"
+
+#: amazonautolinks.php:123
+#@ amazonautolinks
+msgid "The plugin requires the following WordPress version or higher:"
+msgstr "次の WordPress のバージョンより新しいものをお使いになる必要があります："
+
+#: amazonautolinks.php:124
+#@ amazonautolinks
+msgid "Your WordPress version is:"
+msgstr "ご使用の WordPress のバージョンは："
+
+#: amazonautolinks_selectcategory.php:130
+#@ amazonautolinks
+msgid "The unit was successfully created. Go to the Manage Units page from the upper tab."
+msgstr "ユニットが作成されました。上部タブからユニット編集のページへ移動してください。"
+
+#: amazonautolinks_selectcategory.php:171
+#@ amazonautolinks
+msgid "Current Selection"
+msgstr "現在の選択"
+
+#: amazonautolinks_selectcategory.php:173
+#@ amazonautolinks
+msgid "Added Categories"
+msgstr "追加されたカテゴリー"
+
+#: amazonautolinks_selectcategory.php:179
+#@ amazonautolinks
+msgid "Create"
+msgstr "作成"
+
+#: amazonautolinks_selectcategory.php:179
+#: classes/AmazonAutoLinks_Forms_.php:219
+#: classes/AmazonAutoLinks_Forms_.php:238
+#: classes/AmazonAutoLinks_Forms_.php:589
+#@ amazonautolinks
+msgid "Save"
+msgstr "保存"
+
+#: amazonautolinks_selectcategory.php:186
+#@ amazonautolinks
+msgid "Add Current Category"
+msgstr "現在のカテゴリーを追加"
+
+#: amazonautolinks_selectcategory.php:188
+#@ amazonautolinks
+msgid "Delete Selected"
+msgstr "選択されたものを消去"
+
+#: amazonautolinks_selectcategory.php:193
+#@ amazonautolinks
+msgid "None"
+msgstr "なし"
+
+#: amazonautolinks_selectcategory.php:205
+#@ amazonautolinks
+msgid "No categories added."
+msgstr "カテゴリーは追加されていません。"
+
+#: amazonautolinks_selectcategory.php:210
+#@ amazonautolinks
+msgid "Select Category"
+msgstr "カテゴリーの選択"
+
+#: amazonautolinks_selectcategory.php:211
+#@ amazonautolinks
+msgid "Preview of This Category"
+msgstr "このカテゴリーのプレビュー"
+
+#: amazonautolinks_selectcategory.php:211
+#@ amazonautolinks
+msgid "No Preview"
+msgstr "プレビューはありません"
+
+#: amazonautolinks_selectcategory.php:212
+#@ amazonautolinks
+msgid "Unit Preview"
+msgstr "ユニットのプレビュー"
+
+#: amazonautolinks_selectcategory.php:219
+#@ amazonautolinks
+msgid "Please select a category from the list on the left."
+msgstr "左側のリストからカテゴリーを選択して下さい。"
+
+#: amazonautolinks_selectcategory.php:223
+#@ amazonautolinks
+msgid "Please add a category from the list after selecting it."
+msgstr "リストから選択後、カテゴリーを追加してください"
+
+#: classes/AmazonAutoLinks_Admin_.php:257
+#@ amazonautolinks
+msgid "Add New Unit"
+msgstr "新しいユニットの追加"
+
+#: classes/AmazonAutoLinks_Admin_.php:277
+#: classes/AmazonAutoLinks_Admin_.php:608
+#: classes/AmazonAutoLinks_Admin_.php:641
+#: classes/AmazonAutoLinks_Admin_.php:744
+#@ amazonautolinks
+msgid "Some form information needs to be corrected."
+msgstr "フォームの情報を修正する必要があります。"
+
+#: classes/AmazonAutoLinks_Admin_.php:376
+#@ amazonautolinks
+msgid "Clear Unit Cache"
+msgstr "ユニットキャッシュの消去"
+
+#: classes/AmazonAutoLinks_Admin_.php:378
+#@ amazonautolinks
+msgid "Delete Selected Units"
+msgstr "選択されたユニットを消去"
+
+#: classes/AmazonAutoLinks_Admin_.php:438
+#@ amazonautolinks
+msgid "On"
+msgstr "オン"
+
+#: classes/AmazonAutoLinks_Admin_.php:438
+#@ amazonautolinks
+msgid "Off"
+msgstr "オフ"
+
+#: classes/AmazonAutoLinks_Admin_.php:470
+#@ amazonautolinks
+msgid "Edit"
+msgstr "編集"
+
+#: classes/AmazonAutoLinks_Admin_.php:472
+#@ amazonautolinks
+msgid "View"
+msgstr "ビュー"
+
+#: classes/AmazonAutoLinks_Admin_.php:487
+#: classes/AmazonAutoLinks_Forms_.php:377
+#@ amazonautolinks
+msgid "Best Sellers"
+msgstr "ベストセラー"
+
+#: classes/AmazonAutoLinks_Admin_.php:490
+#: classes/AmazonAutoLinks_Forms_.php:378
+#@ amazonautolinks
+msgid "Hot New Releases"
+msgstr "新着ニューリリース"
+
+#: classes/AmazonAutoLinks_Admin_.php:493
+#: classes/AmazonAutoLinks_Forms_.php:379
+#@ amazonautolinks
+msgid "Mover & Shakers"
+msgstr "ヒット商品"
+
+#: classes/AmazonAutoLinks_Admin_.php:496
+#: classes/AmazonAutoLinks_Forms_.php:380
+#@ amazonautolinks
+msgid "Top Rated"
+msgstr "評価の高い商品"
+
+#: classes/AmazonAutoLinks_Admin_.php:499
+#: classes/AmazonAutoLinks_Forms_.php:381
+#@ amazonautolinks
+msgid "Most Wished For"
+msgstr "一番ほしい物リストに追加されている商品"
+
+#: classes/AmazonAutoLinks_Admin_.php:502
+#: classes/AmazonAutoLinks_Forms_.php:382
+#@ amazonautolinks
+msgid "Gift Ideas"
+msgstr "一番ギフトとして贈られている商品"
+
+#: classes/AmazonAutoLinks_Admin_.php:509
+#: classes/AmazonAutoLinks_Forms_.php:427
+#@ amazonautolinks
+msgid "Above Post"
+msgstr "投稿の上"
+
+#: classes/AmazonAutoLinks_Admin_.php:512
+#: classes/AmazonAutoLinks_Forms_.php:428
+#@ amazonautolinks
+msgid "Below Post"
+msgstr "投稿の下"
+
+#: classes/AmazonAutoLinks_Admin_.php:515
+#: classes/AmazonAutoLinks_Forms_.php:429
+#@ amazonautolinks
+msgid "Above Excerpt"
+msgstr "抜粋の上"
+
+#: classes/AmazonAutoLinks_Admin_.php:518
+#: classes/AmazonAutoLinks_Forms_.php:430
+#@ amazonautolinks
+msgid "Below Excerpt"
+msgstr "抜粋の下"
+
+#: classes/AmazonAutoLinks_Admin_.php:521
+#: classes/AmazonAutoLinks_Forms_.php:431
+#@ amazonautolinks
+msgid "Above Feed Item"
+msgstr "フィードアイテムの上"
+
+#: classes/AmazonAutoLinks_Admin_.php:524
+#: classes/AmazonAutoLinks_Forms_.php:432
+#@ amazonautolinks
+msgid "Below Feed Item"
+msgstr "フィードアイテムの下"
+
+#: classes/AmazonAutoLinks_Admin_.php:527
+#: classes/AmazonAutoLinks_Forms_.php:433
+#@ amazonautolinks
+msgid "Above Feed Excerpt"
+msgstr "フィードの抜粋の上"
+
+#: classes/AmazonAutoLinks_Admin_.php:530
+#: classes/AmazonAutoLinks_Forms_.php:434
+#@ amazonautolinks
+msgid "Below Feed Excerpt"
+msgstr "フィードの抜粋の下"
+
+#: classes/AmazonAutoLinks_Admin_.php:567
+#: classes/AmazonAutoLinks_Admin_.php:578
+#: classes/AmazonAutoLinks_Forms_.php:70
+#: classes/AmazonAutoLinks_Forms_SelectCategories_.php:44
+#@ amazonautolinks
+msgid "Go Back"
+msgstr "戻る"
+
+#: classes/AmazonAutoLinks_Admin_.php:570
+#@ amazonautolinks
+msgid "Preview"
+msgstr "プレビュー"
+
+#: classes/AmazonAutoLinks_Admin_.php:677
+#@ amazonautolinks
+msgid "Updated the options."
+msgstr "オプションがアップデートされました。"
+
+#: classes/AmazonAutoLinks_Admin_.php:714
+#@ amazonautolinks
+msgid "Edit Unit"
+msgstr "ユニットの編集"
+
+#: classes/AmazonAutoLinks_Admin_.php:737
+#@ amazonautolinks
+msgid "Nonce verification failed."
+msgstr "ナンスの判定に失敗しました。"
+
+#: classes/AmazonAutoLinks_Admin_.php:742
+#@ amazonautolinks
+msgid "Options are saved."
+msgstr "オプションが保存されました。"
+
+#: classes/AmazonAutoLinks_Admin_.php:872
+#: pro/AmazonAutoLinks_Admin_Pro.php:9
+#@ amazonautolinks
+msgid "New Unit"
+msgstr "新しいユニット"
+
+#: classes/AmazonAutoLinks_Admin_.php:873
+#: pro/AmazonAutoLinks_Admin_Pro.php:10
+#@ amazonautolinks
+msgid "Manage Units"
+msgstr "ユニットの編集"
+
+#: classes/AmazonAutoLinks_Admin_.php:874
+#: pro/AmazonAutoLinks_Admin_Pro.php:11
+#@ amazonautolinks
+msgid "General Settings"
+msgstr "一般設定"
+
+#: classes/AmazonAutoLinks_Admin_.php:876
+#: pro/AmazonAutoLinks_Admin_Pro.php:13
+#@ amazonautolinks
+msgid "Information"
+msgstr "お知らせ"
+
+#: classes/AmazonAutoLinks_Admin_.php:926
+#: classes/AmazonAutoLinks_Forms_.php:253
+#: classes/AmazonAutoLinks_Forms_SelectCategories_.php:40
+#@ amazonautolinks
+msgid "Unit Label"
+msgstr "ユニットラベル"
+
+#: classes/AmazonAutoLinks_Admin_.php:929
+#: classes/AmazonAutoLinks_Forms_.php:297
+#@ amazonautolinks
+msgid "Associate ID"
+msgstr "アソシエイトID"
+
+#: classes/AmazonAutoLinks_Admin_.php:790
+#: classes/AmazonAutoLinks_Admin_.php:932
+#: classes/AmazonAutoLinks_Forms_.php:331
+#@ amazonautolinks
+msgid "Image Size"
+msgstr "イメージサイズ"
+
+#: classes/AmazonAutoLinks_Admin_.php:798
+#: classes/AmazonAutoLinks_Admin_.php:935
+#: classes/AmazonAutoLinks_Forms_.php:346
+#@ amazonautolinks
+msgid "Sort Order"
+msgstr "並び順"
+
+#: classes/AmazonAutoLinks_Admin_.php:938
+#@ amazonautolinks
+msgid "Types"
+msgstr "タイプ"
+
+#: classes/AmazonAutoLinks_Admin_.php:941
+#@ amazonautolinks
+msgid "Items to Show"
+msgstr "表示するアイテムの数"
+
+#: classes/AmazonAutoLinks_Admin_.php:944
+#@ amazonautolinks
+msgid "Nosim"
+msgstr "Nosim"
+
+#: classes/AmazonAutoLinks_Admin_.php:950
+#@ amazonautolinks
+msgid "Insertions"
+msgstr "挿入"
+
+#: classes/AmazonAutoLinks_Admin_.php:953
+#@ amazonautolinks
+msgid "Short Code"
+msgstr "ショートコード"
+
+#: classes/AmazonAutoLinks_Admin_.php:953
+#@ amazonautolinks
+msgid "PHP Code"
+msgstr "PHPコード"
+
+#: classes/AmazonAutoLinks_Admin_.php:956
+#@ amazonautolinks
+msgid "Categories"
+msgstr "カテゴリー"
+
+#: classes/AmazonAutoLinks_Admin_.php:959
+#@ amazonautolinks
+msgid "Operation"
+msgstr "操作"
+
+#: classes/AmazonAutoLinks_Core_.php:52
+#@ amazonautolinks
+msgid "the plugin expects the option to be an array"
+msgstr "このプラグインはオプションが配列であることを前提としています。"
+
+#: classes/AmazonAutoLinks_Forms_.php:88
+#@ amazonautolinks
+msgid "The unit label cannot be empty."
+msgstr "ユニットラベルは空欄にできません。"
+
+#: classes/AmazonAutoLinks_Forms_.php:100
+#@ amazonautolinks
+msgid "The unit label already exists:"
+msgstr "そのユニットラベルはすでに存在します。　"
+
+#: classes/AmazonAutoLinks_Forms_.php:109
+#@ amazonautolinks
+msgid "Associate ID cannot be empty."
+msgstr "アソシエイトIDは空欄にはできません。"
+
+#: classes/AmazonAutoLinks_Forms_.php:216
+#: classes/AmazonAutoLinks_Forms_.php:236
+#@ amazonautolinks
+msgid "Proceed"
+msgstr "進む"
+
+#: classes/AmazonAutoLinks_Forms_.php:223
+#@ amazonautolinks
+msgid "Advanced Option"
+msgstr "詳細設定"
+
+#: classes/AmazonAutoLinks_Forms_.php:258
+#@ amazonautolinks
+msgid "String value to identify the ad unit."
+msgstr "広告ユニットのための文字列。"
+
+#: classes/AmazonAutoLinks_Forms_.php:271
+#@ amazonautolinks
+msgid "Country"
+msgstr "国"
+
+#: classes/AmazonAutoLinks_Forms_.php:274
+#@ amazonautolinks
+msgid "Austria"
+msgstr "オーストリア"
+
+#: classes/AmazonAutoLinks_Forms_.php:275
+#@ amazonautolinks
+msgid "Canada"
+msgstr "カナダ"
+
+#: classes/AmazonAutoLinks_Forms_.php:276
+#@ amazonautolinks
+msgid "China"
+msgstr "中国"
+
+#: classes/AmazonAutoLinks_Forms_.php:277
+#@ amazonautolinks
+msgid "France"
+msgstr "フランス"
+
+#: classes/AmazonAutoLinks_Forms_.php:278
+#@ amazonautolinks
+msgid "Germany"
+msgstr "ドイツ"
+
+#: classes/AmazonAutoLinks_Forms_.php:279
+#@ amazonautolinks
+msgid "Italy"
+msgstr "イタリア"
+
+#: classes/AmazonAutoLinks_Forms_.php:280
+#@ amazonautolinks
+msgid "Japan"
+msgstr "日本"
+
+#: classes/AmazonAutoLinks_Forms_.php:281
+#@ amazonautolinks
+msgid "United Kingdom"
+msgstr "イギリス"
+
+#: classes/AmazonAutoLinks_Forms_.php:282
+#@ amazonautolinks
+msgid "Spain"
+msgstr "スペイン"
+
+#: classes/AmazonAutoLinks_Forms_.php:283
+#@ amazonautolinks
+msgid "United States"
+msgstr "アメリカ合衆国"
+
+#: classes/AmazonAutoLinks_Forms_.php:285
+#@ amazonautolinks
+msgid "Select the country for the associate ID."
+msgstr "アソシエイトIDに対応する国を選択して下さい。"
+
+#: classes/AmazonAutoLinks_Forms_.php:316
+#: pro/AmazonAutoLinks_Forms_Pro.php:41
+#@ amazonautolinks
+msgid "Number of Items to Show"
+msgstr "表示するアイテムの数"
+
+#: classes/AmazonAutoLinks_Forms_.php:319
+#: classes/AmazonAutoLinks_Forms_.php:334
+#: classes/AmazonAutoLinks_Forms_.php:469
+#: pro/AmazonAutoLinks_Forms_Pro.php:44
+#: pro/AmazonAutoLinks_Forms_Pro.php:60
+#@ amazonautolinks
+msgid "Default"
+msgstr "デフォルト"
+
+#: classes/AmazonAutoLinks_Forms_.php:319
+#@ amazonautolinks
+msgid "Max"
+msgstr "最大"
+
+#: classes/AmazonAutoLinks_Forms_.php:334
+#@ amazonautolinks
+msgid "in pixel."
+msgstr "ピクセル"
+
+#: classes/AmazonAutoLinks_Forms_.php:334
+#@ amazonautolinks
+msgid "Accepts upto 500. Set 0 for no image."
+msgstr "最大500まで設定可能。画像なしは0を指定。"
+
+#: classes/AmazonAutoLinks_Forms_.php:349
+#@ amazonautolinks
+msgid "Date"
+msgstr "日付"
+
+#: classes/AmazonAutoLinks_Forms_.php:350
+#@ amazonautolinks
+msgid "Title"
+msgstr "タイトル"
+
+#: classes/AmazonAutoLinks_Forms_.php:351
+#@ amazonautolinks
+msgid "Random"
+msgstr "ランダム"
+
+#: classes/AmazonAutoLinks_Forms_.php:353
+#@ amazonautolinks
+msgid "Defines how the product links are sorted."
+msgstr "商品の並び順を指定します。"
+
+#: classes/AmazonAutoLinks_Forms_.php:366
+#@ amazonautolinks
+msgid "Ad Types"
+msgstr "広告タイプ"
+
+#: classes/AmazonAutoLinks_Forms_.php:367
+#@ amazonautolinks
+msgid "It is recommended to check only a few for faster page loading."
+msgstr "ページロードのスピードを考慮して少ない数を選択することをお勧めします。"
+
+#: classes/AmazonAutoLinks_Forms_.php:380
+#@ amazonautolinks
+msgid "This may not be available in some countries."
+msgstr "この項目は国によっては可能な場合とそうでない場合があります。"
+
+#: classes/AmazonAutoLinks_Admin_.php:802
+#: classes/AmazonAutoLinks_Forms_.php:395
+#@ amazonautolinks
+msgid "Direct Link Bonus"
+msgstr "直接リンク"
+
+#: classes/AmazonAutoLinks_Forms_.php:400
+#@ amazonautolinks
+msgid "Inserts ref=nosim in the link url. For more information, visit the following page:"
+msgstr "ref=nosim をURLに挿入します。詳細は次のページを参考にしてください:"
+
+#: classes/AmazonAutoLinks_Forms_.php:414
+#@ amazonautolinks
+msgid "Where To Insert"
+msgstr "挿入する場所"
+
+#: classes/AmazonAutoLinks_Forms_.php:415
+#@ amazonautolinks
+msgid "Check where items to be inserted."
+msgstr "アイテムを挿入する場所を選択して下さい。"
+
+#: classes/AmazonAutoLinks_Forms_.php:464
+#: pro/AmazonAutoLinks_Forms_Pro.php:56
+#@ amazonautolinks
+msgid "Cache Expiration"
+msgstr "キャッシュの保存時間"
+
+#: classes/AmazonAutoLinks_Forms_.php:469
+#: pro/AmazonAutoLinks_Forms_Pro.php:60
+#@ amazonautolinks
+msgid "in seconds."
+msgstr "秒。"
+
+#: classes/AmazonAutoLinks_Forms_.php:481
+#: pro/AmazonAutoLinks_Forms_Pro.php:73
+#@ amazonautolinks
+msgid "Container Format"
+msgstr "コンテナーフォーマット"
+
+#: classes/AmazonAutoLinks_Forms_.php:482
+#: pro/AmazonAutoLinks_Forms_Pro.php:74
+#@ amazonautolinks
+msgid "item"
+msgstr "アイテム"
+
+#: classes/AmazonAutoLinks_Forms_.php:491
+#: pro/AmazonAutoLinks_Forms_Pro.php:82
+#@ amazonautolinks
+msgid "Default Value"
+msgstr "初期値"
+
+#: classes/AmazonAutoLinks_Forms_.php:507
+#: pro/AmazonAutoLinks_Forms_Pro.php:98
+#@ amazonautolinks
+msgid "Item Format"
+msgstr "アイテムフォーマット"
+
+#: classes/AmazonAutoLinks_Forms_.php:509
+#: classes/AmazonAutoLinks_Forms_.php:542
+#: pro/AmazonAutoLinks_Forms_Pro.php:100
+#: pro/AmazonAutoLinks_Forms_Pro.php:133
+#@ amazonautolinks
+msgid "link url"
+msgstr "リンクURL"
+
+#: classes/AmazonAutoLinks_Forms_.php:510
+#: classes/AmazonAutoLinks_Forms_.php:543
+#: pro/AmazonAutoLinks_Forms_Pro.php:101
+#: pro/AmazonAutoLinks_Forms_Pro.php:134
+#@ amazonautolinks
+msgid "title"
+msgstr "タイトル"
+
+#: classes/AmazonAutoLinks_Forms_.php:511
+#: pro/AmazonAutoLinks_Forms_Pro.php:102
+#@ amazonautolinks
+msgid "thumbnail"
+msgstr "サムネイル"
+
+#: classes/AmazonAutoLinks_Forms_.php:512
+#: pro/AmazonAutoLinks_Forms_Pro.php:103
+#@ amazonautolinks
+msgid "description with HTML tags"
+msgstr "HTMLタグ付きの詳細"
+
+#: classes/AmazonAutoLinks_Forms_.php:513
+#@ amazonautolinks
+msgid "description without HTML tags"
+msgstr "タグなしの詳細テキスト"
+
+#: classes/AmazonAutoLinks_Forms_.php:523
+#: classes/AmazonAutoLinks_Forms_.php:554
+#: pro/AmazonAutoLinks_Forms_Pro.php:113
+#: pro/AmazonAutoLinks_Forms_Pro.php:144
+#@ amazonautolinks
+msgid "Default Valie"
+msgstr "初期値"
+
+#: classes/AmazonAutoLinks_Forms_.php:539
+#: pro/AmazonAutoLinks_Forms_Pro.php:130
+#@ amazonautolinks
+msgid "Image Format"
+msgstr "イメージフォーマット"
+
+#: classes/AmazonAutoLinks_Forms_.php:541
+#: pro/AmazonAutoLinks_Forms_Pro.php:132
+#@ amazonautolinks
+msgid "imgurl"
+msgstr "イメージURL"
+
+#: classes/AmazonAutoLinks_Forms_.php:544
+#: pro/AmazonAutoLinks_Forms_Pro.php:104
+#: pro/AmazonAutoLinks_Forms_Pro.php:135
+#@ amazonautolinks
+msgid "description without tags"
+msgstr "タグなしの詳細テキスト"
+
+#: classes/AmazonAutoLinks_Forms_.php:601
+#@ amazonautolinks
+msgid "Support Rate"
+msgstr "サポート率"
+
+#: classes/AmazonAutoLinks_Forms_.php:604
+#@ amazonautolinks
+msgid "0%"
+msgstr "0%"
+
+#: classes/AmazonAutoLinks_Forms_.php:605
+#@ amazonautolinks
+msgid "10%"
+msgstr "10%"
+
+#: classes/AmazonAutoLinks_Forms_.php:606
+#@ amazonautolinks
+msgid "20%"
+msgstr "20%"
+
+#: classes/AmazonAutoLinks_Forms_.php:607
+#@ amazonautolinks
+msgid "30%"
+msgstr "30%"
+
+#: classes/AmazonAutoLinks_Forms_.php:608
+#@ amazonautolinks
+msgid "50%"
+msgstr "50%"
+
+#: classes/AmazonAutoLinks_Forms_.php:610
+#@ amazonautolinks
+msgid "The percentage that the associate ID is altered with the plugin developers'."
+msgstr "プラグイン開発者のアソシエイトIDが挿入される確率。"
+
+#: classes/AmazonAutoLinks_Forms_.php:622
+#@ amazonautolinks
+msgid "Have you donated?"
+msgstr "カンパお願いします。"
+
+#: classes/AmazonAutoLinks_Forms_.php:625
+#@ amazonautolinks
+msgid "Not Yet"
+msgstr "まだ"
+
+#: classes/AmazonAutoLinks_Forms_.php:626
+#@ amazonautolinks
+msgid "Yes, I have"
+msgstr "はい"
+
+#: classes/AmazonAutoLinks_Forms_.php:628
+#@ amazonautolinks
+msgid "Please conside donation."
+msgstr "カンパの検討お願いします。"
+
+#: classes/AmazonAutoLinks_Forms_.php:629
+#@ amazonautolinks
+msgid "Please consider donation."
+msgstr "カンパをご検討お願いします。"
+
+#: classes/AmazonAutoLinks_Admin_.php:794
+#: classes/AmazonAutoLinks_Forms_.php:641
+#@ amazonautolinks
+msgid "Black List"
+msgstr "ブラックリスト"
+
+#: classes/AmazonAutoLinks_Forms_.php:644
+#@ amazonautolinks
+msgid "Put ASINs that are not to be displayed, separated by commas."
+msgstr "表示させない商品の ASIN をコンマで区切って入力してください。"
+
+#: classes/AmazonAutoLinks_Admin_.php:362
+#@ amazonautolinks
+msgid "Create New Unit"
+msgstr "新しいユニットの作成"
+
+#: amazonautolinks_selectcategory.php:130
+#@ amazonautolinks
+msgid "The unit options are edited."
+msgstr "ユニットオプションは編集されました。"
+
+#: amazonautolinks_selectcategory.php:144
+#@ amazonautolinks
+msgid "Could not load categories. Please consult the plugin developer."
+msgstr "カテゴリーを読み込みできませんでした。プラグイン開発者に相談してください。"
+
+#: amazonautolinks_selectcategory.php:202
+#@ amazonautolinks
+msgid "To add more categories, upgrade to the <a href=\"http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro\" target=\"_blank\">pro version</a>."
+msgstr "カテゴリーをこれ以上追加するには、<a href=\"http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro\" target=\"_blank\">プロバージョン</a>にアップグレードしてください。"
+
+#: classes/AmazonAutoLinks_Admin_.php:232
+#@ amazonautolinks
+msgid "To add more units, please consider upgrading to <a href=\"\">Pro</a>."
+msgstr "ユニットをこれ以上追加するには、<a href=\"\">プロバージョン</a>.にアップグレードしてください。"
+
+#: classes/AmazonAutoLinks_Admin_.php:332
+#@ amazonautolinks
+msgid "Caches are cleared. Please make sure the browser cache is also cleared if the unit items are still shown."
+msgstr "キャッシュはクリアされました。ブラウザのキャッシュが残っている可能性がありますので、もし更新されないようならそちらをチェックしてください。"
+
+#: classes/AmazonAutoLinks_Admin_.php:341
+#@ amazonautolinks
+msgid "Deleted the selected units."
+msgstr "選択されたユニットを消去しました。"
+
+#: classes/AmazonAutoLinks_Admin_.php:352
+#@ amazonautolinks
+msgid "There was a broken unit and deleted."
+msgstr "壊れたユニットがありそのデータは消去されました。"
+
+#: classes/AmazonAutoLinks_Admin_.php:765
+#: classes/AmazonAutoLinks_Admin_.php:773
+#@ amazonautolinks
+msgid "Get Pro Now!"
+msgstr "プロを今すぐ入手"
+
+#: classes/AmazonAutoLinks_Admin_.php:774
+#@ amazonautolinks
+msgid "Please consider upgrading to the pro version if you like the plugin and want more useful features, which include the ability of item formatting, unlimited numbers of categories, units, and items, and more!"
+msgstr "このプラグインを良いと判断され、もっと追加機能が欲しい場合は、プロバージョンへのアップグレードを検討お願い致します。プロバージョンによりアイテムのレイアウト詳細に決めることができ、また、追加できるカテゴリー、ユニット、表示できるアイテムの数が無制限になります。"
+
+#: classes/AmazonAutoLinks_Admin_.php:776
+#@ amazonautolinks
+msgid "Supported Features"
+msgstr "サポートされている機能"
+
+#: classes/AmazonAutoLinks_Admin_.php:783
+#@ amazonautolinks
+msgid "Standard"
+msgstr "スタンダード"
+
+#: classes/AmazonAutoLinks_Admin_.php:786
+#@ amazonautolinks
+msgid "Pro"
+msgstr "プロ"
+
+#: classes/AmazonAutoLinks_Admin_.php:791
+#: classes/AmazonAutoLinks_Admin_.php:792
+#: classes/AmazonAutoLinks_Admin_.php:795
+#: classes/AmazonAutoLinks_Admin_.php:796
+#: classes/AmazonAutoLinks_Admin_.php:799
+#: classes/AmazonAutoLinks_Admin_.php:800
+#: classes/AmazonAutoLinks_Admin_.php:803
+#: classes/AmazonAutoLinks_Admin_.php:804
+#: classes/AmazonAutoLinks_Admin_.php:807
+#: classes/AmazonAutoLinks_Admin_.php:808
+#: classes/AmazonAutoLinks_Admin_.php:811
+#: classes/AmazonAutoLinks_Admin_.php:812
+#: classes/AmazonAutoLinks_Admin_.php:816
+#: classes/AmazonAutoLinks_Admin_.php:820
+#@ amazonautolinks
+msgid "Available"
+msgstr "有効"
+
+#: classes/AmazonAutoLinks_Admin_.php:806
+#@ amazonautolinks
+msgid "Insert in Posts and Feeds"
+msgstr "記事やフィードに挿入"
+
+#: classes/AmazonAutoLinks_Admin_.php:814
+#@ amazonautolinks
+msgid "HTML Formatting"
+msgstr "HTMLレイアウトの編集"
+
+#: classes/AmazonAutoLinks_Admin_.php:815
+#: classes/AmazonAutoLinks_Admin_.php:819
+#@ amazonautolinks
+msgid "Unavailable"
+msgstr "無効"
+
+#: classes/AmazonAutoLinks_Admin_.php:818
+#@ amazonautolinks
+msgid "Cache Expiration Time"
+msgstr "キャッシュの保存時間"
+
+#: classes/AmazonAutoLinks_Admin_.php:822
+#: classes/AmazonAutoLinks_Admin_.php:842
+#: classes/AmazonAutoLinks_Admin_.php:844
+#@ amazonautolinks
+msgid "Max Number of Items to Show"
+msgstr "表示できる最大アイテム数"
+
+#: classes/AmazonAutoLinks_Admin_.php:824
+#: classes/AmazonAutoLinks_Admin_.php:828
+#: classes/AmazonAutoLinks_Admin_.php:833
+#@ amazonautolinks
+msgid "Unlimited"
+msgstr "無制限"
+
+#: classes/AmazonAutoLinks_Admin_.php:826
+#: classes/AmazonAutoLinks_Admin_.php:846
+#@ amazonautolinks
+msgid "Max Number of Categories Per Unit"
+msgstr "ユニットに追加できるカテゴリーの最大数"
+
+#: classes/AmazonAutoLinks_Admin_.php:831
+#: classes/AmazonAutoLinks_Admin_.php:848
+#@ amazonautolinks
+msgid "Max Number of Units"
+msgstr "作成できるユニットの最大数"
+
+#: classes/AmazonAutoLinks_Admin_.php:838
+#@ amazonautolinks
+msgid "HTML Formating"
+msgstr "HTMLレイアウトの編集"
+
+#: classes/AmazonAutoLinks_Admin_.php:839
+#@ amazonautolinks
+msgid "This gives you more freedom to stylize how the items are displayed by formatting the html tags."
+msgstr "HTMLタグを編集することで、アイテムがどのように表示されるのかを自由に扱えるようになります。"
+
+#: classes/AmazonAutoLinks_Admin_.php:840
+#@ amazonautolinks
+msgid "Cacue Expiration Time"
+msgstr "キャッシュの保存時間"
+
+#: classes/AmazonAutoLinks_Admin_.php:841
+#@ amazonautolinks
+msgid "You can set more flexible timeout for the cached files."
+msgstr "ユニットのキャッシュファイルの保存時間を詳細に設定することができます。"
+
+#: classes/AmazonAutoLinks_Admin_.php:843
+#@ amazonautolinks
+msgid "Get pro for unlimited items to show."
+msgstr "無制限にアイテムを表示するには、プロを入手しましょう。"
+
+#: classes/AmazonAutoLinks_Admin_.php:845
+#@ amazonautolinks
+msgid "Get pro for unlimited items to show!"
+msgstr "無制限にアイテムを表示するには、プロを入手しましょう。"
+
+#: classes/AmazonAutoLinks_Admin_.php:847
+#@ amazonautolinks
+msgid "Get pro for unlimited categories to set up!"
+msgstr "無制限にカテゴリーを追加するには、プロを入手しましょう。"
+
+#: classes/AmazonAutoLinks_Admin_.php:849
+#@ amazonautolinks
+msgid "Get pro for unlimited units so that you can put ads as many as you want."
+msgstr "作りたいだけユニットを無制限に作成するには、プロを入手しましょう。"
+
+#: classes/AmazonAutoLinks_Admin_.php:856
+#@ amazonautolinks
+msgid "Translators"
+msgstr "翻訳者"
+
+#: classes/AmazonAutoLinks_Admin_.php:857
+#@ amazonautolinks
+msgid "Bilinguals or anyone fluent in a different language can submit a translation file and the pro version will be rewarded if the language file has not been translated."
+msgstr "バイリンガルの人や他の言語を扱える人は翻訳ファイルを送付することで、プロバージョンを受け取ることができます。その言語がまだ翻訳されていないことが条件となります。"
+
+#: classes/AmazonAutoLinks_Admin_.php:858
+#@ amazonautolinks
+msgid "To create a language file, with a plugin called, <a href=\"http://wordpress.org/extend/plugins/codestyling-localization/\">Codestyling Localization</a>, no programming skill is required. You just edit the messages it displays. Then send the .mo file to <a href=\"mailto:miunosoft@michaeluno.jp\">miunosoft@michaeluno.jp</a> via E-mail."
+msgstr "言語ファイルを作成するには、<a href=\"http://wordpress.org/extend/plugins/codestyling-localization/\">Codestyling Localization</a> というプラグインを使えば、プログラミングの経験など必要ありません。プラグインが表示するメッセージを編集するだけで、作業は終わります。そして .mo ファイルを <a href=\"mailto:miunosoft@michaeluno.jp\">miunosoft@michaeluno.jp</a> に送ればOKです。"
+
+#: classes/AmazonAutoLinks_Admin_.php:859
+#@ amazonautolinks
+msgid "Web Masters and Bloggers"
+msgstr "ウェブサイト管理者やブロガーの方々"
+
+#: classes/AmazonAutoLinks_Admin_.php:863
+#@ amazonautolinks
+msgid "Bug Report"
+msgstr "バグレポート"
+
+#: classes/AmazonAutoLinks_Admin_.php:875
+#@ amazonautolinks
+msgid "Upgrade to Pro"
+msgstr "プロバージョンへアップグレード"
+
+#: classes/AmazonAutoLinks_Forms_.php:185
+#@ amazonautolinks
+msgid "In order to set up the following options, please upgrade to the <a href=\"\">pro version</a>."
+msgstr "次のオプションを設定するには、<a href=\"\">プロバージョン</a>にアップグレードしてください。"
+
+#. translators: plugin header field 'Name'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "Amazon Auto Links"
+msgstr "Amazon Auto Link"
+
+#. translators: plugin header field 'PluginURI'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "http://michaeluno.jp/en/amazon-auto-links"
+msgstr "http://michaeluno.jp/en/amazon-auto-links"
+
+#. translators: plugin header field 'Description'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "creates ad units of Amazon products up to date by selecting a few categories."
+msgstr "カテゴリーを選択するだけで、今注目されているアマゾンの商品の広告ユニットを生成します。"
+
+#. translators: plugin header field 'Author'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "Michael Uno (miunosoft)"
+msgstr "Michael Uno (maiunosoft)"
+
+#. translators: plugin header field 'AuthorURI'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "http://michaeluno.jp"
+msgstr "http://michaeluno.jp"
+
+#. translators: plugin header field 'Version'
+#: amazonautolinks.php:0
+#@ amazonautolinks
+msgid "1.0.1"
+msgstr "1.0.1"
+
+#: classes/AmazonAutoLinks_Admin_.php:443
+#@ amazonautolinks
+msgid "Enable"
+msgstr "有効"
+
+#: classes/AmazonAutoLinks_Admin_.php:443
+#@ amazonautolinks
+msgid "Disable"
+msgstr "無効"
+
+#: classes/AmazonAutoLinks_Admin_.php:810
+#: classes/AmazonAutoLinks_Admin_.php:947
+#: classes/AmazonAutoLinks_Forms_.php:447
+#@ amazonautolinks
+msgid "Widget"
+msgstr "ウィジェット"
+
+#: classes/AmazonAutoLinks_Admin_.php:861
+#@ amazonautolinks
+msgid "A web site owner with <a href=\"http://en.wikipedia.org/wiki/PageRank\">Google PageRank</a> 3 or higher can recieve the pro version by writing an article about this plugin. It should have a link to the <a href=\"http://michaeluno.jp/en/amazon-auto-links/\">product page</a> and some opinion or information about the plugin. It should be constructive. It could be about how to use it or how useful it is or how it could be improved or anything helpful to people and the developer. If the article is published, send the notification with the page url to <a href=\"mailto:miunosoft@michaeluno.jp\">miunosoft@michaeluno.jp</a>."
+msgstr "<a href=\"http://en.wikipedia.org/wiki/PageRank\">Google ページランクが</a> 3以上のウェブサイトを運営している方は、このプラグインに関する記事を書くことでプロバージョンを受け取ることができます。記事にはこのプラグインの<a href=\"http://michaeluno.jp/en/amazon-auto-links/\">ページ</a>のリンクが貼られている必要があり、感想などが記されている必要があります。条件として、建設的な内容で、どのように便利なのか、どのようにして使うのか、どこを改善すればもっとよくなるなど、人々と開発者の助けになるような内容である必要があります。もし、記事が公開されれば、 <a href=\"mailto:miunosoft@michaeluno.jp\">miunosoft@michaeluno.jp</a>へメールでお知らせ下さい。"
+
+#: classes/AmazonAutoLinks_Admin_.php:864
+#@ amazonautolinks
+msgid "If you find the plugin not working or having issues, please report it via the <a href=\"http://michaeluno.jp/en/bug-report\">bug report form</a>."
+msgstr "もしバグや問題点を発見した場合、<a href=\"http://michaeluno.jp/en/bug-report\">こちらの</a>バグレポートフォームからご連絡ください。"
+
+#: classes/AmazonAutoLinks_Forms_.php:452
+#@ amazonautolinks
+msgid "Creates a sidebar/footer widget for this unit. It will be added via the Widget section."
+msgstr "このユニット用のウィジェットを作成します。外観 -> ウィジェットのセクションに追加されます。"
+
