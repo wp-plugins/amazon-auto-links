@@ -4,7 +4,7 @@ Donate link: http://michaeluno.jp/en/donate
 Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, link cloaking, cloak, cloaking, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,13 +48,19 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 = I selected the category but it still says "Please select a category from the list on the left." and no preview is shown. What should I do? =
 
-It could be due to the server restriction on the simultaneous database connections. Please try setting the **Prefetch Link Categgories** option to **Off**. Also please perform **Clear Unit Cache**. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
+Please try setting the **Prefetch Link Categgories** option to **Off** and perform **Clear Unit Cache**. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
 
 = I get the error message "Could not locate/load admin.php. Please consult the administrator." How do I fix this? =
 
-Amazon Auto Links tries to load **`ABSPATH . 'wp-admin/admin.php'`** for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. I cannot tell. So please consult the site administrator.
+Amazon Auto Links tries to load **`ABSPATH . 'wp-admin/admin.php'`** for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. 
 
-If you are the administrator who has applied the modification to the site and still hope that the plugin runs with your modification, please send a message to Michael Uno explaining what kind of customization you did for what and why it is necessary for you. Then the author may consider changing the design of the plugin.
+The following steps is a workaround. 
+
+1. Find out the ABSPATH value of your site. One way to do it is to embed the following code in functions.php in your theme. It will give something like "/home/username/httpdoc/blog" 
+`echo ABSPATH;`
+1. Find the line around #18, `$file_admin = $abspath . 'wp-admin/admin.php' ;` in \inc\amazonautolinks_selectcategory.php
+1. Modify the line as follows assuming ABSPATH of your site is "/home/username/httpdoc/blog",
+`$file_admin = '/home/username/httpdoc/blog/wp-admin/admin.php';`
 
 == Screenshots ==
 
@@ -64,6 +70,9 @@ If you are the administrator who has applied the modification to the site and st
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.1.2 =
+* Fixed: a bug which displayed memory usages in the footer.
 
 = 1.1.1 = 
 * Added: the prefetch category links option. This helps in some servers with the low max simultaneous database connections.
@@ -116,6 +125,9 @@ If you are the administrator who has applied the modification to the site and st
 * Initial Release
 
 == Upgrade Notice ==
+
+= 1.1.2 = 
+In this version, a bug was fixed, which debug outputs were shown.
 
 = 1.1.1 =
 In this version, the prefetch link categories option was added. This is for shared servers which restrict simultaneous database connections.

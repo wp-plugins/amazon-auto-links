@@ -31,7 +31,7 @@ add_action('admin_init', 'AmazonAutoLinks_Requirements');
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
 // for debug 
-add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
+// add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
 
 function AmazonAutoLinks_CleanOptions($key='') {
 	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
