@@ -34,12 +34,14 @@
 	// Load SimplePie in the WordPress  // be aware that WordPress SimplePie works slight differently than the original SimplePie
 	// require_once (ABSPATH . WPINC . '/class-simplepie.php');
 		 
-	// AmazonAutoLinks Admin Class 
-	$oAALSelectCategories = new AmazonAutoLinks_Forms_SelectCategories(AMAZONAUTOLINKSKEY);
 
 	// AmazonAutoLinks Option Class
 	$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
 
+	// AmazonAutoLinks Admin Class 
+	$oAALSelectCategories = new AmazonAutoLinks_Forms_SelectCategories(AMAZONAUTOLINKSKEY);
+
+	
 	// AmazonAutoLinks Category Cache Class
 	$oAALCatCache = new AmazonAutoLinks_CategoryCache(AMAZONAUTOLINKSKEY, $oAALOptions);
 	

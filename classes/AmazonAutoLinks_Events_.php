@@ -5,12 +5,19 @@ class AmazonAutoLinks_Events_ {
 		Description: this class loads saved events to hook actions with add_action() for WP Cron tasks.
 	*/
 	public $arrFuncRef = array();	// store md5 hash strings associating with the unit label.
-	function __construct($bIsManualLoad=False) {		
+	function __construct($oOptions) {		
 	
-		// if True is passed to the constructer, it means the class is intanciated manually. 
 		// AmazonAutoLinks_Log( 'instanciated ' . ($bIsManualLoad ? 'manually.' : 'automatically.') , __METHOD__);
-		if ($bIsManualLoad === True)	return;	// in that case, do not load events.
 
+		// as of v1.1.3 $bIsManualLoad is removed
+		$this->oAALOptions = $oOptions;
+		
+	}
+	
+	function LoadEvents() {
+		
+		// sinvce v1.1.3, moved from the constructor since the behaviour changed to instantiate this class in the ininitial loadfile
+		
 		// check if it is called directly
 		if (isset($_GET['amazonautolinks_cache'])) {
 			if ($_GET['amazonautolinks_cache'] == 'category')
@@ -26,7 +33,8 @@ class AmazonAutoLinks_Events_ {
 		$this->load_category_cache_events();
 		
 		// load feed cache events
-		$this->load_feed_cache_events();
+		$this->load_feed_cache_events();		
+		
 	}
 	
 	// Feed Caches
@@ -35,7 +43,9 @@ class AmazonAutoLinks_Events_ {
 		// This is called from the feed cache events 
 		// $strMethodName is a md5 hashed string of unit label with a prefix of 'aal_func_'. $arguments are not passed.
 		
-		$arrOptions = get_option('amazonautolinks');	
+		
+		$arrOptions = $this->oAALOptions->arrOptions;	// $arrOptions = get_option('amazonautolinks');
+		
 		$strUnitLabel = $this->arrFuncRef[$strMethodName];
 		$strEventName = 'aal_feed_' . md5($strUnitLabel);
 		AmazonAutoLinks_Log( 'unset method name is called: ' . $strMethodName . ' This reads to: ' . $strUnitLabel, __METHOD__);
@@ -52,7 +62,9 @@ class AmazonAutoLinks_Events_ {
 	}
 	
 	function load_feed_cache_events() {
-		$arrOptions = get_option('amazonautolinks');	
+		
+		$arrOptions = $this->oAALOptions->arrOptions;		// $arrOptions = get_option('amazonautolinks');	
+		
 		$i = 0;
 		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) {
 			$strUnitLabel = $arrUnitOption['unitlabel'];

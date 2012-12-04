@@ -202,7 +202,8 @@ class AmazonAutoLinks_Core_
 		}
 		
 		// instanciate the event object
-		$oAALEvents = new AmazonAutoLinks_Events(True);	// passing True to the class constructor means that it is instanciated manually so the saved events won't be automatically loaded
+		// the class needs the option object
+		$oAALEvents = new AmazonAutoLinks_Events($this->oAALOptions);	
 		
 		if (!$bIsScheduled)		// means there is no schedule for this unit to renew its cache
 			$oAALEvents->schedule_feed_cache_rebuild($this->arrUnitOptions['unitlabel'], 0);	// the second parameter means do it in the next page load
@@ -470,12 +471,12 @@ class AmazonAutoLinks_Core_
 		} else {
 		
 			// $arrDescription = preg_split('/<font.+color=["\']#990000["\'].+font>\K/i', $strDescription);	 // this works above PHP v5.2.4
-			$arrDescription = preg_split('/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
+			$arrDescription = preg_split('/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);	// " (syntax fixer )
 		}	
 		$strDescription = $arrDescription[0] . $arrDescription[1];
-		$arrDescription = preg_split('/<br.*?\/?>/i', $strDescription);		// devide the string into arrays by <br> or <br />
+		$arrDescription = preg_split('/<br.*?\/?>/i', $strDescription);		// devide the string into arrays by <br> or <br />	
 		return trim(implode(" ", $arrDescription));	// return them back to html text
-	}
+	} 
 	
 	function format_image($arrReplacementsForImg) {
 		$arrRefVarsForImg = array("%link%", "%imgurl%", "%title%", "%textdescription%");

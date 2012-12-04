@@ -4,17 +4,19 @@ class AmazonAutoLinks_Forms_ {
 	/*  
 		Warning: Never use update_option() in this class.
 		this class is to just display form elements, not manipulating option values.
+		
+		Todo: do not instantiate the option object but make a parameter to the constructor so that we save more memory
 	*/
 	
 	public $classver = 'standard';
 	protected $pluginkey = 'amazonautolinks';
 
-	function __construct($pluginkey) {
+	function __construct($pluginkey, $oOptions) {
 		$this->pluginkey = $pluginkey;
 		$this->pageslug = $pluginkey;
 		$this->textdomain = $pluginkey;
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
-		$this->oAALOptions = new AmazonAutoLinks_Options($pluginkey);
+		$this->oAALOptions = $oOptions; ;new AmazonAutoLinks_Options($pluginkey);
 	}
 	function get_default_unitoptions() {
 	
@@ -96,6 +98,17 @@ class AmazonAutoLinks_Forms_ {
 		$arrErrors = array();
 
 		// nothing to do so far
+		// since v1.1.3
+		// if the prefetch category links is disabled, clean the transients
+		if ($arrGeneralOptions['prefetch'] == 0) {
+			
+			// remove category caches
+			global $wpdb;
+			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
+			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
+		
+		}
+		
 		return false;
 	
 	}
@@ -714,7 +727,7 @@ class AmazonAutoLinks_Forms_ {
 				&nbsp;<font color="#666">( <?php _e('The percentage that the associate ID is altered with the plugin developers\'.', 'amazonautolinks'); ?> )</font>
 			</td>
 		</tr>
-		<?php
+		<?php // syntax stylizing fixer '
 	}	
 	function field_element_donate($numTabnum, $strValue="") {
 	

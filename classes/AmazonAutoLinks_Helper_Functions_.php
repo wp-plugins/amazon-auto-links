@@ -454,5 +454,15 @@ class AmazonAutoLinks_Helper_Functions_
 		// print_r($search);
 		return str_replace ( $search , '_', $strKey);
 	}
+ 
+	/* used to retrieve memory usage */
+	function FormatBytes($size, $precision = 2)
+	{
+		// since v1.1.3
+		// originally written by John Himmelman http://stackoverflow.com/questions/2510434/php-format-bytes-to-kilobytes-megabytes-gigabytes/2510540#2510540
+		$base = log($size) / log(1024);
+		$suffixes = array('', 'k', 'M', 'G', 'T');   
+		return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+	} 
 }
 ?>

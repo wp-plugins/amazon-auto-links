@@ -2,7 +2,7 @@
 class AmazonAutoLinks_Options_ {
 
 	/*
-		this class is for handling form subbmittion and plugin options.
+		this class is for handling form subbmittions and plugin options.
 	*/
 	
 	public $classver = 'standard';
@@ -136,7 +136,7 @@ class AmazonAutoLinks_Options_ {
 	function set_new_unit($arrOptions='') {	
 		if (!$arrOptions) {
 			$this->arrOptions['newunit'] = $this->unitdefaultoptions;			
-			$this->arrOptions['tab101']['cameback'] = False;		// this flag is used for pseudo session.
+			$this->arrOptions['tab101']['cameback'] = False;		// this flag is used for a pseudo session.
 			$this->arrOptions['tab100']['errors'] = False;	
 		}
 		$this->update();
@@ -192,7 +192,7 @@ class AmazonAutoLinks_Options_ {
 		$this->update();
 	}	
 	
-	/* Edit Unit -- used in admin page to save edited unit options */
+	/* Edit Unit -- used in the admin page to save edited unit options */
 	function update_editunit($arrUnitOptions) {
 	
 		// since v1.0.7

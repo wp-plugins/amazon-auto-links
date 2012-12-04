@@ -48,7 +48,13 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 = I selected the category but it still says "Please select a category from the list on the left." and no preview is shown. What should I do? =
 
-Please try setting the **Prefetch Link Categgories** option to **Off** and perform **Clear Unit Cache**. This also clears the cached category links so the empty caches associated with the categories will be removed and the plugin will refetch new data. 
+Set the **Prefetch Link Categgories** option to **Off**.
+
+= I get a blank white page after adding a unit to the theme. What is it? What should I do? =
+
+It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to embed the following code in your config.php
+`define('WP_MEMORY_LIMIT', '128M');`
+The part, 128M, should be changed accordingly.
 
 = I get the error message "Could not locate/load admin.php. Please consult the administrator." How do I fix this? =
 

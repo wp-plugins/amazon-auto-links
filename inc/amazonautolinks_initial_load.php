@@ -5,39 +5,54 @@
 
 // Register Classes - this must be be done before using classes defined in this plugin
 AmazonAutoLinks_RegisterClasses();
-// add_action('plugins_loaded', 'AmazonAutoLinks_RegisterClasses');
 
-// Redirects for URL cloaking
-add_action('plugins_loaded', 'AmazonAutoLinks_Redirects');
+// instantiate the option class first so that the option object can be shared with other classes, which presumably consumes memory.
+// in other words, there is no need to instantiate the option class in each class.
+$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
 
 // Admin Pages
-add_action( 'plugins_loaded', "AmazonAutoLinksAdminPage" );
-function AmazonAutoLinksAdminPage() {
-	$o = new AmazonAutoLinks_Admin;
-}
-// add_action( 'plugins_loaded', create_function( '', '$oAALAdmin = new AmazonAutoLinks_Admin;' ) );
+// this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Admin 
+add_action( 'plugins_loaded', array(new AmazonAutoLinks_Admin($oAALOptions), "RegisterHooks") );		
+
+// Contents Hooks
+// this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Contents
+add_action( 'plugins_loaded', array(new AmazonAutoLinks_Contents($oAALOptions), "RegisterHooks") );
+
+// Redirects for URL cloaking
+add_action( 'plugins_loaded', array(new AmazonAutoLinks_Redirects($oAALOptions), "Redirect") );
+
 
 // Load actions to hook events for Cron jobs
-add_action('init', 'AmazonAutoLinks_Events');
-function AmazonAutoLinks_Events() {
-	$o = new AmazonAutoLinks_Events;
-}
-// add_action('init', create_function( '', '$oAALEvents = new AmazonAutoLinks_Events;' ));
+// todo: pass the option object to the constructor, -> new AmazonAutoLinks_Events($oALOptions)
+add_action('init', array(new AmazonAutoLinks_Events($oAALOptions), "LoadEvents"));	// 'AmazonAutoLinks_Events');
 
 // Plugin Requirements
 add_action('admin_init', 'AmazonAutoLinks_Requirements');
 
 // Widgets
+// todo: find a way to avoid using create_function() 
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
-// for debug 
-// add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
+// Clean up transients upon plugin deactivation
+register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTransients' );
 
+function AmazonAutoLinks_CleanTransients() {
+	
+	// delete transients
+	global $wpdb;
+	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_feed_%')" );
+	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
+	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
+	
+}
 function AmazonAutoLinks_CleanOptions($key='') {
+	
+	// delete options
 	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
 	delete_option('amazonautolinks_catcache_events');	// used for category cache events
 	delete_option('amazonautolinks_userads');			// used for the user ads
 	
+	// initialize it
 	$arr = array();
 	if ($key != '') {
 		$arr = get_option(AMAZONAUTOLINKSKEY);
@@ -45,6 +60,7 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	}
 	update_option(AMAZONAUTOLINKSKEY, $arr);
 
+	// delete transients
 	global $wpdb;
 	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
 	$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
@@ -180,31 +196,3 @@ function AmazonAutoLinks_Requirements() {
 	}
 
 }
-function AmazonAutoLinks_Redirects() {
-	
-	// since v1.0.9
-	// check cloak query is passed in the url
-	$arrOptions = get_option(AMAZONAUTOLINKSKEY);
-	$strCloakQuery = empty($arrOptions['general']['cloakquery']) ? 'productlink': $arrOptions['general']['cloakquery'];
-	if (isset($_GET[$strCloakQuery])) {
-
-		// if so, redirect to the actual url
-		$oAALfuncs = new AmazonAutoLinks_Helper_Functions(AMAZONAUTOLINKSKEY);
-		wp_redirect($oAALfuncs->urldecrypt($_GET[$strCloakQuery]));
-		exit;		
-	}
-}
-
-// for debug 
-// add_action('wp_footer', 'AmazonAutoLinks_MemoryUsage', 100);
-function AmazonAutoLinks_formatBytes($size, $precision = 2)
-{
-	// by John Himmelman http://stackoverflow.com/questions/2510434/php-format-bytes-to-kilobytes-megabytes-gigabytes/2510540#2510540
-    $base = log($size) / log(1024);
-    $suffixes = array('', 'k', 'M', 'G', 'T');   
-    return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
-}
-function AmazonAutoLinks_MemoryUsage() {
-	echo '<p>' . AmazonAutoLinks_formatBytes(memory_get_peak_usage(), 0) . '</p>';
-}
-?>

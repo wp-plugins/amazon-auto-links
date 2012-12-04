@@ -2,8 +2,10 @@
 class AmazonAutoLinks_Admin_ {
 	
 	/*
-		Todo: to seperate the option manipulation ability to the AmazonAutoLinks_Options class. 
-			currently options are updated within this class.
+		Todo: 
+			- seperate the shortcode methods and create an individual class for it.
+			- get rid of the iframe page for selecting categories and inlude in the admin page.
+		
 	*/
 	
 	// Properties
@@ -11,26 +13,36 @@ class AmazonAutoLinks_Admin_ {
 	protected $pluginname = 'Amazon Auto Links';
 	protected $pluginkey = 'amazonautolinks';
     protected $pageslug = 'amazonautolinks';
-    protected $textdomain = 'amazonautolinks';
-	// protected $options = array();
+    protected $textdomain = 'amazonautolinks';	// this is not used for the Code Styling Plugin for localization
 	protected $oAALOptions = array();
 	protected $oAALfuncs = '';	// new AmazonAutoLinks_Helper_Functions;
 	protected $oAALforms = '';	// new AmazonAutoLinks_Forms;
 	protected $tabcaptions = array();
-	
-	// Flags
-	// private $fComingBack = false;
-	
-	/*-------------------------------------------------- Initial Settings -----------------------------------------------------*/
-	function __construct() {
-	
-		// Create Option Class
-		$this->oAALOptions = new AmazonAutoLinks_Options($this->pluginkey);
-		// retrieve options
-		// $this->load_settings();
-		// $this->oAALOptions->arrOptions = get_option( $this->pluginkey );
 		
-		// localize hook only for admin page (admin_init). if all page load should be hooked, use 'init' instead
+	/*-------------------------------------------------- Initial Settings -----------------------------------------------------*/
+	function __construct($oOptions) {
+	
+		// the option array
+		$this->oAALOptions = $oOptions; // new AmazonAutoLinks_Options($this->pluginkey);
+				
+		// Include helper classes
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);		
+				
+		// Include AmazonAutoLinks_Forms class
+		$this->oAALforms = new AmazonAutoLinks_Forms($this->pluginkey, $oOptions);		
+		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories($this->pluginkey);
+	
+		// cache class
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
+		
+		// properties
+		$this->wp_version = & $GLOBALS["wp_version"];
+	}
+	function RegisterHooks() {
+		
+		// since v1.1.3 , moved from the constructor to instantiate the option class in the very beginning of the plugin.
+		
+		// localize hook only for admin page (admin_init). if the entire page-load should be hooked, including regular pages, use 'init' instead
 		add_action('admin_init', array(&$this, 'localize'));
 		
 		// embed Plugin Settings Link in the plugin listing page
@@ -45,6 +57,7 @@ class AmazonAutoLinks_Admin_ {
 		// admin custom CSS
 		add_action('admin_head', array(&$this, 'admin_custom_css'));
 		
+/*
 		// Create Shortcode
 		add_shortcode($this->pluginkey, array(&$this, 'shortcode'));
 		
@@ -53,19 +66,9 @@ class AmazonAutoLinks_Admin_ {
 		add_filter('the_excerpt', array(&$this, 'insertinexcerpt'));
 		add_filter('the_content_feed', array(&$this, 'insertincontentfeed'));
 		add_filter('the_excerpt_rss', array(&$this, 'insertinexcerptrss'));
+*/
 		
-		// Include helper classes
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);		
-				
-		// Include AmazonAutoLinks_Forms class
-		$this->oAALforms = new AmazonAutoLinks_Forms($this->pluginkey);		
-		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories($this->pluginkey);
-	
-		// cache class
-		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
 		
-		// properties
-		$this->wp_version = & $GLOBALS["wp_version"];
 	}
 	function localize() {
 		// $loaded = load_plugin_textdomain( $this->textdomain, false, dirname(  __FILE__  ) . '/lang/');		// modified the last parameter <-- needs to examin if it works
@@ -91,85 +94,7 @@ class AmazonAutoLinks_Admin_ {
 		}
 		return $links;
 	}  		
-	function shortcode($atts) {
-	
-		// reload the option since the timing of this function call depends and the options can have not be updated
-		extract(shortcode_atts(array(
-			'label' => '',
-			// 'numitems' => 10,
-		), $atts));
-		$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($label);
-		if (!$strUnitID) {
-			echo $this->pluginname . ' ';
-			_e('Error: No such unit label exists.', 'amazonautolinks');
-			return;		
-		}
-		
-		// $oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
-		$oAAL = new AmazonAutoLinks_Core($label);
-		return $oAAL->fetch();			
-	}
-	function insertinpost($content) {
-		// if (is_home()) return $content;
-		static $oAALs = array();
-		
-		foreach($this->oAALOptions->arrOptions['units'] as $strUnitID => $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['postabove']) {	
-				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $oAALs[$strUnitID]->fetch() . $content;
-				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				// $content = $oAAL->fetch() . $content;
-			}
-			if ($arrUnitOptions['insert']['postbelow']) {
-				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $content . $oAALs[$strUnitID]->fetch();			
-				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				// $content = $content . $oAAL->fetch();
-			}
-		}
-		return trim($content);
-	}
-	function insertinexcerpt($content){
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['excerptabove']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $oAAL->fetch() . $content;
-			}
-			if ($arrUnitOptions['insert']['excerptbelow']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $content . $oAAL->fetch();
-			}
-		}	
-		return trim($content);
-	}
-	function insertincontentfeed($content) {
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['feedabove']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $oAAL->fetch() . $content;
-			}
-			if ($arrUnitOptions['insert']['feedbelow']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $content . $oAAL->fetch();
-			}
-		}	
-		return trim($content);
-	}
-	function insertinexcerptrss($content) {
 
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['feedexcerptabove']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $oAAL->fetch() . $content;
-			}
-			if ($arrUnitOptions['insert']['feedexcerptbelow']) {
-				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				$content = $content . $oAAL->fetch();
-			}
-		}	
-		return trim($content);
-	}
-	
 	/* ------------------------------------------ Admin Menu --------------------------------------------- */
 	function admin_menu() {
 		add_options_page(
@@ -603,13 +528,20 @@ class AmazonAutoLinks_Admin_ {
 		<h4><?php _e('Preview', 'amazonautolinks'); ?>: <?php echo $strUnitLabel; ?></h4>
 		<div style="padding: 2em 3em 2em 3em;">
 			<?php		
+			$numMemoryUsageBefore = memory_get_peak_usage();
 			$oAAL = new AmazonAutoLinks_Core($strUnitLabel);
 			echo $oAAL->fetch();
+			$numMemoryUsageAfter = memory_get_peak_usage();
 			?>
+			<p>
+			<hr style="margin-top:50px;" />
+				<?php _e('Memory Usage by this unit: ', 'amazonautolinks'); ?>
+				<?php echo $this->oAALfuncs->FormatBytes($numMemoryUsageAfter - $numMemoryUsageBefore, 0); ?>
+			</p>
 		</div>
 		<div style="float:right; margin-bottom: 20px;" >
 			<?php $this->oAALforms->form_submitbutton(200, 'preview', __('Go Back', 'amazonautolinks')); ?>
-		</div>
+		</div>		
 	<?php
 	}
 	
