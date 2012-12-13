@@ -6,22 +6,24 @@ class AmazonAutoLinks_Contents_ {
 		This class is for Shortcode, hooks for content, excerpt, and rss-feed.
 	*/
 
-	function __construct( &$oOption ) {
+	function __construct( $strPluginkey , &$oOption ) {
+		
+		$this->pluginkey = $strPluginkey;
 		
 		// the option array
-		$this->oOption = $oOption; // new AmazonAutoLinks_Options($this->pluginkey);
+		$this->oOption = $oOption; 
 			
 	}
 	function RegisterHooks() {
 		
 		// Create Shortcode
-		add_shortcode($this->pluginkey, array(&$this, 'shortcode'));
+		add_shortcode( $this->pluginkey, array( $this, 'shortcode' ) );
 		
 		// Hook post & RSS contents
-		add_filter('the_content', array(&$this, 'insertinpost'));
-		add_filter('the_excerpt', array(&$this, 'insertinexcerpt'));
-		add_filter('the_content_feed', array(&$this, 'insertincontentfeed'));
-		add_filter('the_excerpt_rss', array(&$this, 'insertinexcerptrss'));				
+		add_filter('the_content', array( $this, 'insertinpost'));
+		add_filter('the_excerpt', array( $this, 'insertinexcerpt'));
+		add_filter('the_content_feed', array( $this, 'insertincontentfeed'));
+		add_filter('the_excerpt_rss', array( $this, 'insertinexcerptrss'));				
 		
 	}
 	

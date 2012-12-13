@@ -4,7 +4,7 @@ Donate link: http://michaeluno.jp/en/donate
 Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, link cloaking, cloak, cloaking, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 1.1.2
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,10 @@ The part, 128M, should be changed accordingly.
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.1.4 =
+
+* Fixed: a bug that shortcode did not work as of 1.1.3.
 
 = 1.1.3 =
 * Supported: WordPress 3.5

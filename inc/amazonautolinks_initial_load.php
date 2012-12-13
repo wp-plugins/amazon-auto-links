@@ -16,7 +16,7 @@ add_action( 'plugins_loaded', array( new AmazonAutoLinks_Admin( $oAALOptions ), 
 
 // Contents Hooks
 // this registers the method, RegisterHooks, of the AmazonAutoLinks_Contents class
-add_action( 'plugins_loaded', array( new AmazonAutoLinks_Contents( $oAALOptions ), "RegisterHooks" ) );
+add_action( 'plugins_loaded', array( new AmazonAutoLinks_Contents( AMAZONAUTOLINKSKEY, $oAALOptions ), "RegisterHooks" ) );
 
 // URL redirects for URL cloaking
 add_action( 'plugins_loaded', array( new AmazonAutoLinks_Redirects( $oAALOptions ), "Redirect" ) );
