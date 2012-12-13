@@ -1,7 +1,7 @@
 table.aal-table {
 	border: 1px solid #E2E2E2;
 }
-.aal-table th,td {
+.aal-table th, .aal-table td {
 	border-top: 1px solid #E2E2E2;
 	height:	30px; 
 	width:	250px;

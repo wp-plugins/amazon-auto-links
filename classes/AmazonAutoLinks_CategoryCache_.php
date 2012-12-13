@@ -41,7 +41,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		'ES'	=> 'uni',
 		'US'	=> 'en',	
 	);	
-	function __construct($pluginkey, $oAALOptions="") {
+	function __construct( $pluginkey, &$oOption="") {
 			
 		// set up properties
 		$this->pluginkey = $pluginkey;
@@ -51,7 +51,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	
 		// store the options 
 		// since v1.1.1 - added the option to switch on/off the prefetch functionality
-		$this->oAALOptions = $oAALOptions;
+		$this->oOption = $oOption;
 	
 		// format the event option
 		$this->formatoption();
@@ -66,7 +66,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	}
 	function schedule_prefetch($strURL='') {
 		
-		if (is_array($this->oAALOptions) && empty($this->oAALOptions->arrOptions['general']['prefetch'])) {
+		if (is_array($this->oOption) && empty($this->oOption->arrOptions['general']['prefetch'])) {
 			echo '<!-- Amazon Auto Links: The prefetch function is disabled.  -->';		
 			return;
 		}
@@ -146,7 +146,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$strKey = $this->eventkey($strURL);		// define the action name
 		
 		// Without this add_action(), the event won't fire even though this plugin loasds saved action names at the beginning. 
-		// $strKey holds the action name for the event. The second paramer is the function name defined in amazonautolinks.php
+		// $strKey holds the action name for the event. The second paramer is the function name defined in amazonautolinks_initial_load.php
 		add_action($strKey, 'AmazonAutoLinks_CacheCategory');	
 		
 		// the value in the first parameter, time(), means do it right away. But actually it will be executed in the next page load.
@@ -157,7 +157,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	function set_catcache_url($strURL) {
 	
 		// saves the event option. The event option is managed separately from the other option
-		// since events occur sort of asyncronomously 
+		// since events occur sort of asyncronomously (pseudo-async)
 		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 		$arrCatCacheEvents[$this->eventkey($strURL)] = $strURL;	// add the new item to the event option array
 		update_option('amazonautolinks_catcache_events', $arrCatCacheEvents);	
@@ -170,7 +170,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		// make sure the urls ends with trailing slash
 		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);
 		
-		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45. 			
+		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45, which is the limitation set by WordPress.
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
 			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __METHOD__);

@@ -2,7 +2,7 @@
 class AmazonAutoLinks_Helper_Functions_
 {
 	/* 
-		This class is a set of functions(methods) that is called from all classes.
+		This class contains a set of functions(methods) called from all classes.
 	*/
 	
 	public $classver = 'standard';
@@ -398,7 +398,7 @@ class AmazonAutoLinks_Helper_Functions_
 	);	
 	function get_countrycode_by_ip($ip) {
 	
-		// sinve v1.0.7
+		// since v1.0.7
 		$strXMLResult = $this->api_iptoc($ip);
 		if (!$strXMLResult || $strXMLResult == -1) return;	
 		$xmlDoc = new DOMDocument();

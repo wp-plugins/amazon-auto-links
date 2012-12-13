@@ -6,18 +6,17 @@ class AmazonAutoLinks_Redirects_ {
 	 * This class is for redirecting urls, mainly used for the url cloak feature.
 	 * */
 	 
-	function __construct($oOptions) {
+	function __construct( &$oOption ) {
 		
 		// the option array
-		$this->oAALOptions = $oOptions;		
+		$this->oOption = $oOption;		
 		
 	}
 	function Redirect() {
 		
 		// since v1.0.9
 		// check a cloak query is passed in the url
-		// $arrOptions = get_option(AMAZONAUTOLINKSKEY);
-		$arrOptions = $this->oAALOptions->arrOptions;	// since v1.1.3
+		$arrOptions = $this->oOption->arrOptions;	// since v1.1.3
 		$strCloakQuery = empty($arrOptions['general']['cloakquery']) ? 'productlink': $arrOptions['general']['cloakquery'];
 		if (isset($_GET[$strCloakQuery])) {
 

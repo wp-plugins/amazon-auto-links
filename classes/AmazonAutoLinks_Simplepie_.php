@@ -1,10 +1,7 @@
 <?php
 // make sure that SimplePie has been already loaded
-// if (defined('ABSPATH') && defined('WPINC')) {
-	// require_once (ABSPATH . WPINC . '/class-simplepie.php');
-	// echo 'okey ';
-// }
-require_once (ABSPATH . WPINC . '/class-feed.php');		//<-- very importat. Without this line, the cacue setting breaks.
+require_once (ABSPATH . WPINC . '/class-feed.php');		//<-- very importat. Without this line, the cache setting breaks.
+
 class AmazonAutoLinks_SimplePie_ extends SimplePie
 {
 	public $classver = 'standard';
@@ -17,126 +14,244 @@ class AmazonAutoLinks_SimplePie_ extends SimplePie
 	public function get_items($start = 0, $end = 0)
 	{
 
-		if (!isset($this->data['items']))
-		{
-			if (!empty($this->multifeed_objects))
+		global $wp_version;
+		if ( version_compare( $wp_version , '3.5', "<" ) ) {
+			
+		
+			if (!isset($this->data['items']))
 			{
-				$this->data['items'] = SimplePie::merge_items($this->multifeed_objects, $start, $end, $this->item_limit);
-			}
-			else
-			{
-				$this->data['items'] = array();
-				if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_10, 'entry'))
+				if (!empty($this->multifeed_objects))
 				{
-					$keys = array_keys($items);
-					foreach ($keys as $key)
-					{
-						$this->data['items'][] = new $this->item_class($this, $items[$key]);
-					}
+					$this->data['items'] = SimplePie::merge_items($this->multifeed_objects, $start, $end, $this->item_limit);
 				}
-				if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_03, 'entry'))
+				else
 				{
-					$keys = array_keys($items);
-					foreach ($keys as $key)
+					$this->data['items'] = array();
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_10, 'entry'))
 					{
-						$this->data['items'][] = new $this->item_class($this, $items[$key]);
-					}
-				}
-				if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_10, 'item'))
-				{
-					$keys = array_keys($items);
-					foreach ($keys as $key)
-					{
-						$this->data['items'][] = new $this->item_class($this, $items[$key]);
-					}
-				}
-				if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_090, 'item'))
-				{
-					$keys = array_keys($items);
-					foreach ($keys as $key)
-					{
-						$this->data['items'][] = new $this->item_class($this, $items[$key]);
-					}
-				}
-				if ($items = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_RSS_20, 'item'))
-				{
-					$keys = array_keys($items);
-					foreach ($keys as $key)
-					{
-						$this->data['items'][] =&new $this->item_class($this, $items[$key]);
-					}
-				}
-			}
-		}
-
-		if (!empty($this->data['items']))
-		{
-			// If we want to order it by date, check if all items have a date, and then sort it
-			if ($this->order_by_date && empty($this->multifeed_objects))
-			{
-				if (!isset($this->data['ordered_items']))
-				{
-					$do_sort = true;
-					foreach ($this->data['items'] as $item)
-					{
-						if (!$item->get_date('U'))
+						$keys = array_keys($items);
+						foreach ($keys as $key)
 						{
-							$do_sort = false;
-							break;
+							$this->data['items'][] = new $this->item_class($this, $items[$key]);
 						}
 					}
-					// $item = null;
-					$this->data['ordered_items'] = $this->data['items'];
-					if ($do_sort)
-					{					
-						if ($this->sortorder == 'date') {
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_03, 'entry'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = new $this->item_class($this, $items[$key]);
+						}
+					}
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_10, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = new $this->item_class($this, $items[$key]);
+						}
+					}
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_090, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = new $this->item_class($this, $items[$key]);
+						}
+					}
+					if ($items = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_RSS_20, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = new $this->item_class($this, $items[$key]);
+						}
+					}
+				}
+			}
+
+			if (!empty($this->data['items']))
+			{
+				// If we want to order it by date, check if all items have a date, and then sort it
+				if ($this->order_by_date && empty($this->multifeed_objects))
+				{
+					if (!isset($this->data['ordered_items']))
+					{
+						$do_sort = true;
+						foreach ($this->data['items'] as $item)
+						{
+							if (!$item->get_date('U'))
+							{
+								$do_sort = false;
+								break;
+							}
+						}
+						// $item = null;
+						$this->data['ordered_items'] = $this->data['items'];
+						if ($do_sort)
+						{					
+							if ($this->sortorder == 'date') {
+								usort($this->data['ordered_items'], array(get_class($this), 'sort_items'));
+							}
+							else if ($this->sortorder == 'title') {
+								usort($this->data['ordered_items'], array(get_class($this), 'sort_items_by_title'));
+							}
+							else  {
+								usort($this->data['ordered_items'], array(get_class($this), 'sort_items_by_random'));
+							}
+						} else {
+						
+						}
+					}
+					$items = $this->data['ordered_items'];
+				}
+				else
+				{
+			
+					// Sort 
+					if ($this->sortorder == 'date') {
+						usort($this->data['items'], array(get_class($this), 'sort_items'));
+					}
+					else if ($this->sortorder == 'title') {
+						usort($this->data['items'], array(get_class($this), 'sort_items_by_title'));
+					}
+					else  {
+						usort($this->data['items'], array(get_class($this), 'sort_items_by_random'));
+					}
+			
+					$items = $this->data['items'];			
+				}
+
+				// Slice the data as desired
+				if ($end === 0)
+				{
+					return array_slice($items, $start);
+				}
+				else
+				{
+					return array_slice($items, $start, $end);
+				}
+			}
+			else
+			{		
+				return array();
+			}
+		}
+		else if ( version_compare($wp_version, '3.5', ">=" ) ) {
+			/*
+			 * for Simple Pie v1.3, WordPress v3.5 above
+			 * */	
+			if (!isset($this->data['items']))
+			{
+				if (!empty($this->multifeed_objects))
+				{
+					$this->data['items'] = SimplePie::merge_items($this->multifeed_objects, $start, $end, $this->item_limit);
+				}
+				else
+				{
+					$this->data['items'] = array();
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_10, 'entry'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = $this->registry->create('Item', array($this, $items[$key]));
+						}
+					}
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_ATOM_03, 'entry'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = $this->registry->create('Item', array($this, $items[$key]));
+						}
+					}
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_10, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = $this->registry->create('Item', array($this, $items[$key]));
+						}
+					}
+					if ($items = $this->get_feed_tags(SIMPLEPIE_NAMESPACE_RSS_090, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = $this->registry->create('Item', array($this, $items[$key]));
+						}
+					}
+					if ($items = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_RSS_20, 'item'))
+					{
+						$keys = array_keys($items);
+						foreach ($keys as $key)
+						{
+							$this->data['items'][] = $this->registry->create('Item', array($this, $items[$key]));
+						}
+					}
+				}
+			}
+
+			if (!empty($this->data['items']))
+			{
+				// If we want to order it by date, check if all items have a date, and then sort it
+				if ($this->order_by_date && empty($this->multifeed_objects))
+				{
+					if (!isset($this->data['ordered_items']))
+					{
+						$do_sort = true;
+						foreach ($this->data['items'] as $item)
+						{
+							if (!$item->get_date('U'))
+							{
+								$do_sort = false;
+								break;
+							}
+						}
+						$item = null;
+						$this->data['ordered_items'] = $this->data['items'];
+						if ($do_sort)
+						{
 							usort($this->data['ordered_items'], array(get_class($this), 'sort_items'));
 						}
-						else if ($this->sortorder == 'title') {
-							usort($this->data['ordered_items'], array(get_class($this), 'sort_items_by_title'));
-						}
-						else  {
-							usort($this->data['ordered_items'], array(get_class($this), 'sort_items_by_random'));
-						}
-					} else {
-					
 					}
+					$items = $this->data['ordered_items'];
 				}
-				$items = $this->data['ordered_items'];
-			}
-			else
-			{
-		
-				// Sort 
-				if ($this->sortorder == 'date') {
-					usort($this->data['items'], array(get_class($this), 'sort_items'));
+				else
+				{
+					
+					// Sort 
+					if ($this->sortorder == 'date') {
+						usort($this->data['items'], array(get_class($this), 'sort_items'));
+					}
+					else if ($this->sortorder == 'title') {
+						usort($this->data['items'], array(get_class($this), 'sort_items_by_title'));
+					}
+					else  {
+						usort($this->data['items'], array(get_class($this), 'sort_items_by_random'));
+					}
+					
+					$items = $this->data['items'];
 				}
-				else if ($this->sortorder == 'title') {
-					usort($this->data['items'], array(get_class($this), 'sort_items_by_title'));
-				}
-				else  {
-					usort($this->data['items'], array(get_class($this), 'sort_items_by_random'));
-				}
-		
-				$items = $this->data['items'];			
-			}
 
-			// Slice the data as desired
-			if ($end === 0)
-			{
-				return array_slice($items, $start);
+				// Slice the data as desired
+				if ($end === 0)
+				{
+					return array_slice($items, $start);
+				}
+				else
+				{
+					return array_slice($items, $start, $end);
+				}
 			}
 			else
 			{
-				return array_slice($items, $start, $end);
-			}
-		}
-		else
-		{		
-			return array();
+				return array();
+			}		
 		}
 	}
-
+	
 	public static function sort_items_by_random($a, $b)
 	{
 		return rand(-1, 1);

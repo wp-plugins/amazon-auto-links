@@ -7,10 +7,13 @@ class AmazonAutoLinks_UserAds_
 		Used Option Key: amazonautolinks_userads
 	*/
 	
-	function __construct($pluginkey) {
+	// properties
+	private $oTextFeed;
+	
+	function __construct( $pluginkey, &$oOption ) {
 		$this->pluginkey = $pluginkey;
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
-		$this->oAALOptions = new AmazonAutoLinks_Options($pluginkey);
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( $pluginkey );
+		$this->oOption = $oOption;
 		
 		// import global variables
 		$this->current_user = & $GLOBALS["current_user"];
@@ -67,13 +70,13 @@ class AmazonAutoLinks_UserAds_
 		if (!is_array($arrUserAdsOptions)) $arrUserAdsOptions = array();
 		
 		// get the default value
-		$arrUnitOptions = $this->oAALOptions->unitdefaultoptions;
+		$arrUnitOptions = $this->oOption->unitdefaultoptions;
 		$arrUnitOptions['unitdefaultoptions'] = $strCountryCode;	//<-- this line could be deleted.
 		$arrUnitOptions['numitems'] = 1;
 		$arrUnitOptions['imagesize'] = 30;
-		$arrUnitOptions['associateid'] = $this->oAALOptions->get_token($strCountryCode);
-		$arrUnitOptions['mblang'] = $this->oAALOptions->arrCountryLang[$strCountryCode];
-		$arrUnitOptions['countryurl'] = $this->oAALOptions->arrCountryURLs[$strCountryCode];
+		$arrUnitOptions['associateid'] = $this->oOption->get_token($strCountryCode);
+		$arrUnitOptions['mblang'] = $this->oOption->arrCountryLang[$strCountryCode];
+		$arrUnitOptions['countryurl'] = $this->oOption->arrCountryURLs[$strCountryCode];
 		$arrUnitOptions['modifieddate'] = time();
 		$arrUnitOptions['id'] = uniqid();
 		$arrUnitOptions['unitlabel'] = $strCountryCode;
@@ -175,5 +178,67 @@ class AmazonAutoLinks_UserAds_
 		if (!$output) AmazonAutoLinks_Log('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey], __METHOD__);	
 		echo $output;
 	}	
+	function InitializeTextFeed($arrUrls) {
+		
+		$this->oTextFeed = new AmazonAutoLinks_SimplePie();
+		
+		// Setup Caches
+		$this->oTextFeed->enable_cache(true);
+		$this->oTextFeed->set_cache_class('WP_Feed_Cache');
+		$this->oTextFeed->set_file_class('WP_SimplePie_File');
+		$this->oTextFeed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+
+		// Set Sort Order
+		$this->oTextFeed->set_sortorder('random');
+
+		// Set urls
+		$this->oTextFeed->set_feed_url($arrUrls);
+		$this->oTextFeed->set_item_limit(1);
+
+		// this should be set after defineing $urls
+		$this->oTextFeed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', 3600, $urls));	
+		$this->oTextFeed->set_stupidly_fast(true);
+		$this->oTextFeed->init();		
+		
+	}
+	function ShowTextAd() {
 	
+		// fetch
+		$strOut = '';
+		foreach ( $this->oTextFeed->get_items(0, 1) as $item ) $strOut .= $item->get_description();
+		echo '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
+	}
+	function InitializeBannerFeed($arrUrls) {
+		
+		$this->oBannerFeed = new AmazonAutoLinks_SimplePie();
+		
+		// Setup Caches
+		$this->oBannerFeed->enable_cache(true);
+		$this->oBannerFeed->set_cache_class('WP_Feed_Cache');
+		$this->oBannerFeed->set_file_class('WP_SimplePie_File');
+		$this->oBannerFeed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+
+		// Set Sort Order
+		$this->oBannerFeed->set_sortorder('random');
+
+		// Set urls
+		$this->oBannerFeed->set_feed_url($arrUrls);
+		$this->oBannerFeed->set_item_limit(1);
+
+		// this should be set after defineing $urls
+		$this->oBannerFeed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', 3600, $urls));	
+		$this->oBannerFeed->set_stupidly_fast(true);
+		$this->oBannerFeed->init();		
+		
+	}	
+	function ShowBannerAds() {
+
+		// fetch
+		$strOut = '';
+		foreach ( $this->oBannerFeed->get_items(0, 2) as $item ) 
+		{
+			$strOut .= '<div style="clear:right;">' . $item->get_description() . '</div>';
+		}
+		echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
+	}	
 }

@@ -8,26 +8,24 @@ AmazonAutoLinks_RegisterClasses();
 
 // instantiate the option class first so that the option object can be shared with other classes, which presumably consumes memory.
 // in other words, there is no need to instantiate the option class in each class.
-$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
+$oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 
 // Admin Pages
 // this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Admin 
-add_action( 'plugins_loaded', array(new AmazonAutoLinks_Admin($oAALOptions), "RegisterHooks") );		
+add_action( 'plugins_loaded', array( new AmazonAutoLinks_Admin( $oAALOptions ), "RegisterHooks" ) );		
 
 // Contents Hooks
 // this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Contents
-add_action( 'plugins_loaded', array(new AmazonAutoLinks_Contents($oAALOptions), "RegisterHooks") );
+add_action( 'plugins_loaded', array( new AmazonAutoLinks_Contents( $oAALOptions ), "RegisterHooks" ) );
 
 // Redirects for URL cloaking
-add_action( 'plugins_loaded', array(new AmazonAutoLinks_Redirects($oAALOptions), "Redirect") );
-
+add_action( 'plugins_loaded', array( new AmazonAutoLinks_Redirects( $oAALOptions ), "Redirect" ) );
 
 // Load actions to hook events for Cron jobs
-// todo: pass the option object to the constructor, -> new AmazonAutoLinks_Events($oALOptions)
-add_action('init', array(new AmazonAutoLinks_Events($oAALOptions), "LoadEvents"));	// 'AmazonAutoLinks_Events');
+add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );	// 'AmazonAutoLinks_Events');
 
 // Plugin Requirements
-add_action('admin_init', 'AmazonAutoLinks_Requirements');
+add_action( 'admin_init', 'AmazonAutoLinks_Requirements' );
 
 // Widgets
 // todo: find a way to avoid using create_function() 
@@ -35,6 +33,24 @@ add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLi
 
 // Clean up transients upon plugin deactivation
 register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTransients' );
+
+// debug
+   // add_filter('admin_footer_text', 'AmazonAutoLinks_MemoryUsage'); 
+    function AmazonAutoLinks_MemoryUsage () {
+
+		$size = memory_get_peak_usage();
+		$precision = 0;
+		$base = log($size) / log(1024);
+		$suffixes = array('', 'k', 'M', 'G', 'T');   
+		$displaysize = round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+
+    	echo '<p>' . $displaysize . '</p>';
+
+    }
+
+ 
+
+
 
 function AmazonAutoLinks_CleanTransients() {
 	

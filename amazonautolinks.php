@@ -12,12 +12,12 @@
 */
 
 // Define constants
-define("AMAZONAUTOLINKSKEY", "amazonautolinks");
-define("AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links");
-define("AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename(__FILE__));
-define("AMAZONAUTOLINKSPLUGINFILE", __FILE__);
-define("AMAZONAUTOLINKSPLUGINDIR", dirname(__FILE__));
-define("AMAZONAUTOLINKSPLUGINURL", plugins_url('', __FILE__));
+define( "AMAZONAUTOLINKSKEY", "amazonautolinks" );
+define( "AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links" );
+define( "AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename( __FILE__ ) );
+define( "AMAZONAUTOLINKSPLUGINFILE", __FILE__ );
+define( "AMAZONAUTOLINKSPLUGINDIR", dirname( __FILE__ ) );
+define( "AMAZONAUTOLINKSPLUGINURL", plugins_url('', __FILE__ ) );
 
 include AMAZONAUTOLINKSPLUGINDIR . '/inc/amazonautolinks_initial_load.php';
 

@@ -17,12 +17,12 @@ class AmazonAutoLinks_Core_
 	protected $pluginkey = 'amazonautolinks';
     protected $pageslug = 'amazonautolinks';
     protected $textdomain = 'amazonautolinks';
-	protected $oAALOptions = array();
+	protected $oOption = array();
 	protected $arrUnitOptions = array();
 	protected $arrASINs = array();	// stores a temporary ASIN data with the key of the product url
 	
 	/* Constructor */
-	function __construct($arrUnitOptionsOrstrUnitLabel, $arrGeneralOptions='') {
+	function __construct( &$arrUnitOptionsOrstrUnitLabel, &$arrGeneralOptions='') {
 	
 		// check the parameter
 		if (empty($arrUnitOptionsOrstrUnitLabel)) {
@@ -42,23 +42,23 @@ class AmazonAutoLinks_Core_
 		$this->feed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']
 
 		// options
-		$this->oAALOptions = new AmazonAutoLinks_Options($this->pluginkey);		
+		$this->oOption = new AmazonAutoLinks_Options($this->pluginkey);		
 		if (is_array($arrUnitOptionsOrstrUnitLabel)) 	// unit option is directly passed
 			$this->arrUnitOptions = $arrUnitOptionsOrstrUnitLabel;
 		else {	// a unit label is passed, so retrieve the unit ID and store the unit options of the ID
 			$strUnitLabel = $arrUnitOptionsOrstrUnitLabel;
-			if (is_array($this->oAALOptions->arrOptions['units'][$strUnitLabel]))	{	// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
-				$this->arrUnitOptions = $this->oAALOptions->arrOptions['units'][$strUnitLabel];
+			if (is_array($this->oOption->arrOptions['units'][$strUnitLabel]))	{	// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
+				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitLabel];
 			} else {
-				$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($strUnitLabel);
+				$strUnitID = $this->oOption->get_unitid_from_unitlabel($strUnitLabel);
 				if (empty($strUnitID)) {
 					echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit ID in the class constructor.' . ': ' . $strUnitLabel . '<br />', 'amazonautolinks');
 					return;								
 				}
-				$this->arrUnitOptions = $this->oAALOptions->arrOptions['units'][$strUnitID];
+				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitID];
 			}
 		}
-		$this->arrGeneralOptions = $arrGeneralOptions ? $arrGeneralOptions : $this->oAALOptions->arrOptions['general'];
+		$this->arrGeneralOptions = $arrGeneralOptions ? $arrGeneralOptions : $this->oOption->arrOptions['general'];
 		
 	}
 	function get_unitid_from_unitlabel($strUnitLabel) {
@@ -66,7 +66,7 @@ class AmazonAutoLinks_Core_
 		// since v1.0.7, retrieves the unit option id from the given unit label.
 		// same as the method defined in AmazonAutoLinks_Options_ 
 		// this is called from where the option class should not be instanciated to avoid overload
-		return $this->oAALOptions->get_unitid_from_unitlabel($strUnitLabel);
+		return $this->oOption->get_unitid_from_unitlabel($strUnitLabel);
 	}
 	function cache_rebuild() {
 		
@@ -203,7 +203,7 @@ class AmazonAutoLinks_Core_
 		
 		// instanciate the event object
 		// the class needs the option object
-		$oAALEvents = new AmazonAutoLinks_Events($this->oAALOptions);	
+		$oAALEvents = new AmazonAutoLinks_Events( $this->oOption );	
 		
 		if (!$bIsScheduled)		// means there is no schedule for this unit to renew its cache
 			$oAALEvents->schedule_feed_cache_rebuild($this->arrUnitOptions['unitlabel'], 0);	// the second parameter means do it in the next page load
@@ -350,7 +350,7 @@ class AmazonAutoLinks_Core_
 		
 		// since v1.0.9
 		if (!array_key_exists('urlcloak', $this->arrUnitOptions) || empty($this->arrUnitOptions['urlcloak'])) return $strURL ;	// v1.0.8 or below does not have this option value, so return				
-		$strCloakQuery = empty($this->arrGeneralOptions['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->arrGeneralOptions['cloakquery'];
+		$strCloakQuery = empty($this->arrGeneralOptions['cloakquery']) ? $this->oOption->generaldefaultoptions['cloakquery'] : $this->arrGeneralOptions['cloakquery'];
 		$strEncrypted = $this->oAALfuncs->urlencrypt($strURL);
 // return $strURL;
 		return site_url('?' . rawurlencode($strCloakQuery) . '=' . $strEncrypted);
@@ -435,14 +435,14 @@ class AmazonAutoLinks_Core_
 	}
 	function alter_tag_in_url_query($strURL) {
 		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) {
-			$strToken = $this->oAALOptions->get_token($this->arrUnitOptions['country']);
+			$strToken = $this->oOption->get_token($this->arrUnitOptions['country']);
 			$strURL = preg_replace('/(?<=tag=)(.+?-\d{2,})?/i', $strToken, $strURL);	// the pattern is replaced from '/tag\=\K(.+?-\d{2,})?/i' since \K is avaiable above PHP 5.2.4
 		}
 		return $strURL;
 	}
 	function alter_tag($strString) {
 		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) 
-			return $this->oAALOptions->get_token($this->arrUnitOptions['country']);
+			return $this->oOption->get_token($this->arrUnitOptions['country']);
 		return $strString;	
 	}
 	function does_occur_in($numPercentage) {

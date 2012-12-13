@@ -5,12 +5,12 @@ class AmazonAutoLinks_Events_ {
 		Description: this class loads saved events to hook actions with add_action() for WP Cron tasks.
 	*/
 	public $arrFuncRef = array();	// store md5 hash strings associating with the unit label.
-	function __construct($oOptions) {		
+	function __construct( &$oOption ) {		
 	
 		// AmazonAutoLinks_Log( 'instanciated ' . ($bIsManualLoad ? 'manually.' : 'automatically.') , __METHOD__);
 
 		// as of v1.1.3 $bIsManualLoad is removed
-		$this->oAALOptions = $oOptions;
+		$this->oOption = $oOption;
 		
 	}
 	
@@ -44,7 +44,7 @@ class AmazonAutoLinks_Events_ {
 		// $strMethodName is a md5 hashed string of unit label with a prefix of 'aal_func_'. $arguments are not passed.
 		
 		
-		$arrOptions = $this->oAALOptions->arrOptions;	// $arrOptions = get_option('amazonautolinks');
+		$arrOptions = $this->oOption->arrOptions;	// $arrOptions = get_option('amazonautolinks');
 		
 		$strUnitLabel = $this->arrFuncRef[$strMethodName];
 		$strEventName = 'aal_feed_' . md5($strUnitLabel);
@@ -63,7 +63,7 @@ class AmazonAutoLinks_Events_ {
 	
 	function load_feed_cache_events() {
 		
-		$arrOptions = $this->oAALOptions->arrOptions;		// $arrOptions = get_option('amazonautolinks');	
+		$arrOptions = $this->oOption->arrOptions;		// $arrOptions = get_option('amazonautolinks');	
 		
 		$i = 0;
 		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) {

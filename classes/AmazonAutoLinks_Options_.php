@@ -90,10 +90,10 @@ class AmazonAutoLinks_Options_ {
 		'ES' => '[NiN6GUQ/AvRkTbtgl4zD6FiSNRpeygeJHgRpJPIBiGo=]',
 		'US' => '[fRmuq3rruO3Tw8y29lU1m6mxwAZ1XxxyDOD1L2UvIU4=]'
 	);
-	function __construct($pluginkey) {
+	function __construct( $pluginkey ) {
 	
 		// Include classes
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( $pluginkey );
 			
 		
 		// set up properties
@@ -199,7 +199,6 @@ class AmazonAutoLinks_Options_ {
 		$this->arrOptions['editunit'] = $arrUnitOptions;
 		$this->update();
 	}
-	
 	function save_submitted_unitoption_edit($arrSubmittedFormValues) {
 		
 		// since v1.0.7
@@ -287,6 +286,12 @@ class AmazonAutoLinks_Options_ {
 	}		
 	
 	/* for general usage */		
+	
+	function UnsetOptionKey( $strKey ) {
+		// since v1.1.3
+		unset( $this->arrOptions[$strKey] );
+		$this->update();
+	}
 	function set_id($strUnitID) {
 		if (empty($this->arrOptions['units'][$strUnitID]['id'])) $this->arrOptions['units'][$strUnitID]['id'] = uniqid();
 		$this->update();

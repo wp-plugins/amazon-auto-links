@@ -1,14 +1,15 @@
 <?php
 class AmazonAutoLinks_Contents_ {
 	/*
+	 * Since v1.1.3
 	 *	Separated from the AmazonAutoLinks_Admin_ class.
-		This class is for Shortcode, hooks for contents, excerpts, and rss-feed.
+		This class is for Shortcode, hooks for content, excerpt, and rss-feed.
 	*/
 
-	function __construct($oOptions) {
+	function __construct( &$oOption ) {
 		
 		// the option array
-		$this->oAALOptions = $oOptions; // new AmazonAutoLinks_Options($this->pluginkey);
+		$this->oOption = $oOption; // new AmazonAutoLinks_Options($this->pluginkey);
 			
 	}
 	function RegisterHooks() {
@@ -31,14 +32,14 @@ class AmazonAutoLinks_Contents_ {
 			'label' => '',
 			// 'numitems' => 10,
 		), $atts));
-		$strUnitID = $this->oAALOptions->get_unitid_from_unitlabel($label);
+		$strUnitID = $this->oOption->get_unitid_from_unitlabel($label);
 		if (!$strUnitID) {
 			echo $this->pluginname . ' ';
 			_e('Error: No such unit label exists.', 'amazonautolinks');
 			return;		
 		}
 		
-		// $oAAL = new AmazonAutoLinks_Core($this->oAALOptions->arrOptions['units'][$label]);
+		// $oAAL = new AmazonAutoLinks_Core($this->oOption->arrOptions['units'][$label]);
 		$oAAL = new AmazonAutoLinks_Core($label);
 		return $oAAL->fetch();			
 	}	
@@ -47,24 +48,21 @@ class AmazonAutoLinks_Contents_ {
 		// if (is_home()) return $content;
 		static $oAALs = array();
 		
-		foreach($this->oAALOptions->arrOptions['units'] as $strUnitID => $arrUnitOptions) {
+		foreach($this->oOption->arrOptions['units'] as $strUnitID => $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['postabove']) {	
 				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAALs[$strUnitID]->fetch() . $content;
-				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				// $content = $oAAL->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['postbelow']) {
 				if (!array_key_exists(strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $content . $oAALs[$strUnitID]->fetch();			
-				// $oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
-				// $content = $content . $oAAL->fetch();
 			}
 		}
+		unset($oAALs);
 		return trim($content);
 	}
 	function insertinexcerpt($content){
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
+		foreach($this->oOption->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['excerptabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -74,10 +72,11 @@ class AmazonAutoLinks_Contents_ {
 				$content = $content . $oAAL->fetch();
 			}
 		}	
+		unset($oAAL);
 		return trim($content);
 	}
 	function insertincontentfeed($content) {
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
+		foreach($this->oOption->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -87,11 +86,12 @@ class AmazonAutoLinks_Contents_ {
 				$content = $content . $oAAL->fetch();
 			}
 		}	
+		unset($oAAL);
 		return trim($content);
 	}
 	function insertinexcerptrss($content) {
 
-		foreach($this->oAALOptions->arrOptions['units'] as $arrUnitOptions) {
+		foreach($this->oOption->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['feedexcerptabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 				$content = $oAAL->fetch() . $content;
@@ -101,6 +101,7 @@ class AmazonAutoLinks_Contents_ {
 				$content = $content . $oAAL->fetch();
 			}
 		}	
+		unset($oAAL);
 		return trim($content);
 	}
 		

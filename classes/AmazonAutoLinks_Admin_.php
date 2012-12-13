@@ -3,7 +3,6 @@ class AmazonAutoLinks_Admin_ {
 	
 	/*
 		Todo: 
-			- seperate the shortcode methods and create an individual class for it.
 			- get rid of the iframe page for selecting categories and inlude in the admin page.
 		
 	*/
@@ -14,26 +13,27 @@ class AmazonAutoLinks_Admin_ {
 	protected $pluginkey = 'amazonautolinks';
     protected $pageslug = 'amazonautolinks';
     protected $textdomain = 'amazonautolinks';	// this is not used for the Code Styling Plugin for localization
-	protected $oAALOptions = array();
+	protected $oOption = array();
 	protected $oAALfuncs = '';	// new AmazonAutoLinks_Helper_Functions;
 	protected $oAALforms = '';	// new AmazonAutoLinks_Forms;
 	protected $tabcaptions = array();
-		
+			
 	/*-------------------------------------------------- Initial Settings -----------------------------------------------------*/
-	function __construct($oOptions) {
+	function __construct( &$oOption ) {
 	
 		// the option array
-		$this->oAALOptions = $oOptions; // new AmazonAutoLinks_Options($this->pluginkey);
+		$this->oOption = $oOption; // new AmazonAutoLinks_Options($this->pluginkey);
 				
 		// Include helper classes
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);		
-				
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( $this->pluginkey );		
+		$this->oUserAd = new AmazonAutoLinks_UserAds( $this->pluginkey, $this->oOption );		
+			
 		// Include AmazonAutoLinks_Forms class
-		$this->oAALforms = new AmazonAutoLinks_Forms($this->pluginkey, $oOptions);		
-		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories($this->pluginkey);
+		$this->oAALforms = new AmazonAutoLinks_Forms( $this->pluginkey, $oOption, $this->oUserAd );		
+		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories( $this->pluginkey, $oOption );
 	
 		// cache class
-		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache( $this->pluginkey );
 		
 		// properties
 		$this->wp_version = & $GLOBALS["wp_version"];
@@ -48,32 +48,22 @@ class AmazonAutoLinks_Admin_ {
 		// embed Plugin Settings Link in the plugin listing page
 		add_filter("plugin_action_links_" . AMAZONAUTOLINKSPLUGINFILEBASENAME, array(&$this, 'embed_settings_link') );
 
-		// embed donation link lin the plugin listing page
-		add_filter('plugin_row_meta', array(&$this, 'embed_donate_link'), 10, 2);
+		// embed donation link in the plugin listing page
+		if ($this->classver == 'standard')
+			add_filter('plugin_row_meta', array(&$this, 'embed_donate_link'), 10, 2);
 		
 		// admin menu
 		add_action('admin_menu', array(&$this, 'admin_menu'));
 		
 		// admin custom CSS
 		add_action('admin_head', array(&$this, 'admin_custom_css'));
-		
-/*
-		// Create Shortcode
-		add_shortcode($this->pluginkey, array(&$this, 'shortcode'));
-		
-		// Hook post & RSS contents
-		add_filter('the_content', array(&$this, 'insertinpost'));
-		add_filter('the_excerpt', array(&$this, 'insertinexcerpt'));
-		add_filter('the_content_feed', array(&$this, 'insertincontentfeed'));
-		add_filter('the_excerpt_rss', array(&$this, 'insertinexcerptrss'));
-*/
-		
-		
+				
 	}
 	function localize() {
-		// $loaded = load_plugin_textdomain( $this->textdomain, false, dirname(  __FILE__  ) . '/lang/');		// modified the last parameter <-- needs to examin if it works
+
 		$loaded = load_plugin_textdomain( 'amazonautolinks', false, dirname(dirname( plugin_basename( __FILE__ ) )) . '/lang/');
 		return;
+		// the below is for debugging 
 		if ( ! $loaded ) {
 			$msg = '
 			<div class="error">
@@ -136,9 +126,57 @@ class AmazonAutoLinks_Admin_ {
 					}    					
 					</style>';				
 
-		} else if ($_GET['tab'] == 400) 	// for the upgrading to pro tab; the table needs additional styles
-			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', __FILE__). '">';
+		} else if ( $_GET['tab'] == 400 ) 	// for the upgrading to pro tab; the table needs additional styles
+			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', AMAZONAUTOLINKSPLUGINFILE ) . '">';
+		
+		// for category selection page
+		if ( $_GET['tab'] == 203 || $_GET['tab'] == 101 || $_POST['tab'] == 203 || $_POST['tab'] == 101 ) {
+			$cssurl_wpadmin = admin_url( '/css/wp-admin.css?ver=') . get_bloginfo( 'version' ); // get_bloginfo( 'version' ));
+			$cssurl_colorsfresh = admin_url('/css/colors-fresh.css') . '?ver=' . get_bloginfo( 'version' );
+			$cssurl_catselect = plugins_url('/css/amazonautolinks_catselect.css', AMAZONAUTOLINKSPLUGINFILE );					
+		?>
+			<link rel="stylesheet" href="<?php echo $cssurl_wpadmin; ?>" type="text/css" media="all" />
+			<link rel="stylesheet" id="colors-css" href="<?php echo $cssurl_colorsfresh; ?>" type="text/css" media="all" />
+			<link rel="stylesheet" href="<?php echo $cssurl_catselect; ?>" type="text/css" media="all" />
 			
+		<?php
+		}
+
+	}
+	function GetTabNumber() {
+		/*
+		 * Since v1.1.3
+		 * Determins the loading page tab number
+		 * */
+// echo '<pre>' . AMAZONAUTOLINKSKEY . '</pre>';		 
+// echo '<pre>' . print_r($_POST, True) . '</pre>';		 
+
+		// check if the Create/Save button is pressed
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['newunit']['save'] ) || IsSet( $_POST[AMAZONAUTOLINKSKEY]['editunit']['save'] ) ) {
+
+			if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['newunit']['save'] ) ) $mode = 'newunit';
+			else if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['editunit']['save'] ) ) $mode = 'editunit';
+			
+			// insert the options with the key name of the unit label
+			if ( empty( $this->oOption->arrOptions[$mode]['id'] ) ) $this->oOption->arrOptions[$mode]['id'] = uniqid();	// sets an id if there isn't --- the check is for backward-compatibility when widget is not supported; widget uses this identifier to declare the class
+			$this->oOption->insert_unit($this->oOption->arrOptions[$mode]['id'], $mode); // parameter: id, newunit/editunit
+			$this->oOption->UnsetOptionKey($mode);	// removes the temporary unit options
+			
+			echo '<div class="updated" style="padding: 10px;">'; 
+			if ( $mode == 'newunit' ) _e('The unit was successfully created.', 'amazonautolinks');
+			if ( $mode == 'editunit' ) _e('The unit options are updated.', 'amazonautolinks'); 
+			echo '</div>';
+			return 200;
+		}	
+		
+		// if the "Proceed" button in the edit unit page is pressed,
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ) return 203;
+
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab'] ) ) return $_POST[AMAZONAUTOLINKSKEY]['tab'];			// set in the category selection page. ( AmazonAutoLinks_Forms_SelectCategories::RenderFormCategorySelectionPreview() )
+
+		$numTab = isset( $_GET['tab'] ) ? $_GET['tab'] : 100;			// retrieve the current tab from the url		
+// echo '<pre>$numTab: ' . $numTab . '</pre>';
+		return $numTab;
 	}
 	function adminpage() {
 
@@ -148,37 +186,36 @@ class AmazonAutoLinks_Admin_ {
 		<!-- Start Rendering the Form -->
 		<div class="wrap">
 			<?php 
-			$this->page_header();	// this includs displaying the tabs on top and determins the $this->current_tab value.						
-			switch ($this->current_tab) {
-				case 100: 	// create a new unit
-					$this->admin_tab100();
-					break;				
-				case 200:	// manage units
-					$this->admin_tab200();
-					break;
-				case 201;	// preview the unit
-					$this->admin_tab201();
-					break;
-				case 202;	// edit the slected unit
-					$this->admin_tab202();
-					break;				
-				case 300:	// general settings
-					$this->admin_tab300();
-					break;
-				case 400:
-					$this->admin_tab400();
-					break;
-				case 500:
-					$this->admin_tab500();
-					break;
-			} // end switch for tabs		
-			?>
+			$numCurrentTab = $this->page_header();	// this includes displaying the tabs on top and determins the current tab value.						
+			?>						
+		
+			<table id="aal-admin-container" border="0" style="width:100%">
+				<tbody>
+					<tr>
+						<td valign="top" style="border: 0px;">
+						<?php
+							$strMethodName = "admin_tab{$numCurrentTab}";	
+							$this->$strMethodName();	// e.g. $this->admin_tab101(); 
+						?>
+						</td>
+						<td valign="top" style="border: 0px;">
+						<?php
+							$this->oUserAd->InitializeBannerFeed('http://feeds.feedburner.com/GANLinkBanner160x600Random40');
+							$this->oUserAd->ShowBannerAds();				
+						?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+				
+			
 		</div> <!-- end the admin page wrapper -->
 		<?php 	
 	} 	// admin_page() end
 	/* ------------------------------------------ Tab 100 : Create Unit --------------------------------------------- */
 	function IsReachedLimitNumUnits($num=3) {
-		if (count($this->oAALOptions->arrOptions['units']) >= $num) return true;
+		if (count($this->oOption->arrOptions['units']) >= $num) return true;
 		
 		// else
 		return false;	
@@ -208,14 +245,14 @@ class AmazonAutoLinks_Admin_ {
 			/* Tab 101 - the proceed page for creating a new unit. It is the next page after the tab 1 page. */		
 			// if the Go Back button is pressed. ('tab101_submitted' is sent together)
 			if (IsSet($_POST[$this->pluginkey]['tab101']['gobackbutton'])) {
-				$this->oAALOptions->arrOptions['tab101']['cameback'] = true;	// this flag is used for pseudo session.
-				$this->oAALOptions->update();
+				$this->oOption->arrOptions['tab101']['cameback'] = true;	// this flag is used for pseudo session.
+				$this->oOption->update();
 				$numTabNum = 100;		
 			}
 		} else {
 		
 			// no post form data submitted, meaning the user just arrived at this page.
-			$this->oAALOptions->set_new_unit();	// sets the default unit options to the 'newunit' array and reset the 'cameback' and 'error' flags to false.
+			$this->oOption->set_new_unit();	// sets the default unit options to the 'newunit' array and reset the 'cameback' and 'error' flags to false.
 		}
 
 		?>
@@ -225,7 +262,7 @@ class AmazonAutoLinks_Admin_ {
 			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
 			if ($numTabNum == 100) {
 				echo '<h3>' . __('Add New Unit', 'amazonautolinks') . '</h3>';
-				$this->oAALforms->form_setunit($numTabNum, $this->oAALOptions->arrOptions['newunit'], $this->oAALOptions->arrOptions['tab100']['errors']); 
+				$this->oAALforms->form_setunit($numTabNum, $this->oOption->arrOptions['newunit'], $this->oOption->arrOptions['tab100']['errors']); 
 				
 				// schedule prefetch; the parameter is empty, which means prefetch the root pages.
 				$this->oAALCatCache->schedule_prefetch();
@@ -241,21 +278,21 @@ class AmazonAutoLinks_Admin_ {
 	function admin_tab100_determine_next_page_to_go() {
 	
 		// initialize the flag value first. This flag is also used in the form fields to mark red attentions.
-		$this->oAALOptions->arrOptions['tab100']['errors'] = False;	
+		$this->oOption->arrOptions['tab100']['errors'] = False;	
 		
 		// validate the sent form data 
 		$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab100'];	
-		$this->oAALOptions->arrOptions['tab100']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues);
+		$this->oOption->arrOptions['tab100']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues);
 		
 		// check if a validation error occured
-		if ($this->oAALOptions->arrOptions['tab100']['errors']) {
+		if ($this->oOption->arrOptions['tab100']['errors']) {
 					
 			// Show a warning Message
 			echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
 					
 			// Update the option values as preview to refill the submitted values
 			$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
-			$this->oAALOptions->set_newunit($arrSubmittedFormValues);	// does update_option() 
+			$this->oOption->set_newunit($arrSubmittedFormValues);	// does update_option() 
 			
 			// set the flag to indicate that repeat the page again. Do not go into the next page.
 			return 100;		// returns the tab numeber to go next.
@@ -268,25 +305,135 @@ class AmazonAutoLinks_Admin_ {
 		// those category info should be preserved so that when the user proceeds the settings again, he/she will have the previously seleceted categories
 			
 		// if the user is returning from the proceeding page, restore the previous values
-		if (!is_array($this->oAALOptions->arrOptions['newunit'])) $this->oAALOptions->arrOptions['newunit'] = array();
-		// if ($this->oAALOptions->arrOptions['tab101']['cameback'])	
+		if (!is_array($this->oOption->arrOptions['newunit'])) $this->oOption->arrOptions['newunit'] = array();
+		// if ($this->oOption->arrOptions['tab101']['cameback'])	
 
-		$this->oAALOptions->arrOptions['newunit'] = array_merge($this->oAALOptions->arrOptions['newunit'], $arrSubmittedFormValues);
+		$this->oOption->arrOptions['newunit'] = array_merge($this->oOption->arrOptions['newunit'], $arrSubmittedFormValues);
 	
-		// $this->oAALOptions->arrOptions['newunit'] = $_POST[$this->pluginkey]['tab100'];
-		$this->oAALOptions->arrOptions['newunit'] = $this->oAALforms->setup_unitoption($this->oAALOptions->arrOptions['newunit']);
+		// $this->oOption->arrOptions['newunit'] = $_POST[$this->pluginkey]['tab100'];
+		$this->oOption->arrOptions['newunit'] = $this->oAALforms->setup_unitoption($this->oOption->arrOptions['newunit']);
 		
 		// Update the option values as preview and proceed to the next
-		$this->oAALOptions->update();
+		$this->oOption->update();
 	
 		return 101;	// returns the tab number to go next.
 							
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
-		$this->oAALforms_selectcategories->form_selectcategories_iframe(101, $this->oAALOptions->arrOptions['newunit']);
-	} // end of tab101
+		// $this->oAALforms_selectcategories->form_selectcategories_iframe(101, $this->oOption->arrOptions['newunit']);
+		$this->admin_tab_selectcategories(101);
+	}
+	function admin_tab_selectcategories($numTab) {
 
+		/* Since v1.1.3
+		 * Select Category Page - reached after pressing the Proceed button
+		 * similar to admin_tab203()
+		 * */
+	 
+		// declare variable
+		$bReachedLimit = false;
+
+		// $this->oOption->arrOptions['newunit'] is used so no need these evaluations actually		
+		// determine if it is a new unit or editing an existing unit.
+		// $strMode = round( floor( $numTab / 100 ) * 100, -2 ) == 100 ? 'new' : 'edit';
+		// $mode = round( floor( $numTab / 100 ) * 100, -2 ) == 100 ? 'newunit' : 'editunit'; // <-- review the variable naming
+		$mode = ( $numTab == 203 ) ? 'editunit' : 'newunit'; // or 101 -> newunit
+
+		// for the initial array components - $this->oOption->arrOptions[$mode] must be an array from the previous page (the caller page of the iframe)
+		if ( !is_array( $this->oOption->arrOptions[$mode]['categories'] ) ) $this->oOption->arrOptions[$mode]['categories'] = array();
+	
+		/* POST Data */
+		// Verify nonce 
+		if (IsSet($_POST[AMAZONAUTOLINKSKEY]['submitted']) && !wp_verify_nonce($_POST['nonce'], AMAZONAUTOLINKSKEY)) return;
+
+			
+		// check if the "Add Current Category" button is pressed
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['addcurrentcategory'] ) ) {
+			$numSelectedCategories = $this->oOption->add_category(
+				$mode,		// NewUnit or EditUnit
+				$_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryname'],	//	$strCatName: the submitted category breadcrumb name
+				array(	// $arrCatInfo
+					'feedurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryfeedurl'],
+					'pageurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategorypageurl'])
+			);
+			if ($numSelectedCategories == -1) {
+				$bReachedLimit = True;
+				$numSelectedCategories = 3;
+			}
+		}		
+		// check if the "Delete Checked Categories" button is pressd
+		else if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['deletecategories']) && IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['categories'] ) ) {
+			$numSelectedCategories = $this->oOption->delete_categories(
+				$mode,		// NewUnit or EditUnit
+				$_POST[AMAZONAUTOLINKSKEY][$mode]['categories']	//	array holding the category names to delete
+			);
+		}
+		// new landing, just count the number of categories
+		else $numSelectedCategories = count( $this->oOption->arrOptions[$mode]['categories'] ); 
+	
+		// insert the IsPreview flag so that it won't trigger background cache renewal events.
+		$this->oOption->arrOptions[$mode]['IsPreview'] = True;	// this won't be saved unless update_option() is used after this line, so the actual unit option won't have this value
+			
+		/*
+		 * Sidebar
+		 * */
+		
+		// Determine the url to fetch
+		// first check the $_GET array	
+		$strURL = isset($_GET['href']) ? $this->oAALfuncs->urldecrypt($_GET['href']) : $this->oOption->arrOptions[$mode]['countryurl'];				
+		
+		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when a trailing slash is missing.
+		// e.g. http://www.amazon.ca/Bestsellers-generic/zgbs won't open but http://www.amazon.ca/Bestsellers-generic/zgbs/ does.
+		// Note taht this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
+		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);		// added since v1.0.4
+
+		// create a dom document object			
+		if ( ! $doc = $this->oAALforms_selectcategories->load_dom_from_url( $strURL ) ) exit('<div class="error" style="padding:10px; margin:10px;">' . __('Could not load categories. Please consult the plugin developer.', 'amazonautolinks') . '</div>');
+	
+		// Edit the href attribute to add the query.	
+		// adds a query in the link urls like, ?href=[encrypted_url], so that in a next page load, $_GET['href'] tells where to look up
+		$arrGETQuery = array( 'mode' => $mode,			// newunit or editunit
+ 							  'page' => $_GET['page'],	// &page=amazonautolinks
+							  'tab' => $numTab,			// 101 or 203
+							 );
+		if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
+		
+			// if the category block could not be read, try renewing the cache 
+			$this->oAALCatCache->renew_category_cache( $strURL );
+			echo '<!-- ' . __('Warning: renewing category cache.', 'amazonautolinks') . ' : ' . $strURL . ' -->' . PHP_EOL;
+			$doc = $this->load_dom_from_url( $strURL );			
+			if ( ! $bModifiedHref = $this->modify_href( $doc, $arrGETQuery ) ) {
+				echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazonautolinks') . ' : ' . $strURL . '</div>';
+				echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ) );
+				Exit;
+			}
+		}	
+	
+		// get the sidebar code
+		$strSidebarHTML = $this->oAALforms_selectcategories->GetCategoryListSidebar($doc);
+
+		// Create Breadcrumb 
+		$strBreadcrumb = $this->oAALforms_selectcategories->breadcrumb($doc, $this->oOption->arrOptions[$mode]['country']);
+
+		// extract the rss for the category
+		$strRssLink = $this->oAALforms_selectcategories->get_rss_link($doc);	
+		
+		// the unit preview & selection form
+		$this->oAALforms_selectcategories->RenderFormCategorySelectionPreview($mode
+																			, $numSelectedCategories
+																			, $strRssLink
+																			, $strBreadcrumb
+																			, $strURL
+																			, $bReachedLimit
+																			, $strSidebarHTML
+																			, $numTab);
+												
+		// schedule pre-fetch sub-category links
+		$this->oAALCatCache->schedule_prefetch($strURL);												
+			
+	} // end of tab101
+	
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
 
@@ -316,23 +463,23 @@ class AmazonAutoLinks_Admin_ {
 		if (isset($_POST[$this->pluginkey]['tab200']['tab200_submitted']) && isset($_POST[$this->pluginkey]['tab200']['deleteselectedunits'])) {
 
 			// Delete units of the submitted unit keys
-			if ($this->oAALOptions->delete_units($_POST[$this->pluginkey]['tab200']['delete'])) echo '<div class="updated"><p>' . __('Deleted the selected units.', 'amazonautolinks') . '</p></div>';
+			if ($this->oOption->delete_units($_POST[$this->pluginkey]['tab200']['delete'])) echo '<div class="updated"><p>' . __('Deleted the selected units.', 'amazonautolinks') . '</p></div>';
 			
 			// also clean broken units (remove unlabeled units)
-			if ($this->oAALOptions->clean_unlabeled_units()) echo '<div class="error settings-error"><p>' . __('There was a broken unit and deleted.', 'amazonautolinks') . '</p></div>';
+			if ($this->oOption->clean_unlabeled_units()) echo '<div class="error settings-error"><p>' . __('There was a broken unit and deleted.', 'amazonautolinks') . '</p></div>';
 
 		}
 		?>
 		<h3><?php echo $this->tabcaptions[2]; ?></h3>		
 		
 		<!-- Create New Unit Button -->
-		<div style="float:right; margin-bottom: 20px;" >
+		<div align="right" style="clear: left; margin-bottom: 20px;" >
 			<?php $this->oAALforms->form_submitbutton(100, 'editunit', __('Create New Unit', 'amazonautolinks')); ?>
 		</div>
 		
 		<!-- Unit Table -->
 		<?php 
-		// Once it occured that pressing the delete button reedirected the page to the edit unit page. 
+		// Once it occured that pressing the delete button redirected the page to the edit unit page. 
 		// So speficy where to go after submitting the form.
 		$strAction = '?page=' . $this->pageslug . '&tab=' . $numTabNum ;  
 		?>
@@ -349,29 +496,29 @@ class AmazonAutoLinks_Admin_ {
 	}
 	function admin_tab200_unittable() {
 	
-		// in case unnamed unit is injected in a process of misoperations, delete it. 
+		// in case unnamed unit is injected in a process of misoperations or whatever, delete it. 
 		// This should not happen but it occured once while debugging.
-		$this->oAALOptions->delete_unnamed_key('units');	// does update_option()
+		$this->oOption->delete_unnamed_key('units');	// does update_option()
 
 		// check if the number of units is valid
 		// there could be a case that the user downgrades the version from pro. So leave them as they are.
 		/* 		
 		if ($this->IsReachedLimitNumUnits(4)) {
 			do {
-				array_pop($this->oAALOptions->arrOptions['units']);
+				array_pop($this->oOption->arrOptions['units']);
 			} While (count($stack) > 3);
-			update_option($this->pluginkey, $this->oAALOptions->arrOptions);
+			update_option($this->pluginkey, $this->oOption->arrOptions);
 		} */
 
 		?>
-		<table class="wp-list-table widefat fixed posts" cellspacing="0">
+		<table class="wp-list-table widefat fixed posts" cellspacing="0" style="clear:none; width:auto;">
 			<thead><?php $this->manage_units_table_header();?></thead>
 			<tfoot><?php $this->manage_units_table_header();?></tfoot>
 			<tbody id="the-list">
 				<?php 
 
-				$numUnit = count($this->oAALOptions->arrOptions['units']);
-				foreach( $this->oAALOptions->arrOptions['units'] as $strUnitID => $unit ) {
+				$numUnit = count($this->oOption->arrOptions['units']);
+				foreach( $this->oOption->arrOptions['units'] as $strUnitID => $unit ) {
 					if (!$strUnitID) continue;	// this happened somehow when debugging. It shouldn't happen though.
 					echo '<tr>';
 					for ($i=0; $i <= 11; $i++) {
@@ -492,7 +639,7 @@ class AmazonAutoLinks_Admin_ {
 	}
 	function custom_a_tag($strText, $numTab, $arrQueries="", $strStyle="") {
 	
-		// creates ta custom <a> tag with a modified href attribute. 
+		// creates a custom <a> tag with a modified href attribute. 
 		// the href link url is converted to the self url with specified queries 
 		$strQueries = '';
 		if (Is_Array($arrQueries)) {
@@ -554,7 +701,7 @@ class AmazonAutoLinks_Admin_ {
 	
 		/* $_GET & $_POST */
 		// if the edit query is not set, go to tab 200
-		// if neither arrived by clicking the edit link nor by pressing the proceed button of the setting
+		// if neither arrived by clicking the edit link nor by pressing the proceed button of the setting,
 		if (!IsSet($_GET['edit']) && !IsSet($_POST[$this->pluginkey]['tab' . $numTabNum]['proceedbutton'])) {	
 			$this->admin_tab200();
 			return;	// do not continue 
@@ -566,8 +713,8 @@ class AmazonAutoLinks_Admin_ {
 			// validate the submitted values
 			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];
 		
-			$this->oAALOptions->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
-			if ($this->oAALOptions->arrOptions['tab202']['errors']) {	// if it's invalid
+			$this->oOption->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
+			if ($this->oOption->arrOptions['tab202']['errors']) {	// if it's invalid
 				
 				// Show a warning Message
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
@@ -575,8 +722,8 @@ class AmazonAutoLinks_Admin_ {
 				// Update the option values as preview to refill the submitted values
 				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories
 				$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
-				$this->oAALOptions->arrOptions['editunit'] = array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues);
-				$this->oAALOptions->update();
+				$this->oOption->arrOptions['editunit'] = array_merge($this->oOption->arrOptions['editunit'], $arrSubmittedFormValues);
+				$this->oOption->update();
 				
 				// do it again, redirect to this page 
 				$numTabNum = 202;	
@@ -585,8 +732,8 @@ class AmazonAutoLinks_Admin_ {
 
 				// okey, save options and go to the next page, category selection.
 				// It has to merge with the previous options because they have predefined options which submitted ones don't have, such as categories			 
-				$this->oAALOptions->arrOptions['editunit'] = $this->oAALforms->setup_unitoption(array_merge($this->oAALOptions->arrOptions['editunit'], $arrSubmittedFormValues));
-				$this->oAALOptions->update();
+				$this->oOption->arrOptions['editunit'] = $this->oAALforms->setup_unitoption(array_merge($this->oOption->arrOptions['editunit'], $arrSubmittedFormValues));
+				$this->oOption->update();
 
 				// go to the next page, which is the page to select categories
 				$numTabNum = 203;	
@@ -598,15 +745,15 @@ class AmazonAutoLinks_Admin_ {
 			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];
 	
 			// validate the sumitted values and if it's okey, save the options to the database and go to Tab 200.
-			$this->oAALOptions->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
-			if ($this->oAALOptions->arrOptions['tab202']['errors']) {	// if it's invalid
+			$this->oOption->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
+			if ($this->oOption->arrOptions['tab202']['errors']) {	// if it's invalid
 			
 				// Show a warning Message
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazonautolinks') . '</p></div>';
 						
 				// Update the option values as preview to refill the submitted values
 				$arrSubmittedFormValues = $this->oAALforms->clean_unitoptions($arrSubmittedFormValues);	// trying to see if this may fix the <img> breaking issue
-				$this->oAALOptions->update_editunit($arrSubmittedFormValues);	// does update_option()
+				$this->oOption->update_editunit($arrSubmittedFormValues);	// does update_option()
 				
 				// do it again
 				$numTabNum = 202;	
@@ -614,7 +761,7 @@ class AmazonAutoLinks_Admin_ {
 			
 				// okey, all done. Save options and go back to Manage Unit
 				$arrSubmittedFormValues = $this->oAALforms->setup_unitoption($arrSubmittedFormValues);
-				$this->oAALOptions->save_submitted_unitoption_edit($arrSubmittedFormValues);	// this method include update_option()	
+				$this->oOption->save_submitted_unitoption_edit($arrSubmittedFormValues);	// this method include update_option()	
 				echo '<div class="updated"><p>' . __('Updated the options.', 'amazonautolinks') . '</p></div>';
 				$this->admin_tab200(200);
 				return; // do not continue			
@@ -625,7 +772,7 @@ class AmazonAutoLinks_Admin_ {
 			$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['edit']);	// note that the unit label is passed , not ID
 			
 			// this stores the temporary unit option in 'editunit' option key; the user modifies it and it will be used to update the unit option
-			$this->oAALOptions->store_temporary_editunit_option($strUnitLabel);	// this method includes update_option()
+			$this->oOption->store_temporary_editunit_option($strUnitLabel);	// this method includes update_option()
 			
 			// schedule prefetch; the parameter is empty, which means prefetch the root pages.
 			$this->oAALCatCache->schedule_prefetch();
@@ -644,7 +791,7 @@ class AmazonAutoLinks_Admin_ {
 			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
 			if ($numTabNum == 202) {
 				echo '<h3>' . __('Edit Unit', 'amazonautolinks') . '</h3>';	
-				$this->oAALforms->form_setunit($numTabNum, $this->oAALOptions->arrOptions['editunit'], $this->oAALOptions->arrOptions['tab202']['errors']); 
+				$this->oAALforms->form_setunit($numTabNum, $this->oOption->arrOptions['editunit'], $this->oOption->arrOptions['tab202']['errors']); 
 			} else if ($numTabNum == 203) 
 				$this->admin_tab203($numTabNum); // got to the category selection page
 			?>
@@ -652,11 +799,13 @@ class AmazonAutoLinks_Admin_ {
 		<?php	
 		
 		// delete the unnecessry data
-		$this->oAALOptions->unset_error_flags(202);	// uses update_option()
+		$this->oOption->unset_error_flags(202);	// uses update_option()
 		
 	}
 	function admin_tab203($numTab=203) {
-		$this->oAALforms_selectcategories->form_selectcategories_iframe($numTab, $this->oAALOptions->arrOptions['editunit']);
+		// similar to admin_tab101
+		$this->admin_tab_selectcategories($numTab);
+		// $this->oAALforms_selectcategories->form_selectcategories_iframe($numTab, $this->oOption->arrOptions['editunit']);
 	}
 	/* ------------------------------------------ Tab 300: General Settings --------------------------------------------- */
 	function admin_tab300($numTabNum=300) {
@@ -681,7 +830,7 @@ class AmazonAutoLinks_Admin_ {
 			<?php
 			$this->oAALforms->embednonce($this->pluginkey, 'nonce'); 
 			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
-			$this->oAALforms->form_generaloptions($numTabNum, $this->oAALOptions->arrOptions['general'], $this->oAALOptions->arrOptions['tab300']['errors']); 
+			$this->oAALforms->form_generaloptions($numTabNum, $this->oOption->arrOptions['general'], $this->oOption->arrOptions['tab300']['errors']); 
 			?>
 		</form>				
 	<?php	
@@ -689,7 +838,7 @@ class AmazonAutoLinks_Admin_ {
 	
 	/* ------------------------------------------ Tab 400: Introducing Pro version --------------------------------------------- */
 	function buynowbutton($strFloat='right', $strPadding='10px 5em 20px') {
-		$strImgBuyNow = plugins_url( 'img/buynowbutton.gif', dirname(__FILE__ ));
+		$strImgBuyNow = plugins_url( 'img/buynowbutton.gif', dirname( __FILE__ ) );
 	?>
 		<div style="padding:<?php echo $strPadding; ?>;">
 			<div style="float:<?php echo $strFloat; ?>;"><a href="http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro" title="<?php _e('Get Pro Now!', 'amazonautolinks') ?>"><img src="<?php echo $strImgBuyNow; ?>" /></a></div>
@@ -697,8 +846,8 @@ class AmazonAutoLinks_Admin_ {
 	<?php
 	}
 	function admin_tab400($numTab=400) {
-		$strCheckMark = plugins_url( 'img/checkmark.gif', dirname(__FILE__ ));
-		$strDeclineMark = plugins_url( 'img/declinedmark.gif', dirname(__FILE__ ));
+		$strCheckMark = plugins_url( 'img/checkmark.gif', dirname( __FILE__ ) );
+		$strDeclineMark = plugins_url( 'img/declinedmark.gif', dirname( __FILE__ ) );
 	?>
 		<h3><?php _e('Get Pro Now!', 'amazonautolinks'); ?></h3>
 		<p><?php _e('Please consider upgrading to the pro version if you like the plugin and want more useful features, which include the ability of item formatting, unlimited numbers of categories, units, and items, and more!', 'amazonautolinks'); ?></p>
@@ -719,44 +868,58 @@ class AmazonAutoLinks_Admin_ {
 					<tr>
 						<td><?php _e('Image Size', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Black List', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Sort Order', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Direct Link Bonus', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Insert in Posts and Feeds', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Widget', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
+					<tr>
+						<td><?php _e('No Ads in Admin Panel', 'amazonautolinks'); ?></td>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>					
 					<tr>
 						<td><?php _e('HTML Formatting', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Cache Expiration Time', 'amazonautolinks'); ?></td>
 						<td align="center"><img title="<?php _e('Unavailable', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Unavailable', 'amazonautolinks'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
-						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td></tr>
+						<td align="center"><img title="<?php _e('Available', 'amazonautolinks'); ?>" border="0" alt="<?php _e('Available', 'amazonautolinks'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>
 					<tr>
 						<td><?php _e('Max Number of Items to Show', 'amazonautolinks'); ?></td>
 						<td align="center">10</td>
-						<td align="center"><strong><?php _e('Unlimited', 'amazonautolinks'); ?></strong></td></tr>
+						<td align="center"><strong><?php _e('Unlimited', 'amazonautolinks'); ?></strong></td>
+					</tr>
 					<tr>
 						<td><?php _e('Max Number of Categories Per Unit', 'amazonautolinks'); ?></td>
 						<td align="center">3</td>
 						<td align="center"><strong><?php _e('Unlimited', 'amazonautolinks'); ?></strong></td>
-						</tr>
+					</tr>
 					<tr>
 						<td><?php _e('Max Number of Units', 'amazonautolinks'); ?></td>
 						<td align="center">3</td>
@@ -792,6 +955,10 @@ class AmazonAutoLinks_Admin_ {
 		<p><?php _e('If you find the plugin not working or having issues, please report it via the <a href="http://michaeluno.jp/en/bug-report">bug report form</a>.' , 'amazonautolinks'); ?></p>
 		
 		<?php $this->donation_info(); ?>
+		
+		<h3><?php _e('Need a PHP Developer?' , 'amazonautolinks'); ?></h3>
+		<p><?php _e('The developer of this plugin, Michael Uno, may be available to work with you. If you like, offer him a job via <a href="mailto:michaeluno@michaeluno.jp">michaeluno@michaeluno.jp</a>.' , 'amazonautolinks'); ?></p>
+
 	<?php
 	}
 	function donation_info() {
@@ -824,28 +991,34 @@ class AmazonAutoLinks_Admin_ {
 		$this->screen_icon();
 
 		// user ad
-		$oUserAd = new AmazonAutoLinks_UserAds($this->pluginkey);
-		$oUserAd->show_top_banner();
+		echo '<div>';	// style fixer for v3.5 or above
+		$this->oUserAd->show_top_banner();
+		echo '</div>'; // style fixer for v3.5 or above
 		
 		// page header title
 		$strClassVer = $this->classver == 'pro' ? ' Pro' : '';
 		echo '<h2 style="height:1.8em;">' . $this->pluginname . $strClassVer . '</h2>';
-		
+				
 		// tab menu
-		$this->tab_menu();	// the property, $this->current_tab, is set there	
+		$this->tab_menu($numCurrentTab = $this->GetTabNumber());	
+		
+		// text
+		$this->oUserAd->InitializeTextFeed('http://feeds.feedburner.com/GANLinkTextRandom40');
+		$this->oUserAd->ShowTextAd();
+		
+		return $numCurrentTab;
 	}
 	function screen_icon() {
 	
 		// called from $this->admin_page() but can be independently used
 		echo '<div class="icon32" style="background-image: url(' . plugins_url( 'img/logo_AmazonAutoLinks36.gif' , dirname(__FILE__ )) . ');"><br /></div>';
 	}	
-	function tab_menu() {
+	function tab_menu($numCurrentTab) {
 	
 		// called from $this->admin_page(), dependant on admin_page() 
 		// This method should be called from the administration page. It displays the tabbed menu placed on top of the page.
-		// creates the property, current_tab, which is used in the main method to display the admin page.
-		$this->current_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 100;			// retrieve the current tab from the url
-		$numFlooredTabNum = round(floor($this->current_tab / 100 ) * 100, -2);		// this converts tab numbers to the floored rounded number. e.g. 399 becomes 300 
+		
+		$numFlooredTabNum = round( floor( $numCurrentTab / 100 ) * 100, -2 );		// this converts tab numbers to the floored rounded number. e.g. 399 becomes 300 
 		$numTabs = count($this->tabcaptions);		// stores how many tabs are available
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach($this->tabcaptions as $numTab => $strTabCaption) {
@@ -936,14 +1109,14 @@ class AmazonAutoLinks_Admin_ {
 		// currently only the general option page uses this method
 		if ($strOption == 'general') {
 			$arrSubmittedOptions = $this->oAALforms->clean_generaloptions($arrSubmittedOptions);
-			$this->oAALOptions->arrOptions[$numTab]['errors'] = $this->oAALforms->validate_generaloptions($arrSubmittedOptions);
-			if ($this->oAALOptions->arrOptions[$numTab]['errors'])
+			$this->oOption->arrOptions[$numTab]['errors'] = $this->oAALforms->validate_generaloptions($arrSubmittedOptions);
+			if ($this->oOption->arrOptions[$numTab]['errors'])
 				return false;
 		}
 // print_r($arrSubmittedOptions);		
 		// save the data
-		$this->oAALOptions->arrOptions[$strOption] = $arrSubmittedOptions;	//$_POST[$this->pluginkey]['tab' . $numTab];
-		$this->oAALOptions->update();
+		$this->oOption->arrOptions[$strOption] = $arrSubmittedOptions;	//$_POST[$this->pluginkey]['tab' . $numTab];
+		$this->oOption->update();
 		return true;
 	}
 	function validate_options($numTab) {

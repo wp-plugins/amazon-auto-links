@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://michaeluno.jp/en/donate
 Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, link cloaking, cloak, cloaking, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
-Tested up to: 3.4.2
+Tested up to: 3.5
 Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -56,18 +56,6 @@ It could be the allocated memory capacity for PHP reached the limit. One way to 
 `define('WP_MEMORY_LIMIT', '128M');`
 The part, 128M, should be changed accordingly.
 
-= I get the error message "Could not locate/load admin.php. Please consult the administrator." How do I fix this? =
-
-Amazon Auto Links tries to load **`ABSPATH . 'wp-admin/admin.php'`** for the iframe preview page and if it fails it throws the error. It could be because your WordPress has been installed with a third party tool or custom access right modifications have been applied or the entire admin files are moved. 
-
-The following steps is a workaround. 
-
-1. Find out the ABSPATH value of your site. One way to do it is to embed the following code in functions.php in your theme. It will give something like "/home/username/httpdoc/blog" 
-`echo ABSPATH;`
-1. Find the line around #18, `$file_admin = $abspath . 'wp-admin/admin.php' ;` in \inc\amazonautolinks_selectcategory.php
-1. Modify the line as follows assuming ABSPATH of your site is "/home/username/httpdoc/blog",
-`$file_admin = '/home/username/httpdoc/blog/wp-admin/admin.php';`
-
 == Screenshots ==
 
 1. **Setting Page** (Creating New Unit)
@@ -76,6 +64,13 @@ The following steps is a workaround.
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.1.3 =
+* Supported: WordPress 3.5
+* Changed: the preview page not to use iframe so that "Could not locate admin.php" error would not occur.
+* Added: the ability to delete transients for category caches when the pre-fetch option is set to off.
+* Added: the unit memory usage in the unit preview page.
+* Added: the ability to remove transients when the plug-in is deactivated. 
 
 = 1.1.2 =
 * Fixed: a bug which displayed memory usages in the footer.
@@ -131,6 +126,9 @@ The following steps is a workaround.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 1.1.3 =
+In this version, hopefully, we get rid of the error, "Could not locate admin.php" and support for the new WordPress version 3.5.
 
 = 1.1.2 = 
 In this version, a bug was fixed, which debug outputs were shown.

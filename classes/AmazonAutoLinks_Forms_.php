@@ -11,17 +11,18 @@ class AmazonAutoLinks_Forms_ {
 	public $classver = 'standard';
 	protected $pluginkey = 'amazonautolinks';
 
-	function __construct($pluginkey, $oOptions) {
+	function __construct( $pluginkey, &$oOption, &$oUserAd='' ) {
 		$this->pluginkey = $pluginkey;
 		$this->pageslug = $pluginkey;
 		$this->textdomain = $pluginkey;
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
-		$this->oAALOptions = $oOptions; ;new AmazonAutoLinks_Options($pluginkey);
+		$this->oOption = $oOption; 
+		$this->oUserAd = $oUserAd;
 	}
 	function get_default_unitoptions() {
 	
 		// returns an array containing the default option values
-		return $this->oAALOptions->unitdefaultoptions;
+		return $this->oOption->unitdefaultoptions;
 	}
 	function embednonce($action, $name, $referer=true, $echo=true) {
 		if ( function_exists('wp_nonce_field') ) {
@@ -84,7 +85,7 @@ class AmazonAutoLinks_Forms_ {
 		
 		// if nothing is submitted for the "cloakquery" value, set the default
 		if (strlen(trim($arrGeneralOptions['cloakquery'])) == 0)  
-			$arrGeneralOptions['cloakquery'] = $this->oAALOptions->generaldefaultoptions['cloakquery'];
+			$arrGeneralOptions['cloakquery'] = $this->oOption->generaldefaultoptions['cloakquery'];
 		
 		$arrGeneralOptions['cloakquery'] = $this->oAALfuncs->fix_request_array_key($arrGeneralOptions['cloakquery']);
 		// $arrGeneralOptions['cloakquery'] = rawurlencode(trim($arrGeneralOptions['cloakquery'])); //<-- do not do this since if there is a encoded invalid character, it keeps continue converting and everytime it is saved it keeps changing its value
@@ -160,12 +161,12 @@ class AmazonAutoLinks_Forms_ {
 		
 		// just fix it to the default value	
 		$arrUnitOptions['imagesize'] = $this->oAALfuncs->fixnum(	$arrUnitOptions['imagesize']	// subject
-																,	$this->oAALOptions->unitdefaultoptions['imagesize']	// default value
+																,	$this->oOption->unitdefaultoptions['imagesize']	// default value
 																,	0		// minimum: 0
 																,	500);	// max: 500
 		// max number of ites to show		
 		$arrUnitOptions['numitems'] = $this->oAALfuncs->fixnum(		$arrUnitOptions['numitems']
-																,	$this->oAALOptions->unitdefaultoptions['imagesize']
+																,	$this->oOption->unitdefaultoptions['imagesize']
 																,	1
 																,	10);
 		
@@ -175,7 +176,7 @@ class AmazonAutoLinks_Forms_ {
 		
 		// set the minimum value for cache expiration seconds 
 		$arrUnitOptions['cacheexpiration'] = $this->oAALfuncs->fixnum(	$arrUnitOptions['cacheexpiration']			// subject
-																,	$this->oAALOptions->unitdefaultoptions['cacheexpiration']	// default value
+																,	$this->oOption->unitdefaultoptions['cacheexpiration']	// default value
 																,	60);	// minimum 60, maximum no limit
 																
 		// *warning: never save option values containing html code without fltering correctly; otherwise, WordPress automatically escapes characters and the code gets messed.
@@ -187,8 +188,8 @@ class AmazonAutoLinks_Forms_ {
 	function changecountyinfo_unitoptions($arrUnitOptions) {
 	
 		// adds/changes countyurl and mblang elements to the unit option
-		$arrUnitOptions['countryurl'] = $this->oAALOptions->arrCountryURLs[$arrUnitOptions['country']];
-		$arrUnitOptions['mblang'] = $this->oAALOptions->arrCountryLang[$arrUnitOptions['country']];		
+		$arrUnitOptions['countryurl'] = $this->oOption->arrCountryURLs[$arrUnitOptions['country']];
+		$arrUnitOptions['mblang'] = $this->oOption->arrCountryLang[$arrUnitOptions['country']];		
 		return $arrUnitOptions;	
 	}
 	function addadtype_unitoptions($arrUnitOptions) {
@@ -235,12 +236,12 @@ class AmazonAutoLinks_Forms_ {
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
 		if (!is_array($arrOptionsToDisplay)) 
-			$arrOptionsToDisplay = $this->oAALOptions->unitdefaultoptions;
+			$arrOptionsToDisplay = $this->oOption->unitdefaultoptions;
 		if (!is_array($arrErrors)) 
 			$arrErrors = array();
 					
 		?>	
-		<table class="form-table">
+		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
 				<?php $this->field_element_unitlabel($numTabNum, $arrOptionsToDisplay['unitlabel'], $arrErrors['unitlabel']); ?>
 				<?php $this->field_element_country($numTabNum, $arrOptionsToDisplay['country']); ?>
@@ -258,6 +259,7 @@ class AmazonAutoLinks_Forms_ {
 				<?php // $this->field_element_widget($numTabNum, $arrOptionsToDisplay['widget']); // depricated ?>
 			</tbody>
 		</table>
+		<?php $this->oUserAd->ShowTextAd(); // oUserAd must be instantiated prior to this method call ?>
 		<p class="submit">
 			<?php 
 				$strFieldName = $this->pluginkey . '[tab' . $numTabNum . '][proceedbutton]';
@@ -270,7 +272,7 @@ class AmazonAutoLinks_Forms_ {
 		</p>
 		<h3><?php _e('Advanced Option', 'amazonautolinks'); ?></h3>
 		<?php $this->get_pro_description(); ?>
-		<table class="form-table">	
+		<table class="form-table" style="clear:left; width:auto;" >	
 			<tbody>
 				<?php $this->field_element_cacheexpiration($numTabNum, $arrOptionsToDisplay['cacheexpiration']); ?>
 				<?php $this->field_element_containerformat($numTabNum, $arrOptionsToDisplay['containerformat']); ?>
@@ -295,7 +297,7 @@ class AmazonAutoLinks_Forms_ {
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][unitlabel]';
 		$strPriorUnitLabel = $this->pluginkey . '[tab' . $numTabnum . '][prior_unitlabel]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['unitlabel'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['unitlabel'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Unit Label', 'amazonautolinks'); ?></th>
@@ -313,7 +315,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][country]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['country'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['country'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Country', 'amazonautolinks'); ?></th>
@@ -339,7 +341,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][associateid]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['associateid'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['associateid'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Associate ID', 'amazonautolinks'); ?></th>
@@ -358,13 +360,13 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][numitems]';
-		$numValue = $numValue ? $numValue : $this->oAALOptions->unitdefaultoptions['numitems'];
+		$numValue = $numValue ? $numValue : $this->oOption->unitdefaultoptions['numitems'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Number of Items to Show', 'amazonautolinks'); ?></th>
 			<td>
 				<input type="text" size="30" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666">( <?php _e('Default', 'amazonautolinks');?>: <?php echo $this->oAALOptions->unitdefaultoptions['numitems']; ?> <?php _e('Max', 'amazonautolinks'); ?> : 10 )</font>	
+				&nbsp;<font color="#666">( <?php _e('Default', 'amazonautolinks');?>: <?php echo $this->oOption->unitdefaultoptions['numitems']; ?> <?php _e('Max', 'amazonautolinks'); ?> : 10 )</font>	
 			</td>
 		</tr>							
 	<?php
@@ -373,13 +375,13 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]';	
-		$numValue = $numValue !== '' ? $numValue : $this->oAALOptions->unitdefaultoptions['imagesize'];
+		$numValue = $numValue !== '' ? $numValue : $this->oOption->unitdefaultoptions['imagesize'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Image Size', 'amazonautolinks'); ?></th>
 			<td>
 				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666"><?php _e('in pixel.', 'amazonautolinks');?> ( <?php _e('Accepts upto 500. Set 0 for no image.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oAALOptions->unitdefaultoptions['imagesize']; ?> )</font>
+				&nbsp;<font color="#666"><?php _e('in pixel.', 'amazonautolinks');?> ( <?php _e('Accepts upto 500. Set 0 for no image.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oOption->unitdefaultoptions['imagesize']; ?> )</font>
 			</td>
 		</tr>	
 	<?php
@@ -388,7 +390,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][sortorder]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['sortorder'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['sortorder'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Sort Order', 'amazonautolinks'); ?></th>
@@ -407,7 +409,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][feedtypes]';
-		$arrValue = $arrValue ? $arrValue : $this->oAALOptions->unitdefaultoptions['feedtypes'];
+		$arrValue = $arrValue ? $arrValue : $this->oOption->unitdefaultoptions['feedtypes'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -436,7 +438,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][nosim]';	
-		$bValue = $bValue ? $bValue : $this->oAALOptions->unitdefaultoptions['nosim'];
+		$bValue = $bValue ? $bValue : $this->oOption->unitdefaultoptions['nosim'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -454,7 +456,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabNum . '][insert]';
-		$arrValues = $arrValues ? $arrValues : $this->oAALOptions->unitdefaultoptions['insert'];
+		$arrValues = $arrValues ? $arrValues : $this->oOption->unitdefaultoptions['insert'];
 
 	?>
 		<tr valign="top">
@@ -488,7 +490,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][widget]';	
-		$bValue = $bValue ? $bValue : $this->oAALOptions->unitdefaultoptions['widget'];
+		$bValue = $bValue ? $bValue : $this->oOption->unitdefaultoptions['widget'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -506,13 +508,13 @@ class AmazonAutoLinks_Forms_ {
 		
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][titlelength]';	
-		$numValue = !empty($numValue) ? $numValue : $this->oAALOptions->unitdefaultoptions['titlelength'];
+		$numValue = !empty($numValue) ? $numValue : $this->oOption->unitdefaultoptions['titlelength'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Title Length', 'amazonautolinks'); ?></th>
 			<td>
 				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666"><?php _e('It is used to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oAALOptions->unitdefaultoptions['titlelength']; ?></font>
+				&nbsp;<font color="#666"><?php _e('It is used to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazonautolinks');?> <?php _e('Default', 'amazonautolinks');?> : <?php echo $this->oOption->unitdefaultoptions['titlelength']; ?></font>
 			</td>
 		</tr>	
 	<?php	
@@ -521,7 +523,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][linkstyle]';	
-		$numValue = !empty($numValue) ? $numValue : $this->oAALOptions->unitdefaultoptions['linkstyle'];
+		$numValue = !empty($numValue) ? $numValue : $this->oOption->unitdefaultoptions['linkstyle'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Link Style', 'amazonautolinks'); ?></th>
@@ -538,7 +540,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][credit]';	
-		$bValue = ($bValue != '') ? $bValue : $this->oAALOptions->unitdefaultoptions['credit'];
+		$bValue = ($bValue != '') ? $bValue : $this->oOption->unitdefaultoptions['credit'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -556,8 +558,8 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][urlcloak]';	
-		$bValue = ($bValue != '') ? $bValue : $this->oAALOptions->unitdefaultoptions['urlcloak'];
-		$strCloakQuery = empty($this->oAALOptions->arrOptions['general']['cloakquery']) ? $this->oAALOptions->generaldefaultoptions['cloakquery'] : $this->oAALOptions->arrOptions['general']['cloakquery'];
+		$bValue = ($bValue != '') ? $bValue : $this->oOption->unitdefaultoptions['urlcloak'];
+		$strCloakQuery = empty($this->oOption->arrOptions['general']['cloakquery']) ? $this->oOption->generaldefaultoptions['cloakquery'] : $this->oOption->arrOptions['general']['cloakquery'];
 	?>
 		<tr valign="top">
 			<th scope="row">
@@ -579,7 +581,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][cacheexpiration]';	
-		$numValue = $numValue ? $numValue : $this->oAALOptions->unitdefaultoptions['cacheexpiration'];
+		$numValue = $numValue ? $numValue : $this->oOption->unitdefaultoptions['cacheexpiration'];
 	?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Cache Expiration', 'amazonautolinks'); ?><br />
@@ -587,7 +589,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<input disabled style="background-color: #eee; color: #999;" type="text" size="30" value="<?php echo $numValue ; ?>" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666">( <?php _e('in seconds.', 'amazonautolinks'); ?> <?php _e('Default', 'amazonautolinks'); ?> : <?php echo $this->oAALOptions->unitdefaultoptions['cacheexpiration']; ?> )</font>	
+				&nbsp;<font color="#666">( <?php _e('in seconds.', 'amazonautolinks'); ?> <?php _e('Default', 'amazonautolinks'); ?> : <?php echo $this->oOption->unitdefaultoptions['cacheexpiration']; ?> )</font>	
 			</td>
 		</tr>		
 	<?php
@@ -595,7 +597,7 @@ class AmazonAutoLinks_Forms_ {
 	function field_element_containerformat($numTabnum, $strValue="") {
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][containerformat]';	
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['containerformat'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['containerformat'];
 	?>
 		<tr valign="top">
 			<th scope="row" rowspan="2">
@@ -611,7 +613,7 @@ class AmazonAutoLinks_Forms_ {
 			<td style="margin-top:0; padding-top:0;">
 				<?php _e('Default Value', 'amazonautolinks'); ?>:<br />
 				<div style="margin-left:1em; color: #666;">
-					<?php echo htmlspecialchars($this->oAALOptions->unitdefaultoptions['containerformat']); ?>
+					<?php echo htmlspecialchars($this->oOption->unitdefaultoptions['containerformat']); ?>
 				</div>
 			</td>
 		</tr>	
@@ -621,7 +623,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][itemformat]';	
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['itemformat'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['itemformat'];
 	?>
 		<tr valign="top">
 			<th scope="row" rowspan="2">
@@ -643,7 +645,7 @@ class AmazonAutoLinks_Forms_ {
 			<td style="margin-top:0; padding-top:0;">
 				<?php _e('Default Valie', 'amazonautolinks'); ?>:<br />
 				<div style="margin-left:1em; color:#666;">
-					<?php echo htmlspecialchars($this->oAALOptions->unitdefaultoptions['itemformat']); ?>
+					<?php echo htmlspecialchars($this->oOption->unitdefaultoptions['itemformat']); ?>
 				</div>
 			</td>
 		</tr>	
@@ -653,7 +655,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imgformat]';	
-		$strValue = $strValue ? $strValue : $this->oAALOptions->unitdefaultoptions['imgformat'];
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['imgformat'];
 	?>
 		<tr valign="top">
 			<th scope="row" rowspan="2">
@@ -674,7 +676,7 @@ class AmazonAutoLinks_Forms_ {
 			<td style="margin-top:0; padding-top:0;">
 				<?php _e('Default Valie', 'amazonautolinks'); ?>:<br />
 				<div style="margin-left:1em; color:#666;">
-					<?php echo htmlspecialchars($this->oAALOptions->unitdefaultoptions['imgformat']); ?>
+					<?php echo htmlspecialchars($this->oOption->unitdefaultoptions['imgformat']); ?>
 				</div>
 			</td>
 		</tr>	
@@ -688,11 +690,11 @@ class AmazonAutoLinks_Forms_ {
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
 		if (!is_array($arrOptionsToDisplay)) 
-			$arrOptionsToDisplay = $this->oAALOptions->generaldefaultoptions;
+			$arrOptionsToDisplay = $this->oOption->generaldefaultoptions;
 		if (!is_array($arrErrors)) 
 			$arrErrors = array();
 		?>	
-		<table class="form-table">
+		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
 				<?php $this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']); ?>
 				<?php $this->field_element_blacklist($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
@@ -712,7 +714,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][supportrate]';
-		$strValue = $strValue != "" ? $strValue : $this->oAALOptions->generaldefaultoptions['supportrate'];
+		$strValue = $strValue != "" ? $strValue : $this->oOption->generaldefaultoptions['supportrate'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Support Rate', 'amazonautolinks'); ?></th>
@@ -733,7 +735,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][donate]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->generaldefaultoptions['donate'];
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['donate'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Have you donated?', 'amazonautolinks'); ?></th>
@@ -752,7 +754,7 @@ class AmazonAutoLinks_Forms_ {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][blacklist]';
-		$strValue = $strValue ? $strValue : $this->oAALOptions->generaldefaultoptions['blacklist'];
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['blacklist'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?></th>
@@ -768,7 +770,7 @@ class AmazonAutoLinks_Forms_ {
 		// called from form_generaloptions()
 		// since v1.0.9
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][cloakquery]';
-		$strValue = !empty($strValue) ? $strValue : $this->oAALOptions->generaldefaultoptions['cloakquery'];
+		$strValue = !empty($strValue) ? $strValue : $this->oOption->generaldefaultoptions['cloakquery'];
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Cloak URL Query Parameter', 'amazonautolinks'); ?></th>
@@ -779,7 +781,7 @@ class AmazonAutoLinks_Forms_ {
 				&nbsp;
 				<?php
 				_e('Default: ', 'amazonautolinks'); 
-				echo $this->oAALOptions->generaldefaultoptions['cloakquery']; 
+				echo $this->oOption->generaldefaultoptions['cloakquery']; 
 				?>  
 				)</font>	
 			</td>
@@ -792,7 +794,7 @@ class AmazonAutoLinks_Forms_ {
 		// since v1.1.1
 		// sets whether the prefetch category lists to on or off.
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][prefetch]';
-		$numValue = $numValue == "" ? $this->oAALOptions->generaldefaultoptions['prefetch'] : $numValue;
+		$numValue = $numValue == "" ? $this->oOption->generaldefaultoptions['prefetch'] : $numValue;
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e('Prefetch Category Lists', 'amazonautolinks'); ?></th>
