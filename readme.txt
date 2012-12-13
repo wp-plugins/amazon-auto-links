@@ -65,9 +65,14 @@ The part, 128M, should be changed accordingly.
 
 == Changelog ==
 
+= 1.1.5 =
+
+* Fixed: a bug that the plugin requirement check did not work as of v1.1.3.
+* Improved: the response speed when first accessing the setting page.
+
 = 1.1.4 =
 
-* Fixed: a bug that shortcode did not work as of 1.1.3.
+* Fixed: a bug that shortcode did not work as of v1.1.3.
 
 = 1.1.3 =
 * Supported: WordPress 3.5

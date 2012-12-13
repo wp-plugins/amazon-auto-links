@@ -29,8 +29,8 @@ add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEven
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
 // Plugin Requirements & initial setup
-register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_Requirements' );
-register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_SetupTransients' );
+register_activation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_Requirements' );
+register_activation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_SetupTransients' );
 
 // Clean up transients upon plugin deactivation
 register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTransients' );

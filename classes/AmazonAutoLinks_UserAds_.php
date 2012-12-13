@@ -9,6 +9,7 @@ class AmazonAutoLinks_UserAds_
 	
 	// properties
 	private $oTextFeed;
+	private $oBannerFeed;
 	
 	function __construct( $pluginkey, &$oOption ) {
 		$this->pluginkey = $pluginkey;
@@ -201,12 +202,15 @@ class AmazonAutoLinks_UserAds_
 		$this->oTextFeed->init();		
 		
 	}
-	function ShowTextAd() {
+	function ShowTextAd($bPrint=True) {
 	
 		// fetch
 		$strOut = '';
 		foreach ( $this->oTextFeed->get_items(0, 1) as $item ) $strOut .= $item->get_description();
-		echo '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
+		if ( $bPrint )
+			echo '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
+		else	
+			return '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
 	}
 	function InitializeBannerFeed($arrUrls) {
 		
@@ -231,15 +235,16 @@ class AmazonAutoLinks_UserAds_
 		$this->oBannerFeed->init();		
 		
 	}	
-	function ShowBannerAds() {
+	function ShowBannerAds($bPrint=True) {
 
 		// fetch
 		$strOut = '';
 		foreach ( $this->oBannerFeed->get_items(0, 2) as $item ) 
-		{
 			$strOut .= '<div style="clear:right;">' . $item->get_description() . '</div>';
-		}
-		echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
+		if ( $bPrint )
+			echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
+		else 
+			return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 	}	
 	
 	function SetupTransients() {
