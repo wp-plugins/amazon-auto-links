@@ -6,30 +6,31 @@
 // Register Classes - this must be be done before using classes defined in this plugin
 AmazonAutoLinks_RegisterClasses();
 
-// instantiate the option class first so that the option object can be shared with other classes, which presumably consumes memory.
+// instantiate the option class first so that the option object can be shared with other classes, which presumably consumes less memory.
 // in other words, there is no need to instantiate the option class in each class.
 $oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 
 // Admin Pages
-// this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Admin 
+// this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
 add_action( 'plugins_loaded', array( new AmazonAutoLinks_Admin( $oAALOptions ), "RegisterHooks" ) );		
 
 // Contents Hooks
-// this registers the method, RegisterHooks of the instance of AmazonAutoLinks_Contents
+// this registers the method, RegisterHooks, of the AmazonAutoLinks_Contents class
 add_action( 'plugins_loaded', array( new AmazonAutoLinks_Contents( $oAALOptions ), "RegisterHooks" ) );
 
-// Redirects for URL cloaking
+// URL redirects for URL cloaking
 add_action( 'plugins_loaded', array( new AmazonAutoLinks_Redirects( $oAALOptions ), "Redirect" ) );
 
-// Load actions to hook events for Cron jobs
+// Load actions to hook events for WordPress cron jobs
 add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );	// 'AmazonAutoLinks_Events');
-
-// Plugin Requirements
-add_action( 'admin_init', 'AmazonAutoLinks_Requirements' );
 
 // Widgets
 // todo: find a way to avoid using create_function() 
 add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
+
+// Plugin Requirements & initial setup
+register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_Requirements' );
+register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_SetupTransients' );
 
 // Clean up transients upon plugin deactivation
 register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTransients' );
@@ -210,5 +211,10 @@ function AmazonAutoLinks_Requirements() {
 		echo '<div class="error"><p>' . $strMsg . '</p></div>';
 		deactivate_plugins( $plugin );
 	}
+}
 
+function AmazonAutoLinks_SetupTransients() {	
+	$o = new AmazonAutoLinks_UserAds( AMAZONAUTOLINKSKEY, new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY ) );
+	$o->SetupTransients();	
+	$o->check_user_countrycode();
 }

@@ -196,12 +196,14 @@ class AmazonAutoLinks_Admin_ {
 						<?php
 							$strMethodName = "admin_tab{$numCurrentTab}";	
 							$this->$strMethodName();	// e.g. $this->admin_tab101(); 
+							flush();
 						?>
 						</td>
 						<td valign="top" style="border: 0px;">
 						<?php
 							$this->oUserAd->InitializeBannerFeed('http://feeds.feedburner.com/GANLinkBanner160x600Random40');
 							$this->oUserAd->ShowBannerAds();				
+							flush();
 						?>
 						</td>
 					</tr>
@@ -994,6 +996,7 @@ class AmazonAutoLinks_Admin_ {
 		echo '<div>';	// style fixer for v3.5 or above
 		$this->oUserAd->show_top_banner();
 		echo '</div>'; // style fixer for v3.5 or above
+		flush();
 		
 		// page header title
 		$strClassVer = $this->classver == 'pro' ? ' Pro' : '';
@@ -1005,6 +1008,7 @@ class AmazonAutoLinks_Admin_ {
 		// text
 		$this->oUserAd->InitializeTextFeed('http://feeds.feedburner.com/GANLinkTextRandom40');
 		$this->oUserAd->ShowTextAd();
+		flush();
 		
 		return $numCurrentTab;
 	}

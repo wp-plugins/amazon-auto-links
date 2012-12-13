@@ -241,4 +241,10 @@ class AmazonAutoLinks_UserAds_
 		}
 		echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 	}	
+	
+	function SetupTransients() {
+		// called from RegisterActivationHook and creates user ad transients so that the user don't feel a delay when first accesses the setting page
+		$this->InitializeBannerFeed('http://feeds.feedburner.com/GANLinkBanner160x600Random40');
+		$this->InitializeTextFeed('http://feeds.feedburner.com/GANLinkTextRandom40');
+	}
 }
