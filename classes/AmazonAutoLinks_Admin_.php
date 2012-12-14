@@ -958,7 +958,7 @@ class AmazonAutoLinks_Admin_ {
 		
 		<?php $this->donation_info(); ?>
 		
-		<h3><?php _e('Need a PHP Developer?' , 'amazonautolinks'); ?></h3>
+		<h3><?php _e('Looking For a PHP Developer?' , 'amazonautolinks'); ?></h3>
 		<p><?php _e('The developer of this plugin, Michael Uno, may be available to work with you. If you like, offer him a job via <a href="mailto:michaeluno@michaeluno.jp">michaeluno@michaeluno.jp</a>.' , 'amazonautolinks'); ?></p>
 
 	<?php
