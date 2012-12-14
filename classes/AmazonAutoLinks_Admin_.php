@@ -683,7 +683,7 @@ class AmazonAutoLinks_Admin_ {
 			$numMemoryUsageAfter = memory_get_peak_usage();
 			?>
 			
-			<div style="padding-top: 10px; margin-top:50px; color: #777 ;clear:both; border-top-width: 1px; border-top-style: solid; border-color: #DFDFDF;" />
+			<div style="padding-top: 10px; margin-top:50px; color: #777 ;clear:both; border-top-width: 1px; border-top-style: solid; border-color: #DFDFDF;">
 				<?php _e('Memory Usage by this unit: ', 'amazonautolinks'); ?>
 				<?php echo $this->oAALfuncs->FormatBytes($numMemoryUsageAfter - $numMemoryUsageBefore, 0); ?>
 			</div>
