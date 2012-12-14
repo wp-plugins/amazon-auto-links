@@ -682,11 +682,11 @@ class AmazonAutoLinks_Admin_ {
 			echo $oAAL->fetch();
 			$numMemoryUsageAfter = memory_get_peak_usage();
 			?>
-			<p>
-			<hr style="margin-top:50px;" />
+			
+			<div style="padding-top: 10px; margin-top:50px; color: #777 ;clear:both; border-top-width: 1px; border-top-style: solid; border-color: #DFDFDF;" />
 				<?php _e('Memory Usage by this unit: ', 'amazonautolinks'); ?>
 				<?php echo $this->oAALfuncs->FormatBytes($numMemoryUsageAfter - $numMemoryUsageBefore, 0); ?>
-			</p>
+			</div>
 		</div>
 		<div style="float:right; margin-bottom: 20px;" >
 			<?php $this->oAALforms->form_submitbutton(200, 'preview', __('Go Back', 'amazonautolinks')); ?>

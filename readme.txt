@@ -67,6 +67,7 @@ The part, 128M, should be changed accordingly.
 
 = 1.1.5 =
 
+* Changed: the unit output to be forced closing any unclosed tags.
 * Fixed: a bug that the plugin requirement check did not work as of v1.1.3.
 * Improved: the response speed when first accessing the setting page.
 
@@ -133,44 +134,3 @@ The part, 128M, should be changed accordingly.
 
 = 1.0.0 =
 * Initial Release
-
-== Upgrade Notice ==
-
-= 1.1.3 =
-In this version, hopefully, we get rid of the error, "Could not locate admin.php" and support for the new WordPress version 3.5.
-
-= 1.1.2 = 
-In this version, a bug was fixed, which debug outputs were shown.
-
-= 1.1.1 =
-In this version, the prefetch link categories option was added. This is for shared servers which restrict simultaneous database connections.
-
-= 1.1.0 =
-In this version, there are several minor fixes.
-
-= 1.0.9 =
-In this version, URL cloaking became possible.
-
-= 1.0.8 =
-In this version, the link style option is added and the format of the link url can be changed. And there is a important fix for shortcode.
-
-= 1.0.7 =
-In this version, in addition to some fixes, the widget is changed to load units by ID not by unit labels. So users using the widget may need to re-select the unit in the widget option page.
-
-= 1.0.6 =
-In this version, finally the widget is back. Now it is easier to embed product links on the sidebar. Also in order to reflect the additional attirube rel="nofollow" existing units may need to be recreated.
-
-= 1.0.5 =
-In this version, the caches are renewed with WordPress Cron API instead of renewing them when the visitor loads the page. So this prevents the visitors from too slow page loads.
-
-= 1.0.4 =
-This version started using a better caching mechanism for the category selection page; the borwsing speed is dramatically improved.
-
-= 1.0.3 =
-This version fixes an issue for users using PHP v5.2.4 or below that the links in the Manage Units page were not accessible.
-
-= 1.0.2 =
-This version fixes an issue for users using WordPress v3.1x, which some area of the plugin setting page does not appear propery.
-
-= 1.0.1 =
-This previous version could cause the site to get a blank white page after enabling the widget option. So please do not use v1.0.0.
