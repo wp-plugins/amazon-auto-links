@@ -125,7 +125,9 @@ class AmazonAutoLinks_Core_
 			$this->set_feed($urls, 999999999);	// set -1 for the expiration time so that it does not renew the cache in this load
 
 			/* Prepare blacklis */
-			$arrBlackASINs = $this->blacklist();	// for checking duplicated items
+			$arrBlackASINs = $this->blacklist('blacklist');	// for checking duplicated items
+			$arrBlackTitleStrings = $this->blacklist('blacklist_title');	// for checking duplicated items
+			$arrBlackDescriptionStrings = $this->blacklist('blacklist_description');	// for checking duplicated items
 			
 			/* Fetch */
 			$output = '';
@@ -156,14 +158,16 @@ class AmazonAutoLinks_Core_
 				array_push($arrBlackASINs, $strASIN);				
 			
 				/* Title */
-				$strTitle = $this->fix_title($item->get_title());
-				if (!$strTitle) continue;		//occasionally this happens that empty title is given. 	
-									
+				$strTitle = $this->fix_title( $item->get_title() );
+				if ( !$strTitle ) continue;		//occasionally this happens that an empty title is given. 					
+				if ( $this->stripos_array( $strTitle, $arrBlackTitleStrings ) ) continue; // if a black word is contained, skip.
+							
 				/* Description (creates $htmldescription and $textdescription) */ 
 				$this->removeNodeByTagAndClass($nodeDiv, 'span', 'riRssTitle');
 	
-				// $textdescription -- although $htmldescription has the same routine, the below <a> tag modification needs text description for the title attribute
+				// $textdescription -- although $htmldescription has the same routine, the following <a> tag modification needs text description for the title attribute
 				$textdescription = $this->get_textdescription($nodeDiv);		// needs to be done before modifying links
+				if ( $this->stripos_array( $textdescription, $arrBlackDescriptionStrings ) ) continue; // if a black word is contained, skip.
 				
 				// Modify links in descriptions -- sets attributes and inserts ref=nosim if the option is set
 				$this->modify_links($nodeDiv, $strTitle . ': ' . $textdescription);
@@ -228,8 +232,15 @@ class AmazonAutoLinks_Core_
 		$this->arrUnitOptions['itemlimit'] = ceil($this->arrUnitOptions['numitems'] / $numRssUrls);
 		return $arrURLs;
 	}	
-	function blacklist() {
-		return explode(",", trim($this->arrGeneralOptions['blacklist']));	// return as array
+	function blacklist( $strOptionFieldName='blacklist' ) {
+		return preg_split( '/\s?[,]\s?+/', $this->arrGeneralOptions[$strOptionFieldName], -1, PREG_SPLIT_NO_EMPTY );
+		// return explode( ",", trim( $this->arrGeneralOptions[$strOptionFieldName] ) );	// return as array
+	}
+	function stripos_array( $haystack, $arrNeedles=array(), $offset=0 ) {
+		// since v1.1.6
+// print '<pre>' . print_r($arrNeedles, true) . '</pre>';
+        foreach( $arrNeedles as $needle ) if ( stripos( $haystack, trim( $needle ), $offset ) !== false ) return true;
+		return false;        
 	}
 	function set_feed($urls, $numLifetime) {
 	

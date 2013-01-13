@@ -50,6 +50,8 @@ class AmazonAutoLinks_Options_ {
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,
 		'blacklist'			=> '',
+		'blacklist_title'	=> '',
+		'blacklist_description'	=> '',
 		'donate'			=> 0,
 		'cloakquery'		=> 'productlink',
 		'prefetch'			=> 1

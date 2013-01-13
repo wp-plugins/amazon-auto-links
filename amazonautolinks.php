@@ -1,9 +1,9 @@
 <?php
 /*
 	Plugin Name: Amazon Auto Links
-	Plugin URI: http://michaeluno.jp/en/amazon-auto-links
+	Plugin URI: http://en.michaeluno.jp/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.1.5
+	Version: 1.1.6
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazonautolinks
@@ -11,7 +11,7 @@
 	Requirements: WordPress >= 3.0 and PHP >= 5.1.2
 */
 
-// Define constants
+// Define constants - they will be used in separate included files
 define( "AMAZONAUTOLINKSKEY", "amazonautolinks" );
 define( "AMAZONAUTOLINKSPLUGINNAME", "Amazon Auto Links" );
 define( "AMAZONAUTOLINKSPLUGINFILEBASENAME", plugin_basename( __FILE__ ) );

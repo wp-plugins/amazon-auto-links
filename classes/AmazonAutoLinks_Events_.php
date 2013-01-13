@@ -119,7 +119,7 @@ class AmazonAutoLinks_Events_ {
 	}		
 	function cache_category() {
 		
-		// This function is triggered by the run-off shcedule event. It builds caches for 10 urls per call.
+		// This function is triggered by the run-off shcedule event. It builds caches for 5 urls per call.
 		
 		// Instantiate class objects
 		$oAALCatCache = new AmazonAutoLinks_CategoryCache('amazonautolinks');
@@ -127,7 +127,7 @@ class AmazonAutoLinks_Events_ {
 		shuffle($arrCatCacheEvents);	// make it randome since this method is called simultaneously so multiple instances should not process the same urls.
 		
 		// extract the first entry; the oldest jobs from the begginning
-		$arrEvents = array_splice($arrCatCacheEvents, 0, 10);   // take out 10 elements from the beggining of the array
+		$arrEvents = array_splice($arrCatCacheEvents, 0, 5);   // take out 5 elements from the beggining of the array
 		if (count($arrEvents) == 0)	{
 			// echo '<!-- Amazon Auto Links: no events are scheduled. Returning. -->';
 			AmazonAutoLinks_Log('No events are scheduled. Returning.', __METHOD__);

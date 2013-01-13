@@ -12,7 +12,7 @@ Generates links of Amazon products just coming out today. You just pick categori
 
 == Description ==
 
-Still manually searching products and pasting affiliate links? What happens if the products get outdated? With this plugin, you do not have to worry about it nor trouble to do such repetitive tasks. Just pick categories which suit your site and it will automatically displays the links of decent products just coming out from Amazon today.
+Still manually searching products and pasting affiliate links? What happens if the products get outdated? With this plugin, you do not have to worry about it nor trouble to do such repetitive tasks. Just pick categories which suit your site and it will automatically display the links of decent products just coming out from Amazon today.
 
 The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazon locales and works even on JavaScript disabled browsers. Insert the ads as widget or place generated shortcode or PHP code where the links should appear.
 
@@ -25,7 +25,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 * Random/Title/Date sort order. It's totally possible to show links in random order. 
 * Shortcode to embed the ads into posts and pages. 
 * PHP function to insert in the theme.
-* Blacklist. If you want certain products not to be shown, the black list can be set by ASIN.
+* Blacklist. If you want certain products not to be shown, the black list can be set by ASIN, substring of title and description.
 * URL cloaking. You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons.
   
 == Installation ==
@@ -48,7 +48,7 @@ With the pro version, unlimited numbers of units can be created. Also the number
 
 = I selected the category but it still says "Please select a category from the list on the left." and no preview is shown. What should I do? =
 
-Set the **Prefetch Link Categgories** option to **Off**.
+Please try setting the **Prefetch Link Categgories** option to **Off**.
 
 = I get a blank white page after adding a unit to the theme. What is it? What should I do? =
 
@@ -65,9 +65,12 @@ The part, 128M, should be changed accordingly.
 
 == Changelog ==
 
+= 1.1.6 =
+* Added: Blacklist by title and description set in the General Settings page.
+
 = 1.1.5 =
 
-* Changed: the unit output to be forced closing any unclosed tags.
+* Changed: to force the unit output to close any unclosed HTML tags.
 * Fixed: a bug that the plugin requirement check did not work as of v1.1.3.
 * Improved: the response speed when first accessing the setting page.
 
@@ -76,17 +79,20 @@ The part, 128M, should be changed accordingly.
 * Fixed: a bug that shortcode did not work as of v1.1.3.
 
 = 1.1.3 =
+
 * Supported: WordPress 3.5
 * Changed: the preview page not to use iframe so that "Could not locate admin.php" error would not occur.
+* Fixed: a bug that the style was not loaded in one of the tab page in the plugin setting page.
+* Fixed: a bug that the arrow images which indicate where to click did not appear in the category selection page.
 * Added: the ability to delete transients for category caches when the pre-fetch option is set to off.
 * Added: the unit memory usage in the unit preview page.
 * Added: the ability to remove transients when the plug-in is deactivated. 
 
 = 1.1.2 =
-* Fixed: a bug which displayed memory usages in the footer.
+* Fixed: a bug which displayed the plugin memory usage in the page footer.
 
 = 1.1.1 = 
-* Added: the prefetch category links option. This helps in some servers with the low max simultaneous database connections.
+* Added: the prefetch category links option, which helps in some servers which sets a low value to the max simultaneous database connections.
 
 = 1.1.0 =
 * Fixed: a bug that url cloak option gets unchecked in the option page.
@@ -112,18 +118,18 @@ The part, 128M, should be changed accordingly.
 
 = 1.0.6 =
 * Added: the rel attribute, rel="nofollow", in the a tag of product links.
-* Re-Added: the widget. Now it is able to add units easily on the sidebar.
+* Re-Added: the widget which enables to add units easily on the sidebar.
 
 = 1.0.5 =
 * Improved: the caching method. Now the caches of links are renewed in the background.
 
 = 1.0.4 =
 * Added: the settings link in the plugin list page of the administration panel.
-* Improved: the browsing speed in the category selection page by reducing the cache elements.
+* Improved: the page load speed in the category selection page by reducing the cache elements.
 
 = 1.0.3 =
 * Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
-* Improved: the browsing speed in the category selection page with caches.
+* Improved: the page load speed in the category selection page with caches.
 * Removed: the widget functionality since it produces a blank page in some systems and the cause and solution have not been discovered.
 
 = 1.0.2 =

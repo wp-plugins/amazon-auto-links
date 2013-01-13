@@ -194,6 +194,9 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	
 	function form_selectcategories_iframe($numTab, $arrOptions) {	// as of v1.1.1 changed the name to form_selectcategories_iframe from form_selectcategories
 	
+		/*
+		 * Deprecated as of v1.1.3
+		 * */
 		// change the height of iframe by calculating the imagesize and the number of items.
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_selectcategories() .. </form>
 		$numIframeHeight = $arrOptions['numitems'] * (150 + $arrOptions['imagesize']);

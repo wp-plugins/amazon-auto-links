@@ -697,7 +697,9 @@ class AmazonAutoLinks_Forms_ {
 		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
 				<?php $this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']); ?>
-				<?php $this->field_element_blacklist($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
+				<?php $this->field_element_blacklist_by_ASIN($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
+				<?php $this->field_element_blacklist_by_title($numTabNum, $arrOptionsToDisplay['blacklist_title']); ?>
+				<?php $this->field_element_blacklist_by_description($numTabNum, $arrOptionsToDisplay['blacklist_description']); ?>
 				<?php $this->field_element_cloakquery($numTabNum, $arrOptionsToDisplay['cloakquery']); ?>
 				<?php $this->field_element_prefetch($numTabNum, $arrOptionsToDisplay['prefetch']); ?>
 			</tbody>
@@ -750,21 +752,53 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 		<?php
 	}	
-	function field_element_blacklist($numTabnum, $strValue="", $strWarning="") {
+	function field_element_blacklist_by_ASIN($numTabnum, $strValue="", $strWarning="") {
 	
 		// called from form_generaloptions()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][blacklist]';
 		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['blacklist'];
 		?>
 		<tr valign="top">
-			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?></th>
+			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?>&nbsp;<?php _e('by ASIN', 'amazonautolinks'); ?></th>
 			<td>
-				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  />
-				<br />&nbsp;<font color="#666">( <?php _e('Put ASINs that are not to be displayed, separated by commas.', 'amazonautolinks'); ?> e.g. 12345678901, B001AAAA0A )</font>							
+				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<font color="#666">( <?php _e('Enter ASINs that are not to be displayed, separated by commas.', 'amazonautolinks'); ?> e.g. 12345678901, B001AAAA0A )</font>							
 			</td>
 		</tr>
 		<?php
 	}
+	function field_element_blacklist_by_title($numTabnum, $strValue="", $strWarning="") {
+	
+		// called from form_generaloptions()
+		// since v1.1.6
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][blacklist_title]';
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['blacklist_title'];
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?>&nbsp;<?php _e('by Title', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<font color="#666">( <?php _e('Enter strings, separated by commas so that product links whose title contains them will not be displayed.', 'amazonautolinks'); ?> e.g. adult, XXX )</font>
+			</td>
+		</tr>
+		<?php
+	}	
+	function field_element_blacklist_by_description($numTabnum, $strValue="", $strWarning="") {
+	
+		// called from form_generaloptions()
+		// since v1.1.6
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][blacklist_description]';
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['blacklist_description'];
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Black List', 'amazonautolinks'); ?>&nbsp;<?php _e('by Description', 'amazonautolinks'); ?></th>
+			<td>
+				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<font color="#666">( <?php _e('Enter strings, separated by commas so that product links whose description text contains them will not be displayed.', 'amazonautolinks'); ?> e.g. adult, XXX )</font>
+			</td>
+		</tr>
+		<?php
+	}		
 	function field_element_cloakquery($numTabnum, $strValue="", $strWarning="") {
 	
 		// called from form_generaloptions()
@@ -800,7 +834,8 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Prefetch Category Lists', 'amazonautolinks'); ?></th>
 			<td>
 				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> <?php _e('On' ,'amazonautolinks'); ?> &nbsp;&nbsp;&nbsp;
-				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazonautolinks'); ?>&nbsp;&nbsp;(<font color="#666"><?php _e('Default: On', 'amazonautolinks');?></font> )<br />
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazonautolinks'); ?>&nbsp;&nbsp;
+				(<font color="#666"><?php _e('Default: On.', 'amazonautolinks');?>&nbsp;<?php _e('Set it off if links do not appear in the preview in some categories.', 'amazonautolinks');?></font> )<br />
 			</td>
 		</tr>	
 		<?php			
