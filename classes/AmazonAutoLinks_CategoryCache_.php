@@ -29,6 +29,18 @@ class AmazonAutoLinks_CategoryCache_ {
 		'ES'	=> 'http://www.amazon.es/gp/bestsellers/',
 		'US'	=> 'http://www.amazon.com/gp/bestsellers/',
 	);
+	public $arrCountryRedirectURLs = array(
+		'AT'	=> 'http://www.amazon.de/gp/product/black-curtain-redirect.html',
+		'CA'	=> 'http://www.amazon.ca/gp/product/black-curtain-redirect.html',
+		'CN'	=> 'http://www.amazon.cn/gp/product/black-curtain-redirect.html',
+		'FR'	=> 'http://www.amazon.fr/gp/product/black-curtain-redirect.html',
+		'DE'	=> 'http://www.amazon.de/gp/product/black-curtain-redirect.html',
+		'IT'	=> 'http://www.amazon.it/gp/product/black-curtain-redirect.html',
+		'JP'	=> 'http://www.amazon.co.jp/gp/product/black-curtain-redirect.html',
+		'UK'	=> 'http://www.amazon.co.uk/gp/product/black-curtain-redirect.html',
+		'ES'	=> 'http://www.amazon.es/gp/product/black-curtain-redirect.html',
+		'US'	=> 'http://www.amazon.com/gp/product/black-curtain-redirect.html',	
+	);
 	public $arrCountryLang = array(
 		'AT'	=> 'uni',
 		'CA'	=> 'uni',

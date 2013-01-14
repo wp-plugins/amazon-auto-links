@@ -400,12 +400,22 @@ class AmazonAutoLinks_Admin_ {
 							  'tab' => $numTab,			// 101 or 203
 							 );
 		if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
-		
+
 			// if the category block could not be read, try renewing the cache 
 			$this->oAALCatCache->renew_category_cache( $strURL );
 			echo '<!-- ' . __('Warning: renewing category cache.', 'amazonautolinks') . ' : ' . $strURL . ' -->' . PHP_EOL;
-			$doc = $this->load_dom_from_url( $strURL );			
-			if ( ! $bModifiedHref = $this->modify_href( $doc, $arrGETQuery ) ) {
+			$doc = $this->oAALforms_selectcategories->load_dom_from_url( $strURL );	
+			
+			// try with a R18 confirmation redirect -> not working 
+			// if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
+				// $strRedirectURL = $this->oAALCatCache->arrCountryRedirectURLs[$this->oOption->arrOptions[$mode]['country']];
+				// $strRedirectURL = $strRedirectURL . '?redirect=true&redirectUrl=' . urlencode( $strURL );
+				// $doc = $this->oAALforms_selectcategories->load_dom_from_url( $strRedirectURL );
+				// $strURL	= $strRedirectURL;
+			// }
+// print '<pre>' . print_r( $this->oOption->arrOptions[$mode], true ). '</pre>' ;
+				
+			if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
 				echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazonautolinks') . ' : ' . $strURL . '</div>';
 				echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ) );
 				Exit;
