@@ -122,7 +122,7 @@ class AmazonAutoLinks_Events_ {
 		// This function is triggered by the run-off shcedule event. It builds caches for 5 urls per call.
 		
 		// Instantiate class objects
-		$oAALCatCache = new AmazonAutoLinks_CategoryCache('amazonautolinks');
+		$oAALCatCache = new AmazonAutoLinks_CategoryCache('amazonautolinks', $this->oOption );
 		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 		shuffle($arrCatCacheEvents);	// make it randome since this method is called simultaneously so multiple instances should not process the same urls.
 		

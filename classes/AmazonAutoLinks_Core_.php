@@ -132,8 +132,9 @@ class AmazonAutoLinks_Core_
 			/* Fetch */
 			$output = '';
 			$this->i = 0;
+
 			foreach ($this->feed->get_items(0, 0) as $item) {
-									
+		
 				/* DOM Object for description */
 				$dom = $this->load_dom_from_htmltext($item->get_description(), $this->arrUnitOptions['mblang']);
 
@@ -183,6 +184,7 @@ class AmazonAutoLinks_Core_
 						
 				// Max Number of Items 
 				if (++$this->i >= $this->arrUnitOptions['numitems']) break;
+						
 			} 	
 		} catch (Exception $e) { $this->i = 0; }
 		

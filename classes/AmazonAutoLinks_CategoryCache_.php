@@ -77,8 +77,8 @@ class AmazonAutoLinks_CategoryCache_ {
 		return 'aal_' . sha1($strURL);
 	}
 	function schedule_prefetch($strURL='') {
-		
-		if (is_array($this->oOption) && empty($this->oOption->arrOptions['general']['prefetch'])) {
+
+		if (is_array($this->oOption->arrOptions) && empty($this->oOption->arrOptions['general']['prefetch'])) {
 			echo '<!-- Amazon Auto Links: The prefetch function is disabled.  -->';		
 			return;
 		}

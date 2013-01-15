@@ -65,6 +65,9 @@ The part, 128M, should be changed accordingly.
 
 == Changelog ==
 
+= 1.1.7 =
+* Fixed: a bug that the Prefetch Category Lists option did not take effect.
+
 = 1.1.6 =
 * Fixed: a minor bug that an error message does not appear properly when category links cannot be retrieved.
 * Added: Blacklist by title and description set in the General Settings page.

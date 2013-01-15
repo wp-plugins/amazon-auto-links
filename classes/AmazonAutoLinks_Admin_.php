@@ -33,7 +33,7 @@ class AmazonAutoLinks_Admin_ {
 		$this->oAALforms_selectcategories = new AmazonAutoLinks_Forms_SelectCategories( $this->pluginkey, $oOption );
 	
 		// cache class
-		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache( $this->pluginkey );
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache( $this->pluginkey, $oOption );
 		
 		// properties
 		$this->wp_version = & $GLOBALS["wp_version"];
@@ -430,7 +430,7 @@ class AmazonAutoLinks_Admin_ {
 
 		// extract the rss for the category
 		$strRssLink = $this->oAALforms_selectcategories->get_rss_link($doc);	
-		
+// echo '<pre>RSS: ' . $strRssLink . '</pre>';
 		// the unit preview & selection form
 		$this->oAALforms_selectcategories->RenderFormCategorySelectionPreview($mode
 																			, $numSelectedCategories
@@ -468,7 +468,7 @@ class AmazonAutoLinks_Admin_ {
 			// remove events
 			delete_option('amazonautolinks_catcache_events');
 			
-			echo '<div class="updated"><p>' . __('Caches are cleared. Please make sure the browser cache is also cleared if the unit items are still shown.', 'amazonautolinks') . '</p></div>';
+			echo '<div class="updated"><p>' . __('Caches were cleared. Please make sure the browser caches were also cleared if the unit items are still shown.', 'amazonautolinks') . '</p></div>';
 		}
 		
 		// Delete Units

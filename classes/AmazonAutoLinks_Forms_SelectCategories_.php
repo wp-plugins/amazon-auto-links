@@ -36,7 +36,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		// Include helper classes
 		// require_once(dirname(__FILE__) . '/amazonautolinks_helperclass.php');
 		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($pluginkey);
-		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($pluginkey);
+		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache($pluginkey, $oOption);
 		
 		
 		$this->pluginkey = $pluginkey;

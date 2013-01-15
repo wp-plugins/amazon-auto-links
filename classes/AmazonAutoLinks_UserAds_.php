@@ -89,7 +89,7 @@ class AmazonAutoLinks_UserAds_
 			// the urls are not ready. So shcedule prefetch and return 
 			// generate feed urls for this country from the root category
 			// this is heavy and takes time. so the script may be timed out
-			$oAALCategoryCache = new AmazonAutoLinks_CategoryCache($this->pluginkey);
+			$oAALCategoryCache = new AmazonAutoLinks_CategoryCache($this->pluginkey, $this->oOption);
 			AmazonAutoLinks_Log('Retrieving category urls: ' . $arrUnitOptions['countryurl'], __METHOD__);
 			$arrCatUrls = $oAALCategoryCache->get_subcategories_from_url($arrUnitOptions['countryurl']);
 			shuffle($arrCatUrls);		// get_rsslink_from_urls() gets stuck at completing a certain number of urls and does not complete it by one call but it stores caches by url so shuffle it and strart from un-saved elements
