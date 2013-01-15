@@ -92,7 +92,7 @@ class AmazonAutoLinks_Forms_ {
 		return $arrGeneralOptions;
 	}
 	function validate_generaloptions($arrGeneralOptions) {
-		
+		global $table_prefix;
 		// since v1.0.9
 		// - added for the cloak query option
 		$bInvalid = false;
@@ -105,8 +105,8 @@ class AmazonAutoLinks_Forms_ {
 			
 			// remove category caches
 			global $wpdb;
-			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
-			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
 		
 		}
 		

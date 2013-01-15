@@ -66,6 +66,7 @@ The part, 128M, should be changed accordingly.
 == Changelog ==
 
 = 1.1.7 =
+* Fixed: a bug that caches were not cleared with database tables with a custom prefix.
 * Fixed: a bug that the Prefetch Category Lists option did not take effect.
 
 = 1.1.6 =

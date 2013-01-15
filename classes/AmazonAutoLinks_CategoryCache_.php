@@ -280,7 +280,7 @@ class AmazonAutoLinks_CategoryCache_ {
 			AmazonAutoLinks_Log('Transient is now saved: ' . $strTransient , __METHOD__ );
 			return $html;
 		}
-		echo '<!-- Amazon Auto Links : transient is used: ' . $strURL . ' -->';	
+		echo '<!-- Amazon Auto Links : transient is used: ' . $strTransient . ' : ' . $strURL . ' -->';	
 		AmazonAutoLinks_Log('Transient is used: ' . $strURL , __METHOD__ );		
 		return $this->oAALfuncs->decrypt($html);	
 	}

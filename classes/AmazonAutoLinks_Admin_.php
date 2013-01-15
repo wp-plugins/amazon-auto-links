@@ -448,7 +448,7 @@ class AmazonAutoLinks_Admin_ {
 	
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
-
+		global $table_prefix;
 		/* POST Data : Delete Units */
 		// verify nonce
 		if (!$this->oAALforms->verifynonce_in_tab($numTabNum, $this->pluginkey, 'nonce')) return;	// do nothing	
@@ -459,11 +459,11 @@ class AmazonAutoLinks_Admin_ {
 			// remove feed caches
 			add_filter( 'wp_feed_cache_transient_lifetime', create_function( '$a', 'return 0;' ) );	
 			global $wpdb;
-			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_feed_%')" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_feed_%')" );
 			
 			// remove category caches
-			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
-			$wpdb->query( "DELETE FROM `wp_options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
+			$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
 			
 			// remove events
 			delete_option('amazonautolinks_catcache_events');

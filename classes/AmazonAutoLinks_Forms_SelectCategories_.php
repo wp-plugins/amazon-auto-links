@@ -263,7 +263,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		if (!$domRssLinks) {
 			
 			// the root category does not provide a rss link, so return silently
-			echo '<!-- ' . __METHOD__ . ': "zg_rssLinks" ID could not be found. -->';
+			echo '<!-- ' . __METHOD__ . ': ' . $id_rss . ' ID could not be found. -->';
 			return;
 		}
 
