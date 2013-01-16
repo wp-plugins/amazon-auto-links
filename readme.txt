@@ -67,7 +67,7 @@ The part, 128M, should be changed accordingly.
 
 = 1.1.7 =
 * Fixed: a bug that caches were not cleared with database tables that have a custom prefix.
-* Fixed: a bug that the Prefetch Category Lists option did not take effect.
+* Fixed: a bug that the Prefetch Category Lists option did not take effect since v1.1.3 removing the iframe preview page.
 
 = 1.1.6 =
 * Fixed: a minor bug that an error message did not appear properly when category links cannot be retrieved.
