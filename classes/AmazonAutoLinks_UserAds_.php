@@ -10,6 +10,7 @@ class AmazonAutoLinks_UserAds_
 	// properties
 	private $oTextFeed;
 	private $oBannerFeed;
+	private $oTopBannerFeed;
 	
 	function __construct( $pluginkey, &$oOption ) {
 		$this->pluginkey = $pluginkey;
@@ -212,6 +213,39 @@ class AmazonAutoLinks_UserAds_
 		else	
 			return '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
 	}
+	function InitializeTopBannerFeed($arrUrls) {
+		
+		$this->oTopBannerFeed = new AmazonAutoLinks_SimplePie();
+		
+		// Setup Caches
+		$this->oTopBannerFeed->enable_cache( true );
+		$this->oTopBannerFeed->set_cache_class( 'WP_Feed_Cache' );
+		$this->oTopBannerFeed->set_file_class( 'WP_SimplePie_File' );
+		$this->oTopBannerFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+
+		// Set Sort Order
+		$this->oTopBannerFeed->set_sortorder( 'random' );
+
+		// Set urls
+		$this->oTopBannerFeed->set_feed_url( $arrUrls );
+		$this->oTopBannerFeed->set_item_limit( 1 );
+
+		// this should be set after defineing $urls
+		$this->oTopBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $urls ) );	
+		$this->oTopBannerFeed->set_stupidly_fast( true );
+		$this->oTopBannerFeed->init();		
+	}		
+	function ShowTopBannerAds($numItems=1, $bPrint=True) {
+
+		// fetch
+		$strOut = '';
+		foreach ( $this->oTopBannerFeed->get_items(0, $numItems) as $item ) 
+			$strOut .= '<div style="clear:right; margin:0; padding:0;">' . $item->get_description() . '</div>';
+		if ( $bPrint )
+			echo '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
+		else 
+			return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
+	}		
 	function InitializeBannerFeed($arrUrls) {
 		
 		$this->oBannerFeed = new AmazonAutoLinks_SimplePie();
@@ -235,11 +269,11 @@ class AmazonAutoLinks_UserAds_
 		$this->oBannerFeed->init();		
 		
 	}	
-	function ShowBannerAds($bPrint=True) {
+	function ShowBannerAds($numItems=2, $bPrint=True) {
 
 		// fetch
 		$strOut = '';
-		foreach ( $this->oBannerFeed->get_items(0, 2) as $item ) 
+		foreach ( $this->oBannerFeed->get_items(0, $numItems) as $item ) 
 			$strOut .= '<div style="clear:right;">' . $item->get_description() . '</div>';
 		if ( $bPrint )
 			echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
@@ -248,8 +282,10 @@ class AmazonAutoLinks_UserAds_
 	}	
 	
 	function SetupTransients() {
+	
 		// called from RegisterActivationHook and creates user ad transients so that the user don't feel a delay when first accesses the setting page
-		$this->InitializeBannerFeed('http://feeds.feedburner.com/GANLinkBanner160x600Random40');
-		$this->InitializeTextFeed('http://feeds.feedburner.com/GANLinkTextRandom40');
+		$this->InitializeBannerFeed( 'http://feeds.feedburner.com/GANLinkBanner160x600Random40' );
+		$this->InitializeTextFeed( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
+		$this->InitializeTopBannerFeed( 'http://feeds.feedburner.com/GANBanner60x468' );
 	}
 }

@@ -9,6 +9,11 @@ class AmazonAutoLinks_Core_
 	/* Used Constants 
 		ABSPATH			// this means instanciation of this class must be after including WordPress admin.php 
 	*/
+
+	/*
+		Todo: 
+			- investigate the memory usage getting large in loops.
+	*/
 	
 	/* Properties */
 	public $classver = 'standard';
@@ -19,7 +24,7 @@ class AmazonAutoLinks_Core_
     protected $textdomain = 'amazonautolinks';
 	protected $oOption = array();
 	protected $arrUnitOptions = array();
-	protected $arrASINs = array();	// stores a temporary ASIN data with the key of the product url
+	public $arrASINs = array();	// stores a temporary ASIN data with the key of the product url	// used by Feed API as well so it must be public
 	
 	/* Constructor */
 	function __construct( &$arrUnitOptionsOrstrUnitLabel, &$arrGeneralOptions='') {
@@ -526,5 +531,21 @@ class AmazonAutoLinks_Core_
 	function formatvalidation($output, $i) {
 		if (count(array("%link%", "%imgurl%", "%title%", "%link%", "%title%", "%htmldescription%", "%textdescription%", "%img%", "%items%")) < $i ) throw new Exception("");
 	}		
+	
+	// for the Amazon Auto Links Feed API extention
+	// sinve v1.1.8
+	function output_rss() {
+
+		do_action( 'aalhook_output_rss', $this, $this->arrUnitOptions );
+
+	}
+	function pick_category_link() {
+		// moved from the pro version since v1.1.8 for Feed API
+		// returns only one representative url from the stored category urls
+		$arrCatLinks = $this->arrUnitOptions['categories'];
+		shuffle($arrCatLinks);
+		foreach($arrCatLinks as $catname => $catinfo) 
+			return $catinfo['pageurl'] . '?tag=' . $this->arrUnitOptions['associateid'];
+	}	
 }
 ?>

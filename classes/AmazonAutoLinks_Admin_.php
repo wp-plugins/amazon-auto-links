@@ -1,12 +1,6 @@
 <?php
 class AmazonAutoLinks_Admin_ {
-	
-	/*
-		Todo: 
-			- get rid of the iframe page for selecting categories and inlude in the admin page.
 		
-	*/
-	
 	// Properties
 	public $classver = 'standard';
 	protected $pluginname = 'Amazon Auto Links';
@@ -48,9 +42,9 @@ class AmazonAutoLinks_Admin_ {
 		// embed Plugin Settings Link in the plugin listing page
 		add_filter("plugin_action_links_" . AMAZONAUTOLINKSPLUGINFILEBASENAME, array(&$this, 'embed_settings_link') );
 
-		// embed donation link in the plugin listing page
+		// embed custom links in the plugin listing page
 		if ($this->classver == 'standard')
-			add_filter('plugin_row_meta', array(&$this, 'embed_donate_link'), 10, 2);
+			add_filter('plugin_row_meta', array(&$this, 'EmbedLinks'), 10, 2);
 		
 		// admin menu
 		add_action('admin_menu', array(&$this, 'admin_menu'));
@@ -77,12 +71,15 @@ class AmazonAutoLinks_Admin_ {
 		array_unshift($arrLinks, $settings_link); 
 		return $arrLinks; 	
 	}
-	function embed_donate_link($links, $file) {
-		if ($file == AMAZONAUTOLINKSPLUGINFILEBASENAME) {
-			$donate_link = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __('Donate', 'amazonautolinks') . '</a>';
-			$links[] = $donate_link;
+	function EmbedLinks( $arrLinks, $strFile ) {
+		if ( $strFile == AMAZONAUTOLINKSPLUGINFILEBASENAME ) {
+			// add links to the $arrLinks array.
+			$arrLinks[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __('Donate', 'amazonautolinks') . '</a>';
+			$arrLinks[] = '<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __('Order custom plugin', 'amazonautolinks') . '</a>';
+			$arrLinks[] = '<a href="http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __('Get Pro', 'amazonautolinks') . '</a>';
+			$arrLinks[] = '<a href="http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-feed-api/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __('Get Addon', 'amazonautolinks') . '</a>';
 		}
-		return $links;
+		return $arrLinks;
 	}  		
 
 	/* ------------------------------------------ Admin Menu --------------------------------------------- */
@@ -128,7 +125,9 @@ class AmazonAutoLinks_Admin_ {
 
 		} else if ( $_GET['tab'] == 400 ) 	// for the upgrading to pro tab; the table needs additional styles
 			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab400.css', AMAZONAUTOLINKSPLUGINFILE ) . '">';
-		
+		else if ( $_GET['tab'] == 200 )	
+			echo '<link rel="stylesheet" type="text/css" href="' . plugins_url('/css/amazonautolinks_tab200.css', AMAZONAUTOLINKSPLUGINFILE ) . '">';
+			
 		// for category selection page
 		if ( $_GET['tab'] == 203 || $_GET['tab'] == 101 || $_POST['tab'] == 203 || $_POST['tab'] == 101 ) {
 			$cssurl_wpadmin = admin_url( '/css/wp-admin.css?ver=') . get_bloginfo( 'version' ); // get_bloginfo( 'version' ));
@@ -201,7 +200,7 @@ class AmazonAutoLinks_Admin_ {
 						</td>
 						<td valign="top" style="border: 0px;">
 						<?php
-							$this->oUserAd->InitializeBannerFeed('http://feeds.feedburner.com/GANLinkBanner160x600Random40');
+							$this->oUserAd->InitializeBannerFeed( 'http://feeds.feedburner.com/GANLinkBanner160x600Random40' );
 							$this->oUserAd->ShowBannerAds();				
 							flush();
 						?>
@@ -406,19 +405,21 @@ class AmazonAutoLinks_Admin_ {
 			echo '<!-- ' . __('Warning: renewing category cache.', 'amazonautolinks') . ' : ' . $strURL . ' -->' . PHP_EOL;
 			$doc = $this->oAALforms_selectcategories->load_dom_from_url( $strURL );	
 			
-			// try with a R18 confirmation redirect -> not working 
-			// if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
-				// $strRedirectURL = $this->oAALCatCache->arrCountryRedirectURLs[$this->oOption->arrOptions[$mode]['country']];
-				// $strRedirectURL = $strRedirectURL . '?redirect=true&redirectUrl=' . urlencode( $strURL );
-				// $doc = $this->oAALforms_selectcategories->load_dom_from_url( $strRedirectURL );
+			 
+			if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
+			
+				// try with a R18 confirmation redirect - must use file_get_contents(), not wp_remote()
+				$strBlackCurtainURL = $this->oAALCatCache->arrCountryBlackCurtainURLs[$this->oOption->arrOptions[$mode]['country']];
+				$strRedirectURL = $strBlackCurtainURL . '?redirect=true&redirectUrl=' . urlencode( $strURL );
+				$doc = $this->oAALforms_selectcategories->load_dom_from_HTML( file_get_contents( $strRedirectURL ), $this->oAALforms_selectcategories->detect_lang( $strURL ) );
 				// $strURL	= $strRedirectURL;
-			// }
 // print '<pre>' . print_r( $this->oOption->arrOptions[$mode], true ). '</pre>' ;
 				
-			if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
-				echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazonautolinks') . ' : ' . $strURL . '</div>';
-				echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ) );
-				Exit;
+				if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
+					echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazonautolinks') . ' : ' . $strURL . '</div>';
+					echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ) );
+					Exit;
+				}
 			}
 		}	
 	
@@ -429,8 +430,8 @@ class AmazonAutoLinks_Admin_ {
 		$strBreadcrumb = $this->oAALforms_selectcategories->breadcrumb($doc, $this->oOption->arrOptions[$mode]['country']);
 
 		// extract the rss for the category
-		$strRssLink = $this->oAALforms_selectcategories->get_rss_link($doc);	
-// echo '<pre>RSS: ' . $strRssLink . '</pre>';
+		$strRssLink = $this->oAALforms_selectcategories->get_rss_link($doc);	// echo '<pre>RSS: ' . $strRssLink . '</pre>';
+
 		// the unit preview & selection form
 		$this->oAALforms_selectcategories->RenderFormCategorySelectionPreview($mode
 																			, $numSelectedCategories
@@ -523,7 +524,7 @@ class AmazonAutoLinks_Admin_ {
 		} */
 
 		?>
-		<table class="wp-list-table widefat fixed posts" cellspacing="0" style="clear:none; width:auto;">
+		<table class="wp-list-table widefat fixed posts amazon-auto-links-admin" cellspacing="0" style="clear:none; width:auto;">
 			<thead><?php $this->manage_units_table_header();?></thead>
 			<tfoot><?php $this->manage_units_table_header();?></tfoot>
 			<tbody id="the-list">
@@ -535,7 +536,7 @@ class AmazonAutoLinks_Admin_ {
 					echo '<tr>';
 					for ($i=0; $i <= 11; $i++) {
 						if ($i==0) 
-							echo '<td align="center" valign="middle" class="check-column">' . '<input type="checkbox" name="' . $this->pluginkey . '[tab200][delete][' . $strUnitID . ']" value="1" ></td>';
+							echo '<td align="center" class="check-column first-col" style="" >' . '<input type="checkbox" name="' . $this->pluginkey . '[tab200][delete][' . $strUnitID . ']" value="1" ></td>';
 						else if ($i==1)
 							echo '<td>' . $unit['unitlabel'] . '</td>';		//. ': ' . $unit['id']
 						else if ($i==2)
@@ -547,10 +548,12 @@ class AmazonAutoLinks_Admin_ {
 						else if ($i==5) {
 							echo '<td>';	
 							if (is_array($unit['feedtypes'])) {
+								echo '<ul>';
 								ForEach($unit['feedtypes'] as $type => $check) {
 									if ($check) 
-										echo $this->readable_feedtypes($type) . '<br />';
+										echo '<li>' . $this->readable_feedtypes($type) . '</li>';
 								}
+								echo '</ul>';
 							}
 							echo '</td>';	
 						}
@@ -561,34 +564,54 @@ class AmazonAutoLinks_Admin_ {
 							echo $unit['nosim'] ? __('On', 'amazonautolinks') : __('Off', 'amazonautolinks');
 							echo '</td>';			
 						}							
-						else if ($i==8) {
+						else if ($i==8) {	// insertions
 							echo '<td>';
 							if (is_array($unit['insert'])) {
+								echo '<ul>';
 								ForEach($unit['insert'] as $key => $value) {
 									if ($value)
-										echo $this->readable_insertplace($key) . '<br />';
+										echo '<li>'. $this->readable_insertplace($key) . '</li>';
 								}
+								echo '</ul>';
 							}
 							echo '</td>';
 						}						
-						else if ($i==9)
-							echo '<td>' . '[amazonautolinks label="' . $unit['unitlabel'] . '"]<br />' 
-							. '&lt;?php AmazonAutoLinks("' . $unit['unitlabel'] . '"); ?&gt;</td>';
+						else if ($i==9) {
+							echo '<td>' 
+								. '<ul>'
+								. '<li>' . '[amazonautolinks label="' . $unit['unitlabel'] . '"]' . '</li>' 
+								. '<li>' . '&lt;?php AmazonAutoLinks("' . $unit['unitlabel'] . '"); ?&gt;' . '</li>'
+								. '</ul>'
+								. '</td>';
+						}
 						else if ($i==10) {
 							echo '<td>';
 							if (is_array($unit['categories'])) {
+								echo '<ul>';
 								ForEach($unit['categories'] as $catname => $catinfo) {
-									echo $catname . '<br />';
+									echo '<li>' . $catname . '</li>';
 								}
+								echo '</ul>';
 							}
 							echo '</td>';
 						}
-						else if ($i==11)
+						else if ($i==11) {
+							$strUnitLabel = $unit['unitlabel'];
+							$strCryptedUnitLabel = $this->oAALfuncs->urlencrypt( $strUnitLabel );
+							$strOperationLinks =  $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/edit16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('Edit', 'amazonautolinks') . '" alt="' . __('Edit', 'amazonautolinks') . '" style="" />'
+													, 202
+													, array( 'edit' => $strCryptedUnitLabel ) )
+												. $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/view16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('View', 'amazonautolinks') . '" alt="&nbsp;|&nbsp;' . __('View', 'amazonautolinks') . '" style="" />' 
+													, 201
+													, array( 'view' => $strCryptedUnitLabel ) );
+							$strRSSLink = '<img class="icon" src="' . plugins_url( 'img/rss_inactive16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('Get the Feed API extension!', 'amazonautolinks') . '" alt="&nbsp;|&nbsp;' . __('Feed', 'amazonautolinks') . '" />';
 							echo '<td>'
-								. $this->custom_a_tag(__('Edit', 'amazonautolinks'), 202, array('edit' => $this->oAALfuncs->urlencrypt($unit['unitlabel'])))
-								. ' | '
-								. $this->custom_a_tag(__('View', 'amazonautolinks'), 201, array('view' => $this->oAALfuncs->urlencrypt($unit['unitlabel'])))
+								. $strOperationLinks
+								. '<a href="http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-feed-api/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">'
+								. apply_filters( 'aalhook_admin_operation_rss_link',  $strRSSLink, $strUnitLabel )		// since v1.1.8
+								. '</a>'
 								. '</td>';
+						}
 					}
 					echo '</tr>';
 				} ?>
@@ -849,11 +872,15 @@ class AmazonAutoLinks_Admin_ {
 	}	// end of tab300 ---------------------------------------------------------------------
 	
 	/* ------------------------------------------ Tab 400: Introducing Pro version --------------------------------------------- */
-	function buynowbutton($strFloat='right', $strPadding='10px 5em 20px') {
-		$strImgBuyNow = plugins_url( 'img/buynowbutton.gif', dirname( __FILE__ ) );
+	function buynowbutton( $strFloat='right', $strPadding='10px 5em 20px', $type=1, $strLink='http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro' ) {
+		$strImgBuyNow = AMAZONAUTOLINKSPLUGINURL . '/img/' . ( ( $type == 1 ) ? 'buynowbutton.gif' : 'buynowbutton-blue.gif' );
 	?>
 		<div style="padding:<?php echo $strPadding; ?>;">
-			<div style="float:<?php echo $strFloat; ?>;"><a href="http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro" title="<?php _e('Get Pro Now!', 'amazonautolinks') ?>"><img src="<?php echo $strImgBuyNow; ?>" /></a></div>
+			<div style="float:<?php echo $strFloat; ?>;">
+				<a href="<?php echo $strLink; ?>?lang=<?php echo ( WPLANG ? WPLANG : 'en' ); ?>" title="<?php _e('Get Now!', 'amazonautolinks') ?>">
+					<img src="<?php echo $strImgBuyNow; ?>" />
+				</a>
+			</div>
 		</div>	
 	<?php
 	}
@@ -952,6 +979,12 @@ class AmazonAutoLinks_Admin_ {
 		<p><?php _e('Get pro for unlimited units so that you can put ads as many as you want.', 'amazonautolinks'); ?></p>		
 		
 		<?php $this->buynowbutton('right', '20px 5em 20px'); ?>
+		
+		<h3><?php _e('Get Feed API Extension!', 'amazonautolinks'); ?></h3>
+		<?php $strCheckMark = AMAZONAUTOLINKSPLUGINURL . '/img/amazon-auto-links-feed-api-banner-772x250.jpg'; ?>
+		<div style="text-align:center"><img title="Amazon Auto Links Feed API" src="<?php echo $strCheckMark;?>" width="500px" /></div>
+		<p><?php _e('Create a back-end Amazon Associates ad server with enabling unit feeds so that you can import them into your other sites. If you are a developer, implement ads in your applications easily.', 'amazonautolinks'); ?></p>
+		<?php $this->buynowbutton('right', '20px 5em 20px', 2, 'http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-feed-api/'); ?>
 	<?php
 	}
 	function admin_tab500($numTab=500) {
@@ -968,8 +1001,8 @@ class AmazonAutoLinks_Admin_ {
 		
 		<?php $this->donation_info(); ?>
 		
-		<h3><?php _e('Looking For a PHP Developer?' , 'amazonautolinks'); ?></h3>
-		<p><?php _e('The developer of this plugin, Michael Uno, may be available to work with you. If you like, offer him a job via <a href="mailto:michaeluno@michaeluno.jp">michaeluno@michaeluno.jp</a>.' , 'amazonautolinks'); ?></p>
+		<h3><?php _e('Order a custom plugin or theme' , 'amazonautolinks'); ?></h3>
+		<p><?php _e('The developer of this plugin, Michael Uno, may be available to write a custom plugin for you. Please ask! <a href="mailto:michaeluno@michaeluno.jp">michaeluno@michaeluno.jp</a>.' , 'amazonautolinks'); ?></p>
 
 	<?php
 	}
@@ -1004,13 +1037,14 @@ class AmazonAutoLinks_Admin_ {
 
 		// user ad
 		echo '<div>';	// style fixer for v3.5 or above
-		$this->oUserAd->show_top_banner();
+		$this->oUserAd->InitializeTopBannerFeed( 'http://feeds.feedburner.com/GANBanner60x468' );
+		$this->oUserAd->ShowTopBannerAds();
 		echo '</div>'; // style fixer for v3.5 or above
 		flush();
 		
 		// page header title
 		$strClassVer = $this->classver == 'pro' ? ' Pro' : '';
-		echo '<h2 style="height:1.8em;">' . $this->pluginname . $strClassVer . '</h2>';
+		echo '<h2 style="height:1.8em; margin-bottom:16px;">' . $this->pluginname . $strClassVer . '</h2>';
 				
 		// tab menu
 		$this->tab_menu($numCurrentTab = $this->GetTabNumber());	
@@ -1050,26 +1084,26 @@ class AmazonAutoLinks_Admin_ {
 		// called from and dependant on admin_tab200()
 		// this is used for a table header and footer
 	?>
-		<tr>
-			<th scope="col" id="cb" class="manage-column column-cb check-column" style="" valign="middle">
+		<tr style="">
+			<th scope="col" id="cb" class="manage-column column-cb check-column" style="vertical-align:middle; padding-left:4px;" valign="middle">
 				<input type="checkbox">
 			</th>
-			<th scope="col" id="unitlabel" class="manage-column column-date asc" style="">
+			<th scope="col" id="unitlabel" class="manage-column column-label asc desc sortable" style="">
 				<span><?php _e('Unit Label', 'amazonautolinks'); ?></span><span class="sorting-indicator"></span>
 			</th>
-			<th scope="col" id="associateid" class="manage-column column-date asc" style="">
+			<th scope="col" id="associateid" class="manage-column column-label asc sortable" style="">
 				<span><?php _e('Associate ID', 'amazonautolinks'); ?></span><span class="sorting-indicator"></span>
 			</th>
-			<th scope="col" id="imagesize" class="manage-column column-comments num " style="">
+			<th scope="col" id="imagesize" class="manage-column column-imagesize num " style="">
 				<?php _e('Image Size', 'amazonautolinks'); ?>
 			</th>				
-			<th scope="col" id="sortorder" class="manage-column column-date" style="">
+			<th scope="col" id="sortorder" class="manage-column column-sort" style="">
 				<?php _e('Sort Order', 'amazonautolinks'); ?>
 			</th>
-			<th scope="col" id="types" class="manage-column column-date" style="">
+			<th scope="col" id="types" class="manage-column column-type" style="">
 				<?php _e('Types', 'amazonautolinks'); ?>
 			</th>
-			<th scope="col" id="numitems" class="manage-column column-comments num sortable desc" style="">
+			<th scope="col" id="numitems" class="manage-column column-comments num" style="">
 				<?php _e('Items to Show', 'amazonautolinks'); ?>
 			</th>
 			<th scope="col" id="refnosim" class="manage-column column-comments num " style="">
@@ -1078,13 +1112,13 @@ class AmazonAutoLinks_Admin_ {
 			<th scope="col" id="insertion" class="manage-column column-date" style="">
 				<?php _e('Insertions', 'amazonautolinks'); ?>
 			</th>			
-			<th scope="col" id="code" class="manage-column column-tags" style="">
-				<?php _e('Short Code', 'amazonautolinks'); ?> / <?php _e('PHP Code', 'amazonautolinks'); ?>
+			<th scope="col" id="code" class="manage-column column-code" style="">
+				<?php _e('Shortcode', 'amazonautolinks'); ?> / <?php _e('PHP Code', 'amazonautolinks'); ?>
 			</th>
-			<th scope="col" id="categories" class="manage-column column-tags" style="">
+			<th scope="col" id="categories" class="manage-column column-category desc" style="">
 				<?php _e('Categories', 'amazonautolinks'); ?>
 			</th>				
-			<th scope="col" id="operation" class="manage-column column-comments num " style="">
+			<th scope="col" id="operation" class="manage-column column-comments num " style="padding-right:12px;">
 				<?php _e('Operation', 'amazonautolinks'); ?>
 			</th>					
 		</tr>	

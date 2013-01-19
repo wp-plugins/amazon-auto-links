@@ -29,7 +29,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		'ES'	=> 'http://www.amazon.es/gp/bestsellers/',
 		'US'	=> 'http://www.amazon.com/gp/bestsellers/',
 	);
-	public $arrCountryRedirectURLs = array(
+	public $arrCountryBlackCurtainURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/product/black-curtain-redirect.html',
 		'CA'	=> 'http://www.amazon.ca/gp/product/black-curtain-redirect.html',
 		'CN'	=> 'http://www.amazon.cn/gp/product/black-curtain-redirect.html',

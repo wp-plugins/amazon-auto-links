@@ -225,6 +225,17 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	}
 
 	/* methods for inline frame page */
+	function load_dom_from_HTML( $strHTML, $strMbLang='uni' ) {
+		// since v1.1.8 - created for the R18 redirect pages
+		mb_language( $strMbLang ); 
+		$strHTML = @mb_convert_encoding( $strHTML , 'HTML-ENTITIES', 'AUTO');
+		$doc = new DOMDocument();
+		$doc->preserveWhiteSpace = false;
+		$doc->formatOutput = true;
+		@$doc->loadHTML( $strHTML );	
+		return $doc;
+		
+	}
 	function load_dom_from_url($strURL) {
 	
 		// create a dom document object

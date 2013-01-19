@@ -216,5 +216,5 @@ function AmazonAutoLinks_Requirements() {
 function AmazonAutoLinks_SetupTransients() {	
 	$o = new AmazonAutoLinks_UserAds( AMAZONAUTOLINKSKEY, new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY ) );
 	$o->SetupTransients();	
-	$o->check_user_countrycode();
+	// $o->check_user_countrycode();
 }

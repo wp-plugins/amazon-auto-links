@@ -696,14 +696,26 @@ class AmazonAutoLinks_Forms_ {
 		?>	
 		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
-				<?php $this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']); ?>
-				<?php $this->field_element_blacklist_by_ASIN($numTabNum, $arrOptionsToDisplay['blacklist']); ?>
-				<?php $this->field_element_blacklist_by_title($numTabNum, $arrOptionsToDisplay['blacklist_title']); ?>
-				<?php $this->field_element_blacklist_by_description($numTabNum, $arrOptionsToDisplay['blacklist_description']); ?>
-				<?php $this->field_element_cloakquery($numTabNum, $arrOptionsToDisplay['cloakquery']); ?>
-				<?php $this->field_element_prefetch($numTabNum, $arrOptionsToDisplay['prefetch']); ?>
+				<?php
+				$this->field_element_support($numTabNum, $arrOptionsToDisplay['supportrate']);
+				$this->field_element_blacklist_by_ASIN($numTabNum, $arrOptionsToDisplay['blacklist']);
+				$this->field_element_blacklist_by_title($numTabNum, $arrOptionsToDisplay['blacklist_title']);
+				$this->field_element_blacklist_by_description($numTabNum, $arrOptionsToDisplay['blacklist_description']);
+				$this->field_element_cloakquery($numTabNum, $arrOptionsToDisplay['cloakquery']);
+				$this->field_element_prefetch($numTabNum, $arrOptionsToDisplay['prefetch']);
+				
+				// for addons since v1.1.8
+				$strAdditionalFormsFields = '';
+				echo apply_filters( 'aalhook_admin_form_generaloptions_fields',  $strAdditionalFormsFields );
+				?>
 			</tbody>
 		</table>
+		
+		<?php
+		// for addons since v1.1.8
+		do_action( 'aalhook_admin_form_generaloptions_table' );
+		?>
+		
 		<p class="submit">
 			<?php 
 				$strFieldName = $this->pluginkey . '[tab' . $numTabNum . '][savebutton]';

@@ -52,9 +52,13 @@ Please try setting the **Prefetch Link Categgories** option to **Off**.
 
 = I get a blank white page after adding a unit to the theme. What is it? What should I do? =
 
-It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to embed the following code in your config.php
+It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to embed the following code in your wp-config.php or functions.php
 `define('WP_MEMORY_LIMIT', '128M');`
 The part, 128M, should be changed accordingly.
+
+= I want to display product links in multiple columns. Is it possible? = 
+
+Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/responsive-column-widgets/).
 
 == Screenshots ==
 
@@ -65,26 +69,28 @@ The part, 128M, should be changed accordingly.
 
 == Changelog ==
 
+= 1.1.8 = 
+* Added: icons for the Operation column in the Manage Option page.
+* Adjusted: the styles of the Manage Option page in the admin page.
+* Fixed: an issue that R18 categories requiring additional redirects could not be browsed in the category selection page.
+
 = 1.1.7 =
 * Fixed: a bug that caches were not cleared with database tables that have a custom prefix.
-* Fixed: a bug that the Prefetch Category Lists option did not take effect since v1.1.3 removing the iframe preview page.
+* Fixed: a bug that the Prefetch Category Lists option had not take effect since v1.1.3 removing the iframe preview page.
 
 = 1.1.6 =
 * Fixed: a minor bug that an error message did not appear properly when category links cannot be retrieved.
 * Added: Blacklist by title and description set in the General Settings page.
 
 = 1.1.5 =
-
 * Changed: to force the unit output to close any unclosed HTML tags.
 * Fixed: a bug that the plugin requirement check did not work as of v1.1.3.
 * Improved: the response speed when first accessing the setting page.
 
 = 1.1.4 =
-
 * Fixed: a bug that shortcode did not work as of v1.1.3.
 
 = 1.1.3 =
-
 * Supported: WordPress 3.5
 * Changed: the preview page not to use iframe so that "Could not locate admin.php" error would not occur.
 * Fixed: a bug that the style was not loaded in one of the tab page in the plugin setting page.
