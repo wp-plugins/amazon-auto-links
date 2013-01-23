@@ -92,16 +92,16 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 					<tr>
 						<td align="left" valign="top" width="20%" style="padding-right: 3em; border-right:1px solid #CCC;">
 							<div style="width:200px; height:0px; border:1px; border-style:solid; border-color: rgba(0,0,0,0);"></div>
-							<h4 style="margin-top:0; padding-top:0"><?php _e('Current Selection', 'amazonautolinks'); ?></h4>
+							<h4 style="margin-top:0; padding-top:0"><?php _e('Current Selection', 'amazon-auto-links'); ?></h4>
 						</td>
 						<td align="left" valign="top" width="40%" style="padding-left: 3em;">		
-							<h4 style="margin-top:0; padding-top:0"><?php _e('Added Categories', 'amazonautolinks'); ?></h4>
+							<h4 style="margin-top:0; padding-top:0"><?php _e('Added Categories', 'amazon-auto-links'); ?></h4>
 						</td>
 						<td width="40%" rowspan="2" style="font-size:8px; line-height:1em; padding:0;">		
 							<div align="right" class="submit" style="float:right; margin: -1em 3em 0 0; padding-right:0">
 								<?php $strRightArrow = ($numSelectedCategories > 0 &&  count($this->oOption->arrOptions['units']) == 0) ? 'background: url(' . plugins_url('/img/rightarrow_attention.gif', AMAZONAUTOLINKSPLUGINFILE ) . ') no-repeat left;' : '';?>
 								<div style="padding-left: 60px; <?php echo $strRightArrow; ?>">
-									<input style="margin: 0 0 10px" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][save]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?>  value="<?php echo $mode == 'newunit' ? __('Create', 'amazonautolinks') : __('Save', 'amazonautolinks'); ?>" />
+									<input style="margin: 0 0 10px" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][save]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?>  value="<?php echo $mode == 'newunit' ? __('Create', 'amazon-auto-links') : __('Save', 'amazon-auto-links'); ?>" />
 									<br />
 								</div>
 								<?php $strRightArrow = ($strRssLink && $numSelectedCategories == 0 &&  count($this->oOption->arrOptions['units']) == 0 ) ? 'background: url(' . plugins_url('/img/rightarrow_attention.gif', AMAZONAUTOLINKSPLUGINFILE ) . ') no-repeat left;' : '';?>
@@ -109,18 +109,18 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 								<input type="hidden" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][addcategoryfeedurl]" value="<?php echo $strRssLink ;?>" />
 								<input type="hidden" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][addcategorypageurl]" value="<?php echo $strURL ;?>" />
 								<div style="padding-left: 60px; <?php echo $strRightArrow; ?>">
-									<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][addcurrentcategory]" class="button-primary" <?php echo $strRssLink && (!array_key_exists(trim($strBreadcrumb), $this->oOption->arrOptions[$mode]['categories'])) ? '' : 'Disabled' ?> value="<?php _e('Add Current Category', 'amazonautolinks'); ?>" />
+									<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][addcurrentcategory]" class="button-primary" <?php echo $strRssLink && (!array_key_exists(trim($strBreadcrumb), $this->oOption->arrOptions[$mode]['categories'])) ? '' : 'Disabled' ?> value="<?php _e('Add Current Category', 'amazon-auto-links'); ?>" />
 									<br />
 								</div>
 								<div style="padding-left: 60px;"><!-- this is necessary for IE -->
-									<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][deletecategories]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?> value="<?php _e('Delete Selected', 'amazonautolinks'); ?>" />
+									<input style="margin: 0 0 10px;" type="submit" name="<?php echo AMAZONAUTOLINKSKEY; ?>[<?php echo $mode; ?>][deletecategories]" class="button-primary" <?php echo $numSelectedCategories > 0 ? '' : 'Disabled'; ?> value="<?php _e('Delete Selected', 'amazon-auto-links'); ?>" />
 									<br />
 								</div>
 							</div>						
 						</td>
 					</tr>
 					<tr>
-						<td align="left" valign="top" width="20%" style="padding: 0 3em 0 1em; border-right:1px solid #CCC;"><?php if ($strRssLink) { echo $strBreadcrumb; } else { _e('None', 'amazonautolinks'); }?></h4></td>
+						<td align="left" valign="top" width="20%" style="padding: 0 3em 0 1em; border-right:1px solid #CCC;"><?php if ($strRssLink) { echo $strBreadcrumb; } else { _e('None', 'amazon-auto-links'); }?></h4></td>
 						<td align="left" valign="top" width="40%" style="padding-left: 3em;">	
 							<?php 
 								if ( count( $this->oOption->arrOptions[$mode]['categories'] ) ) {								
@@ -135,27 +135,27 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 							<?php 	}
 									if ( $bReachedLimit ) {
 										echo '<div class="updated" style="padding:10px; margin:10px;">' 
-											. __('To add more categories, upgrade to the <a href="http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro" target="_blank">pro version</a>.', 'amazonautolinks') 
+											. __('To add more categories, upgrade to the <a href="http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro" target="_blank">pro version</a>.', 'amazon-auto-links') 
 											. '</div>';					
 									}
-								} else _e('No categories added.', 'amazonautolinks'); 							
+								} else _e('No categories added.', 'amazon-auto-links'); 							
 							?>
 						</td>
 					</tr>				
 					<tr>
 						<td align="left" valign="top" width="20%" style="padding-right: 3em; border-right:1px solid #CCC;">
 							<h4>
-								<?php _e('Select Category', 'amazonautolinks'); ?>
+								<?php _e('Select Category', 'amazon-auto-links'); ?>
 							</h4>
 						</td>
 						<td align="left" valign="top" width="40%" style="padding-left: 3em; border-right:1px solid #CCC;">
 							<h4>
-								<?php echo $strRssLink ? __('Preview of This Category', 'amazonautolinks') : __('No Preview', 'amazonautolinks'); ?>
+								<?php echo $strRssLink ? __('Preview of This Category', 'amazon-auto-links') : __('No Preview', 'amazon-auto-links'); ?>
 							</h4>
 						</td>
 						<td align="left" valign="top" width="40%" style="padding: 0 3em 0 3em;">
 							<h4>
-								<?php _e('Unit Preview', 'amazonautolinks'); ?>
+								<?php _e('Unit Preview', 'amazon-auto-links'); ?>
 							</h4>
 						</td>
 					</tr>
@@ -171,7 +171,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 							if ( $strRssLink ) {
 								flush(); 
 								echo $oAALCatPreview->fetch(array($strRssLink)); 
-							} else _e('Please select a category from the list on the left.', 'amazonautolinks');  
+							} else _e('Please select a category from the list on the left.', 'amazon-auto-links');  
 							?>
 						</td>
 						<td align="left" valign="top" width="40%" style="padding: 0 3em 0 3em">
@@ -181,7 +181,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 							if (count($arrLinks) > 0) { 
 								flush(); 
 								echo $oAALUnitPreview->fetch($arrLinks); 
-							} else _e('Please add a category from the list after selecting it.', 'amazonautolinks');
+							} else _e('Please add a category from the list after selecting it.', 'amazon-auto-links');
 							?>
 						</td>
 					</tr>
@@ -210,11 +210,11 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		<!-- Display the proceeding page for creating a new unit -->
 		<table width="100%" style="padding:0; margin:0;">
 			<tr style="padding:0; margin:0;">
-				<td width="12%" style="padding:0; margin:0;"><h4 style="font-weight: bold; padding:0; margin:0; color:#5E5E5E; font-size: 1em; font-family: sans-serif;"><?php _e('Unit Label', 'amazonautolinks'); ?></h4></td>
+				<td width="12%" style="padding:0; margin:0;"><h4 style="font-weight: bold; padding:0; margin:0; color:#5E5E5E; font-size: 1em; font-family: sans-serif;"><?php _e('Unit Label', 'amazon-auto-links'); ?></h4></td>
 				<td width="8%" style="padding:0; margin:0;"><?php echo $arrOptions['unitlabel'];?></td>
 				<td width="80%" style="padding:0; margin:0;">
 					<div class="submit" style="float:right; margin: 0 22px 5px; padding:20px 0 0;" >
-						<input style="margin:0; paddding:0" type="submit" class="button-primary" name="<?php echo $this->pluginkey ;?>[tab<?php echo $numTab;?>][gobackbutton]" value="<?php $this->_e('Go Back', 'amazonautolinks'); ?>" />
+						<input style="margin:0; paddding:0" type="submit" class="button-primary" name="<?php echo $this->pluginkey ;?>[tab<?php echo $numTab;?>][gobackbutton]" value="<?php $this->_e('Go Back', 'amazon-auto-links'); ?>" />
 					</div>
 				</td>
 			</tr>
@@ -303,7 +303,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		$domleftCol = $xPath->query("//*[@id='zg_browseRoot']")->item(0);		
 		// $domleftCol = $doc->getElementById('zg_browseRoot');
 		if (!$domleftCol) {
-			echo '<!-- ' . __('Categories not found. Plaese consult the plugin developer.', 'amazonautolinks') . ' -->' . PHP_EOL;
+			echo '<!-- ' . __('Categories not found. Plaese consult the plugin developer.', 'amazon-auto-links') . ' -->' . PHP_EOL;
 			return false;
 		}
 		ForEach( $domleftCol->getElementsByTagName('a') as $nodeA) {

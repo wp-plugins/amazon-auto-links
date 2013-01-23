@@ -69,9 +69,18 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 
 == Changelog ==
 
+= 1.1.9 =
+
+* Added: Above and Below Post on Publish check boxes for the auto insert option. 
+* Fixed: the styles of the Manage Unit table by loading the stylesheet in all the setting tab pages of the plugin.
+* Changed: the file name to amazon-auto-links.php from amazonautolinks.php
+* Changed: the text domain to amazon-auto-links from amazonautolinks.
+* Changed: the timimng of registering classes to be extension-friendly.
+* Changed: code formatting to extend the plugin more easily.
+
 = 1.1.8 = 
-* Added: icons for the Operation column in the Manage Option page.
-* Adjusted: the styles of the Manage Option page in the admin page.
+* Added: the icons for the Operation column of the Manage Unit table .
+* Adjusted: the styles of the Manage Unit page in the admin page.
 * Fixed: an issue that R18 categories requiring additional redirects could not be browsed in the category selection page.
 
 = 1.1.7 =

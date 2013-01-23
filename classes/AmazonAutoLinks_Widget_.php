@@ -9,7 +9,7 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 		parent::__construct(
 	 		'amazonautolinks_widget', 
 			'Amazon Auto Links', 
-			array( 'description' => __( 'Amazon Auto Links widget', 'amazonautolinks' ), ) // Args
+			array( 'description' => __( 'Amazon Auto Links widget', 'amazon-auto-links' ), ) // Args
 		);
 	}
 
@@ -59,11 +59,11 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 
 	public function form( $instance ) {
 		if ( isset( $instance[ 'title' ] ) ) $title = $instance[ 'title' ];
-		else $title = __( 'New title', 'amazonautolinks' );
+		else $title = __( 'New title', 'amazon-auto-links' );
 		$selected_unit = ( isset( $instance[ 'strUnitID' ] ) ) ? $instance[ 'strUnitID' ] : '';
 		$unit = ( isset( $instance[ 'unit' ] ) && !empty($instance[ 'unit' ]) ) ? $instance[ 'unit' ] : '';	// for backward compatiblity v1.0.6 or below
 		
-		$arrOptions = get_option('amazonautolinks');
+		$arrOptions = get_option( 'amazonautolinks' );
 		
 		// for backward compatiblity v 1.0.6 or below, which does not have a unique key in the option
 		$arrOptions = $this->fix_unitoption($arrOptions);
@@ -81,13 +81,13 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 		$numUnits = count($arrOptions['units']);
 		?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'amazonautolinks' ); ?></label> 
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'amazon-auto-links' ); ?></label> 
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'strUnitID' ); ?>"><?php _e( 'Units:', 'amazonautolinks' ); ?></label><br />
+			<label for="<?php echo $this->get_field_id( 'strUnitID' ); ?>"><?php _e( 'Units:', 'amazon-auto-links' ); ?></label><br />
 			<select name="<?php echo $this->get_field_name( 'strUnitID' ); ?>" id="<?php echo $this->get_field_id( 'strUnitID' ); ?>">
-				<option value=""><?php echo $numUnits > 0 ? __('Select Unit', 'amazonautolinks') : __('No Unit' , 'amazonautolinks'); ?></option>
+				<option value=""><?php echo $numUnits > 0 ? __('Select Unit', 'amazon-auto-links') : __('No Unit' , 'amazon-auto-links'); ?></option>
 				<?php 
 				foreach($arrOptions['units'] as $arrUnitOption) {
 					echo '<option value="' . esc_attr( $arrUnitOption['id'] ) . '" ' . ($arrUnitOption['id'] == $selected_unit ? 'selected="Selected"' : '') .  '>'
@@ -120,7 +120,7 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 			unset($arrOptions['units'][$strUnitKey]);
 			$arrOptions['units'][$arrUnitOption['id']] = $arrUnitOption;
 		}
-		update_option('amazonautolinks', $arrOptions);
+		update_option('amazon-auto-links', $arrOptions);
 		return $arrOptions;
 	}
 } 

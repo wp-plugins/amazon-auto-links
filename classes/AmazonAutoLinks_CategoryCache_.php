@@ -8,15 +8,15 @@ class AmazonAutoLinks_CategoryCache_ {
 		It is like link prefetching functionality.
 		
 		This class uses the 'amazonautolinks_catcache_events' key for the option which is separated from
-		the plugin main option key, 'amazonautolinks' because cron tasks constantly updates the 
+		the plugin main option key, 'amazon-auto-links' because cron tasks constantly updates the 
 		option in the background, it should not affect other processes using the main option and
 		vice versa.
 */
 	protected $pluginname = 'Amazon Auto Links';
-	protected $pluginkey = 'amazonautolinks';
+	protected $pluginkey = 'amazon-auto-links';
 	protected $eventoptionkey = 'amazonautolinks_catcache_events';
-	protected $pageslug = 'amazonautolinks';
-	protected $textdomain = 'amazonautolinks';	
+	protected $pageslug = 'amazon-auto-links';
+	protected $textdomain = 'amazon-auto-links';	
 	protected $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
 		'CA'	=> 'http://www.amazon.ca/gp/bestsellers/',

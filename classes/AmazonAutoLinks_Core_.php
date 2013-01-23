@@ -4,11 +4,7 @@ if (defined('ABSPATH') && defined('WPINC')) {
 	require_once (ABSPATH . WPINC . '/class-simplepie.php');
 }
 
-class AmazonAutoLinks_Core_
-{
-	/* Used Constants 
-		ABSPATH			// this means instanciation of this class must be after including WordPress admin.php 
-	*/
+class AmazonAutoLinks_Core_ {
 
 	/*
 		Todo: 
@@ -19,19 +15,18 @@ class AmazonAutoLinks_Core_
 	public $classver = 'standard';
 	public $feed = '';
 	protected $pluginname = 'Amazon Auto Links';
-	protected $pluginkey = 'amazonautolinks';
-    protected $pageslug = 'amazonautolinks';
-    protected $textdomain = 'amazonautolinks';
+	protected $pluginkey = 'amazon-auto-links';
+    protected $pageslug = 'amazon-auto-links';
+    protected $textdomain = 'amazon-auto-links';
 	protected $oOption = array();
 	protected $arrUnitOptions = array();
 	public $arrASINs = array();	// stores a temporary ASIN data with the key of the product url	// used by Feed API as well so it must be public
 	
-	/* Constructor */
 	function __construct( &$arrUnitOptionsOrstrUnitLabel, &$arrGeneralOptions='') {
 	
 		// check the parameter
 		if (empty($arrUnitOptionsOrstrUnitLabel)) {
-			echo $this->pluginname . ": " . __METHOD__ . ": " . __('The first parameter cannot be empty.', 'amazonautolinks') . '<br />';
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __('The first parameter cannot be empty.', 'amazon-auto-links') . '<br />';
 			return;								
 		}	
 		
@@ -57,7 +52,7 @@ class AmazonAutoLinks_Core_
 			} else {
 				$strUnitID = $this->oOption->get_unitid_from_unitlabel($strUnitLabel);
 				if (empty($strUnitID)) {
-					echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit ID in the class constructor.' . ': ' . $strUnitLabel . '<br />', 'amazonautolinks');
+					echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit ID in the class constructor.' . ': ' . $strUnitLabel . '<br />', 'amazon-auto-links');
 					return;								
 				}
 				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitID];
@@ -86,18 +81,18 @@ class AmazonAutoLinks_Core_
 
 		// Verify parameters
 		if (empty($this->arrUnitOptions['unitlabel'])) {
-			echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit label.', 'amazonautolinks');
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit label.', 'amazon-auto-links');
 			return;
 		}
 	
 		if ($arrRssUrls =='') $arrRssUrls =  $this->UrlsFromUnitLabel();
 
 		if (count($arrRssUrls) == 0) {
-			echo $this->pluginname . ": " . __METHOD__ . ": " . __('could not retrieve the urls for this unit.', 'amazonautolinks');
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __('could not retrieve the urls for this unit.', 'amazon-auto-links');
 			return;
 		}
 		// if (!(is_array($arrRssUrls) && is_array($this->arrUnitOptions))) {
-			// echo $this->pluginname . ": " . __('the plugin expects the option to be an array', 'amazonautolinks');
+			// echo $this->pluginname . ": " . __('the plugin expects the option to be an array', 'amazon-auto-links');
 			// return;
 		// }
 		

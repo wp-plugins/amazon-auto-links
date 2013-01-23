@@ -44,7 +44,7 @@ class AmazonAutoLinks_Events_ {
 		// $strMethodName is a md5 hashed string of unit label with a prefix of 'aal_func_'. $arguments are not passed.
 		
 		
-		$arrOptions = $this->oOption->arrOptions;	// $arrOptions = get_option('amazonautolinks');
+		$arrOptions = $this->oOption->arrOptions;	// $arrOptions = get_option('amazon-auto-links');
 		
 		$strUnitLabel = $this->arrFuncRef[$strMethodName];
 		$strEventName = 'aal_feed_' . md5($strUnitLabel);
@@ -63,7 +63,7 @@ class AmazonAutoLinks_Events_ {
 	
 	function load_feed_cache_events() {
 		
-		$arrOptions = $this->oOption->arrOptions;		// $arrOptions = get_option('amazonautolinks');	
+		$arrOptions = $this->oOption->arrOptions;		// $arrOptions = get_option('amazon-auto-links');	
 		
 		$i = 0;
 		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) {
@@ -122,7 +122,7 @@ class AmazonAutoLinks_Events_ {
 		// This function is triggered by the run-off shcedule event. It builds caches for 5 urls per call.
 		
 		// Instantiate class objects
-		$oAALCatCache = new AmazonAutoLinks_CategoryCache('amazonautolinks', $this->oOption );
+		$oAALCatCache = new AmazonAutoLinks_CategoryCache('amazon-auto-links', $this->oOption );
 		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
 		shuffle($arrCatCacheEvents);	// make it randome since this method is called simultaneously so multiple instances should not process the same urls.
 		
@@ -162,7 +162,7 @@ class AmazonAutoLinks_Events_ {
 	function cache_usercountrycode($strUserID=1) {
 	
 		// since v1.0.7
-		$oAALUserAds = new AmazonAutoLinks_UserAds('amazonautolinks');
+		$oAALUserAds = new AmazonAutoLinks_UserAds('amazon-auto-links');
 		$strCountryCode = $oAALUserAds->get_user_countrycode();
 		
 		// keep it for 60 days, it won't hardly expire by itself.
@@ -184,7 +184,7 @@ class AmazonAutoLinks_Events_ {
 		AmazonAutoLinks_Log('setting up the unit option for a user ad: ' . $strCountryCode, __METHOD__);		
 		
 		// creates a unit option with the key name of the given county code and saves it in the option with the "amazonautolinks_userads" key.
-		$oAALUserAds = new AmazonAutoLinks_UserAds('amazonautolinks');
+		$oAALUserAds = new AmazonAutoLinks_UserAds('amazon-auto-links');
 		$oAALUserAds->setup_unitoption($strCountryCode);
 	}
 }

@@ -9,8 +9,8 @@ class AmazonAutoLinks_Options_ {
 	public $arrOptions = array();
 	protected $pluginname = 'Amazon Auto Links';
 	protected $pluginkey = 'amazonautolinks';
+	protected $optionkey = 'amazonautolinks';
 	protected $pageslug = 'amazonautolinks';
-	protected $textdomain = 'amazonautolinks';	
 	public $unitdefaultoptions = array(
 		'id'		 		=> '',	 // uniqid() will be inserted when creating the unit. This is the save value as the key string of the unit option element.
 		'unitlabel' 		=> '',	 // this is used with the main function, shortcode, and background events in order to fetch feeds.
@@ -54,7 +54,8 @@ class AmazonAutoLinks_Options_ {
 		'blacklist_description'	=> '',
 		'donate'			=> 0,
 		'cloakquery'		=> 'productlink',
-		'prefetch'			=> 1
+		'prefetch'			=> 1,
+		'license'			=> '', // for Pro
 	);		
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
@@ -95,12 +96,10 @@ class AmazonAutoLinks_Options_ {
 	function __construct( $pluginkey ) {
 	
 		// Include classes
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( $pluginkey );
-			
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( $pluginkey );	
 		
 		// set up properties
 		$this->pluginkey = $pluginkey;
-		$this->textdomain = $pluginkey;	
 		$this->pageslug = $pluginkey;	
 		
 		$this->load_settings();
@@ -112,7 +111,7 @@ class AmazonAutoLinks_Options_ {
 	function load_settings() {
 	
 		// create an option array, if it is the first time of loading this plugin
-		$this->arrOptions = get_option( $this->pluginkey );	
+		$this->arrOptions = get_option( $this->optionkey );	
 		$this->arrOptions = is_array($this->arrOptions) ? $this->arrOptions : array();
 		$arrOption_default = array(
 			"tab100"	=> array(),		// for tab 100
