@@ -70,8 +70,8 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 == Changelog ==
 
 = 1.1.9 =
-
-* Added: Above and Below Post on Publish check boxes for the auto insert option. 
+* Updated: the Japanese localization file. 
+* Added: the Above and Below Post on Publish check boxes for the auto insert option. 
 * Fixed: the styles of the Manage Unit table by loading the stylesheet in all the setting tab pages of the plugin.
 * Changed: the file name to amazon-auto-links.php from amazonautolinks.php
 * Changed: the text domain to amazon-auto-links from amazonautolinks.
