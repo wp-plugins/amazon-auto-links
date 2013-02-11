@@ -69,6 +69,9 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 
 == Changelog ==
 
+= 1.2.0 =
+* Fixed: a bug that url cloak had not been working since v1.1.9.
+
 = 1.1.9 =
 * Updated: the Japanese localization file. 
 * Added: the Above and Below Post on Publish check boxes for the auto insert option. 

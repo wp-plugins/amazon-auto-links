@@ -15,7 +15,6 @@ class AmazonAutoLinks_Core_ {
 	public $classver = 'standard';
 	public $feed = '';
 	protected $pluginname = 'Amazon Auto Links';
-	protected $pluginkey = 'amazon-auto-links';
     protected $pageslug = 'amazon-auto-links';
     protected $textdomain = 'amazon-auto-links';
 	protected $oOption = array();
@@ -32,7 +31,7 @@ class AmazonAutoLinks_Core_ {
 		
 		// classes
 		$this->feed = new AmazonAutoLinks_SimplePie();		// this means class-simplepie.php must be included prior to instantiating this class
-		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions($this->pluginkey);
+		$this->oAALfuncs = new AmazonAutoLinks_Helper_Functions( AMAZONAUTOLINKSKEY );
 	
 		// Setup Caches
 		$this->feed->enable_cache(true);
@@ -42,7 +41,7 @@ class AmazonAutoLinks_Core_ {
 		$this->feed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']
 
 		// options
-		$this->oOption = new AmazonAutoLinks_Options($this->pluginkey);		
+		$this->oOption = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );		
 		if (is_array($arrUnitOptionsOrstrUnitLabel)) 	// unit option is directly passed
 			$this->arrUnitOptions = $arrUnitOptionsOrstrUnitLabel;
 		else {	// a unit label is passed, so retrieve the unit ID and store the unit options of the ID

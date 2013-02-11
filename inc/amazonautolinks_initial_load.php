@@ -2,8 +2,7 @@
 /*
 	this is the initial load script called from the main plugin file
 */
-
-
+	
 add_action( 'plugins_loaded', 'AmazonAutoLinks_LoadPlugin' );		
 function AmazonAutoLinks_LoadPlugin() {
 
@@ -27,7 +26,6 @@ function AmazonAutoLinks_LoadPlugin() {
 	// URL redirects for URL cloaking
 	$oAALRedirects = new AmazonAutoLinks_Redirects( $oAALOptions );
 	$oAALRedirects->Redirect();
-
 
 	// Load actions to hook events for WordPress cron jobs
 	add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );	// 'AmazonAutoLinks_Events');

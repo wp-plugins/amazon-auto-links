@@ -17,12 +17,13 @@ class AmazonAutoLinks_Redirects_ {
 		// since v1.0.9
 		// check a cloak query is passed in the url
 		$arrOptions = $this->oOption->arrOptions;	// since v1.1.3
-		$strCloakQuery = empty($arrOptions['general']['cloakquery']) ? 'productlink': $arrOptions['general']['cloakquery'];
-		if (isset($_GET[$strCloakQuery])) {
+		$strCloakQuery = empty( $arrOptions['general']['cloakquery']) ? 'productlink' : $arrOptions['general']['cloakquery'];
+		if ( isset( $_GET[$strCloakQuery] ) ) {
 
 			// if so, redirect to the actual url
-			$oAALfuncs = new AmazonAutoLinks_Helper_Functions(AMAZONAUTOLINKSKEY);
-			wp_redirect($oAALfuncs->urldecrypt($_GET[$strCloakQuery]));
+			$oAALfuncs = new AmazonAutoLinks_Helper_Functions( AMAZONAUTOLINKSKEY );
+			
+			wp_redirect( $oAALfuncs->urldecrypt( $_GET[$strCloakQuery] ) );
 			exit;		
 		}
 	}
