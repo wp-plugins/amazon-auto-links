@@ -136,16 +136,16 @@ class AmazonAutoLinks_Forms_ {
 			foreach($arrRootOptions['units'] as $strUnitID => $arrUnitOption) {
 				$unitlabel = $arrUnitOption['unitlabel'];
 				if ($unitlabel == $arrOptions['unitlabel']) {
-					$arrErrors['unitlabel'] .= trim(' ' . __('The unit label already exists:', 'amazon-auto-links') . $unitlabel) . ' ' ; 
+					$arrErrors['unitlabel'] .= trim( ' ' . __( 'The unit label already exists:', 'amazon-auto-links' ) . $unitlabel ) . ' ' ; 
 					$bInvalid = true;
 					break;
 				}
-			}		
+			}
 		}
 
 		// check: tab100 -> associateid
 		if (strlen(trim($arrOptions['associateid'])) == 0) {
-			$arrErrors['associateid'] .= ' ' . __('Associate ID cannot be empty.', 'amazon-auto-links');
+			$arrErrors['associateid'] .= ' ' . __( 'Associate ID cannot be empty.', 'amazon-auto-links' );
 			$bInvalid = True;
 		}
 			
@@ -244,19 +244,21 @@ class AmazonAutoLinks_Forms_ {
 		?>	
 		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
-				<?php $this->field_element_unitlabel($numTabNum, $arrOptionsToDisplay['unitlabel'], $arrErrors['unitlabel']); ?>
-				<?php $this->field_element_country($numTabNum, $arrOptionsToDisplay['country']); ?>
-				<?php $this->field_element_associateid($numTabNum, $arrOptionsToDisplay['associateid'], $arrErrors['associateid']); ?>
-				<?php $this->field_element_numberofitems($numTabNum, $arrOptionsToDisplay['numitems']); ?>
-				<?php $this->field_element_imagesize($numTabNum, $arrOptionsToDisplay['imagesize']); ?>
-				<?php $this->field_element_sortorder($numTabNum, $arrOptionsToDisplay['sortorder']); ?>
-				<?php $this->field_element_adtypes($numTabNum, $arrOptionsToDisplay['feedtypes']); ?>
-				<?php $this->field_element_nosim($numTabNum, $arrOptionsToDisplay['nosim']); ?>
-				<?php $this->field_element_insert($numTabNum, $arrOptionsToDisplay['insert']); ?>
-				<?php $this->field_element_titlelength($numTabNum, $arrOptionsToDisplay['titlelength']); ?>
-				<?php $this->field_element_linkstyle($numTabNum, $arrOptionsToDisplay['linkstyle']); ?>
-				<?php $this->field_element_credit($numTabNum, $arrOptionsToDisplay['credit']); ?>
-				<?php $this->field_element_urlcloaking($numTabNum, $arrOptionsToDisplay['urlcloak']); ?>
+				<?php $this->field_element_unitlabel( $numTabNum, $arrOptionsToDisplay['unitlabel'], $arrErrors['unitlabel'] ); ?>
+				<?php $this->field_element_country( $numTabNum, $arrOptionsToDisplay['country'] ); ?>
+				<?php $this->field_element_associateid( $numTabNum, $arrOptionsToDisplay['associateid'], $arrErrors['associateid'] ); ?>
+				<?php $this->field_element_numberofitems( $numTabNum, $arrOptionsToDisplay['numitems'] ); ?>
+				<?php $this->field_element_imagesize( $numTabNum, $arrOptionsToDisplay['imagesize'] ); ?>
+				<?php $this->field_element_sortorder( $numTabNum, $arrOptionsToDisplay['sortorder'] ); ?>
+				<?php $this->field_element_adtypes( $numTabNum, $arrOptionsToDisplay['feedtypes'] ); ?>
+				<?php $this->field_element_nosim( $numTabNum, $arrOptionsToDisplay['nosim'] ); ?>
+				<?php $this->field_element_insert( $numTabNum, $arrOptionsToDisplay['insert'] ); ?>
+				<?php $this->field_element_titlelength( $numTabNum, $arrOptionsToDisplay['titlelength'] ); ?>
+				<?php $this->field_element_linkstyle( $numTabNum, $arrOptionsToDisplay['linkstyle'] ); ?>
+				<?php $this->field_element_credit( $numTabNum, $arrOptionsToDisplay['credit'] ); ?>
+				<?php $this->field_element_urlcloaking( $numTabNum, $arrOptionsToDisplay['urlcloak'] ); ?>
+				<?php $this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); ?>
+				<?php $this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); ?>
 			</tbody>
 		</table>
 		<?php $this->oUserAd->ShowTextAd(); // oUserAd must be instantiated prior to this method call ?>
@@ -581,6 +583,40 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 	<?php	
 	}
+	function field_element_disableonhome( $numTabnum, $bValue="" ) { 
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][disableonhome]';	
+		$bValue = ( $bValue != '' ) ? $bValue : $this->oOption->unitdefaultoptions['disableonhome'];
+	?>
+		<tr valign="top">
+			<th scope="row">
+				<?php _e( 'Where to be Disabled', 'amazon-auto-links' ); ?>						
+			</th>
+			<td>
+				<!-- the hidden field before the checkbox is necessary to send unchecked values -->
+				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty( $bValue ) ? 'Checked' : '' ?> /> 
+				<?php _e( 'Disable on the home page.', 'amazon-auto-links' ); ?>			
+			</td>
+		</tr>
+	<?php			
+	}
+	function field_element_poststobedisabled( $numTabnum, $strValue="" ) {
+		// Product links in the posts set with this option will not be displayed.
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][poststobedisabled]';	
+		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['poststobedisabled'];
+		?>
+		<tr valign="top">
+			<th scope="row"></th>
+			<td>
+				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<font color="#666">( <?php _e( 'Enter post IDs, separated by commas so that the Unit will not be displayed in the posts/pages.', 'amazon-auto-links' ); ?> e.g. 123,135,235 )</font>
+			</td>
+		</tr>
+		<?php		
+	}
+	/*
+	 *  Grayed on the free version
+	 */
 	function field_element_cacheexpiration($numTabnum, $numValue="") {
 	
 		// called from form_setunit()

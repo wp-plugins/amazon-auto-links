@@ -14,8 +14,8 @@ class AmazonAutoLinks_Options_ {
 	public $unitdefaultoptions = array(
 		'id'		 		=> '',	 // uniqid() will be inserted when creating the unit. This is the save value as the key string of the unit option element.
 		'unitlabel' 		=> '',	 // this is used with the main function, shortcode, and background events in order to fetch feeds.
-		'country' 			=> 'US', // <--- TODO: this should be dynamic corresponding to the user's locale or the previous input value
-		'associateid' 		=> '',	 // <--  TODO: needs to investigate a way to remember user's previous input
+		'country' 			=> 'US', // TODO: this should be dynamic corresponding to the user's locale or the previous input value
+		'associateid' 		=> '',	 // TODO: remember user's previous input
 		'containerformat'	=> '<div class="amazon-auto-links">%items%</div>',
 		'itemformat' 		=> '<a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><h5><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a></h5><p>%htmldescription%</p>',
 		'imgformat'			=> '<img src="%imgurl%" alt="%textdescription%" />',
@@ -45,7 +45,9 @@ class AmazonAutoLinks_Options_ {
 		'titlelength'		=> -1,
 		'linkstyle'			=> 1,
 		'credit'			=> True,
-		'urlcloak'			=> False	// sinve v1.0.9
+		'urlcloak'			=> False,	// since v1.0.9
+		'disableonhome'		=> False,	// since v1.2.0 - True/False. determines whether product links should appear on the home page.
+		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
 	);	
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,

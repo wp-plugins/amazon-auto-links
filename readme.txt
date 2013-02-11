@@ -70,6 +70,7 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 == Changelog ==
 
 = 1.2.0 =
+* Added: the option to disable product links per unit basis on certain pages including the home page.
 * Fixed: a bug that url cloak had not been working since v1.1.9.
 
 = 1.1.9 =

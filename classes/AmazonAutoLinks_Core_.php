@@ -77,17 +77,18 @@ class AmazonAutoLinks_Core_ {
 	}
 	/* Method Fetch */
     function fetch($arrRssUrls='') {
-
+		global $wp_query;
+		
 		// Verify parameters
 		if (empty($this->arrUnitOptions['unitlabel'])) {
-			echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit label.', 'amazon-auto-links');
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __( 'failed to retrieve the unit label.', 'amazon-auto-links' );
 			return;
 		}
 	
 		if ($arrRssUrls =='') $arrRssUrls =  $this->UrlsFromUnitLabel();
 
 		if (count($arrRssUrls) == 0) {
-			echo $this->pluginname . ": " . __METHOD__ . ": " . __('could not retrieve the urls for this unit.', 'amazon-auto-links');
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __( 'could not retrieve the urls for this unit.', 'amazon-auto-links' );
 			return;
 		}
 		// if (!(is_array($arrRssUrls) && is_array($this->arrUnitOptions))) {
@@ -111,8 +112,15 @@ class AmazonAutoLinks_Core_ {
 			$this->arrUnitOptions['sortorder']
 			$this->arrUnitOptions['containerformat']
 			$this->arrUnitOptions['titlelength']
+			$this->arrUnitOptions['disableonhome']		// disable option
+			$this->arrUnitOptions['poststobedisabled']	// disable option
 		*/
-		
+	
+		// Do not continue if the disable option for pages is set.
+		if ( $this->arrUnitOptions['disableonhome'] && is_home() ) return;
+		$arrPostIDsToBeDisabled = preg_split( '/\s?[,]\s?+/', $this->arrUnitOptions['poststobedisabled'], -1, PREG_SPLIT_NO_EMPTY );
+		if ( in_array( $wp_query->post->ID, $arrPostIDsToBeDisabled ) )	return;
+	
 		try {
 
 			/* Setup urls */
