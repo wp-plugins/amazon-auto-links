@@ -46,7 +46,8 @@ class AmazonAutoLinks_Core_ {
 			$this->arrUnitOptions = $arrUnitOptionsOrstrUnitLabel;
 		else {	// a unit label is passed, so retrieve the unit ID and store the unit options of the ID
 			$strUnitLabel = $arrUnitOptionsOrstrUnitLabel;
-			if (is_array($this->oOption->arrOptions['units'][$strUnitLabel]))	{	// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
+			// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
+			if ( isset( $this->oOption->arrOptions['units'][$strUnitLabel] ) && is_array( $this->oOption->arrOptions['units'][$strUnitLabel] ) )	{	
 				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitLabel];
 			} else {
 				$strUnitID = $this->oOption->get_unitid_from_unitlabel($strUnitLabel);
@@ -118,8 +119,8 @@ class AmazonAutoLinks_Core_ {
 	
 		// Do not continue if the disable option for pages is set.
 		if ( $this->arrUnitOptions['disableonhome'] && is_home() ) return;
-		$arrPostIDsToBeDisabled = preg_split( '/\s?[,]\s?+/', $this->arrUnitOptions['poststobedisabled'], -1, PREG_SPLIT_NO_EMPTY );
-		if ( in_array( $wp_query->post->ID, $arrPostIDsToBeDisabled ) )	return;
+		$arrPostIDsToBeDisabled = preg_split( '/\s?[,]\s?+/', isset( $this->arrUnitOptions['poststobedisabled'] ) ? $this->arrUnitOptions['poststobedisabled'] : '', -1, PREG_SPLIT_NO_EMPTY );
+		if ( is_object( $wp_query->post ) && in_array( $wp_query->post->ID, $arrPostIDsToBeDisabled ) )	return;
 	
 		try {
 
@@ -127,9 +128,8 @@ class AmazonAutoLinks_Core_ {
 			$urls = $this->set_urls($arrRssUrls);
 			
 			/* Setup the SimplePie instance */
-			// set the life time longer since now the background cache renew crawling functionality has been implemented as of v1.0.5.
-			// $this->set_feed($urls, $this->arrUnitOptions['cacheexpiration'] * 2);	// parameter 1: fetching urls 2: expiration lifetime
-			$this->set_feed($urls, 999999999);	// set -1 for the expiration time so that it does not renew the cache in this load
+			// set the life time longer bacause the background-cache-renew-crawling-functionality has been implemented as of v1.0.5.
+			$this->set_feed($urls, 999999999);	// set -1 for the expiration time for no expireation
 
 			/* Prepare blacklis */
 			$arrBlackASINs = $this->blacklist('blacklist');	// for checking duplicated items
@@ -196,7 +196,7 @@ class AmazonAutoLinks_Core_ {
 		} catch (Exception $e) { $this->i = 0; }
 		
 		// schedule a background cache renewal event
-		if (empty($this->arrUnitOptions['IsPreview'])) $this->schedule_cache_rebuild();
+		if ( empty($this->arrUnitOptions['IsPreview']) ) $this->schedule_cache_rebuild();
 		
 		// end the function by returning the result
 		return $this->format_output($output);
@@ -204,11 +204,11 @@ class AmazonAutoLinks_Core_ {
 	function schedule_cache_rebuild() {
 	
 		// since v1.0.5
-		if (!$this->arrUnitOptions['unitlabel']) return;	// if the option has no unit label, it's a previw unit, so do nothing
-		$numSceduledTime = wp_next_scheduled('aal_feed_' . md5($this->arrUnitOptions['unitlabel']));
-		$bIsScheduled = !empty($numSceduledTime);
+		if ( !$this->arrUnitOptions['unitlabel'] ) return;	// if the option has no unit label, it's a previw unit, so do nothing
+		$numSceduledTime = wp_next_scheduled( 'aal_feed_' . md5( $this->arrUnitOptions['unitlabel'] ) );
+		$bIsScheduled = !empty( $numSceduledTime );
 		$numExpirationTime = time() + $this->arrUnitOptions['cacheexpiration'];
-		if ($bIsScheduled && ($numSceduledTime < $numExpirationTime))	// already scheduled
+		if ( $bIsScheduled && ( $numSceduledTime < $numExpirationTime ) )	// already scheduled
 		{
 			AmazonAutoLinks_Log( '"' . $this->arrUnitOptions['unitlabel'] . '" is already schaduled. Returning. $numSceduledTime: ' . date('Y m d h:i:s A', $numSceduledTime) . ' $numExpirationTime: ' . date('Y m d h:i:s A', $numExpirationTime) , __METHOD__);
 			return;	//  if the event has been already scheduled, do nothing
@@ -218,10 +218,10 @@ class AmazonAutoLinks_Core_ {
 		// the class needs the option object
 		$oAALEvents = new AmazonAutoLinks_Events( $this->oOption );	
 		
-		if (!$bIsScheduled)		// means there is no schedule for this unit to renew its cache
-			$oAALEvents->schedule_feed_cache_rebuild($this->arrUnitOptions['unitlabel'], 0);	// the second parameter means do it in the next page load
+		if ( !$bIsScheduled )		// means there is no schedule for this unit to renew its cache
+			$oAALEvents->schedule_feed_cache_rebuild( $this->arrUnitOptions['unitlabel'], 0 );	// the second parameter means do it in the next page load
 		else 	//if ($numSceduledTime > time() + $this->arrUnitOptions['cacheexpiration'])		// this means that the scheduled time is set incorrectly; in other words, the cache expiration option has been changed by the user.
-			$oAALEvents->reschedule_feed_cache_rebuild($numSceduledTime, $this->arrUnitOptions['unitlabel'], $this->arrUnitOptions['cacheexpiration']);	// delete the previous schedule and add a new schedule
+			$oAALEvents->reschedule_feed_cache_rebuild( $numSceduledTime, $this->arrUnitOptions['unitlabel'], $this->arrUnitOptions['cacheexpiration'] );	// delete the previous schedule and add a new schedule
 			
 	}
 	function set_urls($arrRssUrls) {

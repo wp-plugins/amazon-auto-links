@@ -34,10 +34,13 @@ function AmazonAutoLinks_LoadPlugin() {
 	// todo: find a way to avoid using create_function() 
 	add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
 
+	// Plugin Requirements
+	// do not use register_activation_hook(); deactivate_plugins() will fail for some reasons.
+	new AmazonAutoLinks_Requirements( '5.1.2', '3.0', array( 'mb_language' ) );
+		
 }
 
-// Plugin Requirements & initial setup
-register_activation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_Requirements' );
+// Initial setup
 register_activation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_SetupTransients' );
 
 // Clean up transients upon plugin deactivation
@@ -52,6 +55,21 @@ function AmazonAutoLinks_CleanTransients() {
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient%_aal_%' )" );
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%_aal_%' )" );
 	
+	AmazonAutoLinks_WPUnscheduleEventsByRegex( '/aal_feed_.+/' );
+}
+		
+	
+function AmazonAutoLinks_WPUnscheduleEventsByRegex( $strEventNameNeedle ) {
+
+	// this function removes registered WP Cron events by a specified event name which matches the given regex pattern.
+	$arrCronEvents = _get_cron_array();	
+	foreach( $arrCronEvents as $nTimeStamp => $arrEvent ) {
+		// array_keys() returns an array holding the keys and preg_grep() searches if a matching key exists. 
+		// If exists, with casting (int), it returns true; otherwise, false.
+		$bIsDelete = (int) preg_grep( $strEventNameNeedle, array_keys( $arrCronEvents[$nTimeStamp] ) );
+		if ( $bIsDelete ) unset( $arrCronEvents[$nTimeStamp] );
+	}
+	_set_cron_array( $arrCronEvents );
 }
 function AmazonAutoLinks_CleanOptions($key='') {
 	
@@ -170,40 +188,6 @@ function AmazonAutoLinks_RegisterClasses() {
 	} 
 }
 
-function AmazonAutoLinks_Requirements() {
-
-	// Called from the activation hook.
-	// requirements for this plugin to work in PHP version >= 5.1.2
-	global $wp_version, $wpdb;
-	$plugin = AMAZONAUTOLINKSPLUGINFILEBASENAME;	//plugin_basename( __FILE__ );
-	$plugin_data = get_plugin_data( AMAZONAUTOLINKSPLUGINFILE, false );
-	$numPHPver = '5.1.2';	// required php version
-	$numWPver = '3.0';		// required WordPress version
-	$bSufficient = True;
-	$strMsg = '';
-	if ( version_compare( phpversion(), $numPHPver, "<" ) ) {
-		$bSufficient = False;
-		$strMsg .= $plugin_data['Name'] . ': ' . __( 'The plugin requires the following PHP version or higher:', 'amazon-auto-links' )  
-		. ' ' . $numPHPver . ' ' . __( 'Your PHP version is:', 'amazon-auto-links' ) . phpversion() 
-		. ' ' . __( 'Deactivating the plugin.', 'amazon-auto-links' ) . '<br />';
-	}	
-	if ( version_compare( $wp_version, $numWPver, "<" ) ) {
-		$bSufficient = False;
-		$strMsg .=  $plugin_data['Name'] . ': ' . __( 'The plugin requires the following WordPress version or higher:', 'amazon-auto-links' ) 
-		. ' ' . $numWPver . ' ' . __( 'Your WordPress version is:', 'amazon-auto-links' ) . $wp_version . ' ' 
-		. __( 'Deactivating the plugin.', 'amazon-auto-links' ) ;
-	}
-	if ( !$bSufficient && is_plugin_active( $plugin ) ) {
-		echo '<div class="error"><p>' . $strMsg . '</p></div>';
-		deactivate_plugins( $plugin );
-	}
-}
-
 function AmazonAutoLinks_SetupTransients() {	
-
-	// Called from the activation hook. So this should be functional individually.
-	if ( !class_exists( 'AmazonAutoLinks_UserAds' ) ) AmazonAutoLinks_RegisterClasses();
-	$o = new AmazonAutoLinks_UserAds( AMAZONAUTOLINKSKEY, new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY ) );
-	$o->SetupTransients();	
-	// $o->check_user_countrycode();
+	wp_schedule_single_event( time(), 'aal_setuptransients' );		
 }

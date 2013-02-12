@@ -12,6 +12,9 @@ class AmazonAutoLinks_Events_ {
 		// as of v1.1.3 $bIsManualLoad is removed
 		$this->oOption = $oOption;
 		
+		
+		// For the plugin activation hook
+		add_action( 'aal_setuptransients', array( $this, 'SetupTransients' ) );	 // this must be loaded to execute the callback function		
 	}
 	
 	function LoadEvents() {
@@ -38,7 +41,7 @@ class AmazonAutoLinks_Events_ {
 	}
 	
 	// Feed Caches
-	function __call($strMethodName, $arguments) {
+	function __call( $strMethodName, $arguments ) {
 	
 		// This is called from the feed cache events 
 		// $strMethodName is a md5 hashed string of unit label with a prefix of 'aal_func_'. $arguments are not passed.
@@ -47,11 +50,11 @@ class AmazonAutoLinks_Events_ {
 		$arrOptions = $this->oOption->arrOptions;	// $arrOptions = get_option('amazon-auto-links');
 		
 		$strUnitLabel = $this->arrFuncRef[$strMethodName];
-		$strEventName = 'aal_feed_' . md5($strUnitLabel);
-		AmazonAutoLinks_Log( 'unset method name is called: ' . $strMethodName . ' This reads to: ' . $strUnitLabel, __METHOD__);
+		$strEventName = 'aal_feed_' . md5( $strUnitLabel );
+		AmazonAutoLinks_Log( 'unset method name is called: ' . $strMethodName . ' This reads to: ' . $strUnitLabel, __METHOD__ );
 		
 		// renew the cache
-		$oAAL = new AmazonAutoLinks_Core($strUnitLabel);	// now the class accepts a unit label to be passed in the parameter
+		$oAAL = new AmazonAutoLinks_Core( $strUnitLabel );	// now the class accepts a unit label to be passed in the parameter
 		$oAAL->cache_rebuild();
 		
 		// schedule the next event so that it will be reccursive
@@ -66,26 +69,26 @@ class AmazonAutoLinks_Events_ {
 		$arrOptions = $this->oOption->arrOptions;		// $arrOptions = get_option('amazon-auto-links');	
 		
 		$i = 0;
-		foreach($arrOptions['units'] as $strUnitID => $arrUnitOption) {
+		foreach( $arrOptions['units'] as $strUnitID => $arrUnitOption ) {
 			$strUnitLabel = $arrUnitOption['unitlabel'];
 			$strActionHashName = md5($strUnitLabel);
 			$strFunctionName = 'aal_func_' . $strActionHashName;
 			$strEventName = 'aal_feed_' . $strActionHashName;
 			$this->arrFuncRef[$strFunctionName] = $strUnitLabel;
-			add_action($strEventName, array(&$this, $strFunctionName));	// this sets the method name as the hash name of unit label and if the method is triggered, __call() is called.
+			add_action( $strEventName, array( &$this, $strFunctionName ) );	// this sets the method name as the hash name of unit label and if the method is triggered, __call() is called.
 			$i++;
 		}	
 		AmazonAutoLinks_Log( $i . ' action(s) of feed cache events is(are) hooked. This simply means there are ' . $i . ' unit(s).', __METHOD__);
 	}
-	function schedule_feed_cache_rebuild($strUnitLabel, $numInterval) {
+	function schedule_feed_cache_rebuild( $strUnitLabel, $numInterval ) {
 		
 		// this method is called by the AmazonAutoLinks_Core class
-		$strActionHashName = md5($strUnitLabel);
+		$strActionHashName = md5( $strUnitLabel );
 		$strFunctionName = 'aal_func_' . $strActionHashName;
 		$strEventName = 'aal_feed_' . $strActionHashName;
-		add_action($strEventName, array(&$this, $strFunctionName));	// this sets the method name as the hash name of unit label
-		wp_schedule_single_event(time() + $numInterval, $strEventName);	
-		AmazonAutoLinks_Log( $strUnitLabel . ' is scheduled to rebuild its feed cache at ' . $numInterval . ' seconds from now.', __METHOD__);
+		add_action( $strEventName, array( &$this, $strFunctionName ) );	// this sets the method name as the hash name of unit label
+		wp_schedule_single_event( time() + $numInterval, $strEventName );	
+		AmazonAutoLinks_Log( $strUnitLabel . ' is scheduled to rebuild its feed cache at ' . $numInterval . ' seconds from now.', __METHOD__ );
 	}
 	function reschedule_feed_cache_rebuild($numTimeStamp, $strUnitLabel, $numInterval) {
 		
@@ -187,4 +190,20 @@ class AmazonAutoLinks_Events_ {
 		$oAALUserAds = new AmazonAutoLinks_UserAds('amazon-auto-links');
 		$oAALUserAds->setup_unitoption($strCountryCode);
 	}
+		 
+	/*
+	 * For the plugin activation hook
+	* */ 
+	function SetupTransients() {
+		// Should be called in the background.
+		// file_put_contents( AMAZONAUTOLINKSPLUGINDIR . '/' . __FUNCTION__ . '.txt' , 
+			// __FILE__ . PHP_EOL . 
+			// __METHOD__ . PHP_EOL,
+			// FILE_APPEND );
+				
+		// AmazonAutoLinks_RegisterClasses();
+		$o = new AmazonAutoLinks_UserAds( 'amazonautolinks', new AmazonAutoLinks_Options( 'amazonautolinks' ) );
+		$o->SetupTransients();
+	}
+	
 }

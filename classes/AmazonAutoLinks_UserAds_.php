@@ -180,26 +180,26 @@ class AmazonAutoLinks_UserAds_
 		if (!$output) AmazonAutoLinks_Log('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey], __METHOD__);	
 		echo $output;
 	}	
-	function InitializeTextFeed($arrUrls) {
+	function InitializeTextFeed( $arrUrls ) {
 		
 		$this->oTextFeed = new AmazonAutoLinks_SimplePie();
 		
 		// Setup Caches
-		$this->oTextFeed->enable_cache(true);
-		$this->oTextFeed->set_cache_class('WP_Feed_Cache');
-		$this->oTextFeed->set_file_class('WP_SimplePie_File');
-		$this->oTextFeed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+		$this->oTextFeed->enable_cache( true );
+		$this->oTextFeed->set_cache_class( 'WP_Feed_Cache' );
+		$this->oTextFeed->set_file_class( 'WP_SimplePie_File' );
+		$this->oTextFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
 
 		// Set Sort Order
-		$this->oTextFeed->set_sortorder('random');
+		$this->oTextFeed->set_sortorder( 'random' );
 
 		// Set urls
-		$this->oTextFeed->set_feed_url($arrUrls);
+		$this->oTextFeed->set_feed_url( $arrUrls );
 		$this->oTextFeed->set_item_limit(1);
 
 		// this should be set after defineing $urls
-		$this->oTextFeed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', 3600, $urls));	
-		$this->oTextFeed->set_stupidly_fast(true);
+		$this->oTextFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
+		$this->oTextFeed->set_stupidly_fast( true );
 		$this->oTextFeed->init();		
 		
 	}
@@ -231,7 +231,7 @@ class AmazonAutoLinks_UserAds_
 		$this->oTopBannerFeed->set_item_limit( 1 );
 
 		// this should be set after defineing $urls
-		$this->oTopBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $urls ) );	
+		$this->oTopBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
 		$this->oTopBannerFeed->set_stupidly_fast( true );
 		$this->oTopBannerFeed->init();		
 	}		
@@ -246,26 +246,26 @@ class AmazonAutoLinks_UserAds_
 		else 
 			return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
 	}		
-	function InitializeBannerFeed($arrUrls) {
+	function InitializeBannerFeed( $arrUrls ) {
 		
 		$this->oBannerFeed = new AmazonAutoLinks_SimplePie();
 		
 		// Setup Caches
-		$this->oBannerFeed->enable_cache(true);
-		$this->oBannerFeed->set_cache_class('WP_Feed_Cache');
-		$this->oBannerFeed->set_file_class('WP_SimplePie_File');
-		$this->oBannerFeed->enable_order_by_date(true);			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+		$this->oBannerFeed->enable_cache( true );
+		$this->oBannerFeed->set_cache_class( 'WP_Feed_Cache' );
+		$this->oBannerFeed->set_file_class( 'WP_SimplePie_File' );
+		$this->oBannerFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
 
 		// Set Sort Order
-		$this->oBannerFeed->set_sortorder('random');
+		$this->oBannerFeed->set_sortorder( 'random' );
 
 		// Set urls
-		$this->oBannerFeed->set_feed_url($arrUrls);
-		$this->oBannerFeed->set_item_limit(1);
+		$this->oBannerFeed->set_feed_url( $arrUrls );
+		$this->oBannerFeed->set_item_limit( 1 );
 
 		// this should be set after defineing $urls
-		$this->oBannerFeed->set_cache_duration(apply_filters('wp_feed_cache_transient_lifetime', 3600, $urls));	
-		$this->oBannerFeed->set_stupidly_fast(true);
+		$this->oBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
+		$this->oBannerFeed->set_stupidly_fast( true );
 		$this->oBannerFeed->init();		
 		
 	}	

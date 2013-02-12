@@ -36,9 +36,9 @@ class AmazonAutoLinks_Forms_ {
 	
 		// veryfies nonce with the given options and also checks the specified hidden tag field is sent
 		// the $_POST array's format is specifically designed for this plugin, $_POST[pluginkey][tabNNN][tabNNN_submitted], where NNN is the tab number.
-		if (!$action) 
+		if ( !$action ) 
 			$action = $this->pluginkey;	
-		if (!name)
+		if ( !$name )
 			$name = 'nonce';
 			
 		if ( function_exists('wp_verify_nonce') ) {
@@ -128,7 +128,7 @@ class AmazonAutoLinks_Forms_ {
 		}			
 
 		// if the method is called from the 'Edit Unit' page and the prior unit label is the same
-		if ($mode != 'new' && trim($arrOptions['unitlabel']) == trim($arrOptions['prior_unitlabel'])) {	
+		if ( $mode != 'new' && trim( $arrOptions['unitlabel'] ) == trim( $arrOptions['prior_unitlabel'] ) ) {	
 			// no need to check because the unit label is not edited.
 		} else {
 		// otherwise, check if the same unit label already exists
@@ -236,29 +236,31 @@ class AmazonAutoLinks_Forms_ {
 		// called from admin_tab100() and admin_tab202()
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
-		if (!is_array($arrOptionsToDisplay)) 
+		if ( !is_array( $arrOptionsToDisplay ) ) 
 			$arrOptionsToDisplay = $this->oOption->unitdefaultoptions;
-		if (!is_array($arrErrors)) 
+		if ( !is_array( $arrErrors ) ) 
 			$arrErrors = array();
 					
 		?>	
 		<table class="form-table" style="clear:left; width:auto;">
 			<tbody>
-				<?php $this->field_element_unitlabel( $numTabNum, $arrOptionsToDisplay['unitlabel'], $arrErrors['unitlabel'] ); ?>
-				<?php $this->field_element_country( $numTabNum, $arrOptionsToDisplay['country'] ); ?>
-				<?php $this->field_element_associateid( $numTabNum, $arrOptionsToDisplay['associateid'], $arrErrors['associateid'] ); ?>
-				<?php $this->field_element_numberofitems( $numTabNum, $arrOptionsToDisplay['numitems'] ); ?>
-				<?php $this->field_element_imagesize( $numTabNum, $arrOptionsToDisplay['imagesize'] ); ?>
-				<?php $this->field_element_sortorder( $numTabNum, $arrOptionsToDisplay['sortorder'] ); ?>
-				<?php $this->field_element_adtypes( $numTabNum, $arrOptionsToDisplay['feedtypes'] ); ?>
-				<?php $this->field_element_nosim( $numTabNum, $arrOptionsToDisplay['nosim'] ); ?>
-				<?php $this->field_element_insert( $numTabNum, $arrOptionsToDisplay['insert'] ); ?>
-				<?php $this->field_element_titlelength( $numTabNum, $arrOptionsToDisplay['titlelength'] ); ?>
-				<?php $this->field_element_linkstyle( $numTabNum, $arrOptionsToDisplay['linkstyle'] ); ?>
-				<?php $this->field_element_credit( $numTabNum, $arrOptionsToDisplay['credit'] ); ?>
-				<?php $this->field_element_urlcloaking( $numTabNum, $arrOptionsToDisplay['urlcloak'] ); ?>
-				<?php $this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); ?>
-				<?php $this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); ?>
+			<?php
+			$this->field_element_unitlabel( $numTabNum, $arrOptionsToDisplay['unitlabel'], isset( $arrErrors['unitlabel'] ) ? $arrErrors['unitlabel'] : '' ); 
+			$this->field_element_country( $numTabNum, $arrOptionsToDisplay['country'] ); 
+			$this->field_element_associateid( $numTabNum, $arrOptionsToDisplay['associateid'], isset( $arrErrors['associateid'] ) ? $arrErrors['associateid'] : '' ); 
+			$this->field_element_numberofitems( $numTabNum, $arrOptionsToDisplay['numitems'] ); 
+			$this->field_element_imagesize( $numTabNum, $arrOptionsToDisplay['imagesize'] ); 
+			$this->field_element_sortorder( $numTabNum, $arrOptionsToDisplay['sortorder'] ); 
+			$this->field_element_adtypes( $numTabNum, $arrOptionsToDisplay['feedtypes'] ); 
+			$this->field_element_nosim( $numTabNum, $arrOptionsToDisplay['nosim'] ); 
+			$this->field_element_insert( $numTabNum, $arrOptionsToDisplay['insert'] ); 
+			$this->field_element_titlelength( $numTabNum, $arrOptionsToDisplay['titlelength'] ); 
+			$this->field_element_linkstyle( $numTabNum, $arrOptionsToDisplay['linkstyle'] ); 
+			$this->field_element_credit( $numTabNum, $arrOptionsToDisplay['credit'] ); 
+			$this->field_element_urlcloaking( $numTabNum, $arrOptionsToDisplay['urlcloak'] ); 
+			$this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); 
+			$this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); 
+			?>
 			</tbody>
 		</table>
 		<?php $this->oUserAd->ShowTextAd(); // oUserAd must be instantiated prior to this method call ?>
@@ -294,7 +296,7 @@ class AmazonAutoLinks_Forms_ {
 	}
 	
 	/* Methods for $this->form_setunit() -- the parts of form fields */	
-	function field_element_unitlabel($numTabnum, $strValue="", $strWarning="") {
+	function field_element_unitlabel( $numTabnum, $strValue="", $strWarning="" ) {
 	
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][unitlabel]';
@@ -478,8 +480,8 @@ class AmazonAutoLinks_Forms_ {
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedbelow]" 		 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptabove]"	 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptbelow]"	 value="0" />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo $arrValues['postabove_static'] ? 	'Checked' : '' ?>> <?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo $arrValues['postbelow_static'] ? 	'Checked' : '' ?>> <?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo isset( $arrValues['postabove_static'] ) && $arrValues['postabove_static'] ? 'Checked' : '' ?>> <?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo isset( $arrValues['postbelow_static'] ) && $arrValues['postbelow_static'] ? 'Checked' : '' ?>> <?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove]" 		 value="1" <?php echo $arrValues['postabove'] ? 		'Checked' : '' ?>> <?php _e('Above Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow]"		 value="1" <?php echo $arrValues['postbelow'] ? 		'Checked' : '' ?>> <?php _e('Below Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[excerptabove]" 	 value="1" <?php echo $arrValues['excerptabove'] ? 		'Checked' : '' ?>> <?php _e('Above Excerpt', 'amazon-auto-links');?><br />
@@ -741,7 +743,7 @@ class AmazonAutoLinks_Forms_ {
 				$this->field_element_blacklist_by_description( $numTabNum, $arrOptionsToDisplay['blacklist_description'] );
 				$this->field_element_cloakquery( $numTabNum, $arrOptionsToDisplay['cloakquery'] );
 				$this->field_element_prefetch( $numTabNum, $arrOptionsToDisplay['prefetch'] );
-				$this->field_element_license( $numTabNum, $arrOptionsToDisplay['license'] ); // since v1.1.9			
+				$this->field_element_license( $numTabNum, isset( $arrOptionsToDisplay['license'] ) ? $arrOptionsToDisplay['license'] : '' ); // since v1.1.9			
 				
 				// for addons since v1.1.8
 				$strAdditionalFormsFields = '';

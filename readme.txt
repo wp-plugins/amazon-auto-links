@@ -27,6 +27,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 * PHP function to insert in the theme.
 * Blacklist. If you want certain products not to be shown, the black list can be set by ASIN, substring of title and description.
 * URL cloaking. You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons.
+* Disable on certain pages. You can disable product links on the pages you do not want to by specifying the post IDs or if it is the front page, just check the checkbox.
   
 == Installation ==
 
@@ -70,6 +71,8 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 == Changelog ==
 
 = 1.2.0 =
+* Fixed: some lines of code which caused warning messages when the WordPress debug mode is turned on.
+* Added: the ability to clean up once-off events upon plugin deactivation.
 * Added: the option to disable product links per unit basis on certain pages including the home page.
 * Fixed: a bug that url cloak had not been working since v1.1.9.
 

@@ -230,7 +230,7 @@ class AmazonAutoLinks_Options_ {
 		// called from the AmazonAutoLinks_Admin class to store the temporay editing data in the options['editunit'] array.
 		// the user modifies this temprorary copied data and saves it if it is validated after pressing the form submit button.
 	
-		if (is_array($this->arrOptions['units'][$strUnitLabel])) 
+		if ( isset( $this->arrOptions['units'][$strUnitLabel] ) && is_array( $this->arrOptions['units'][$strUnitLabel] ) ) 
 			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitLabel];	// backward compatibility for v1.0.6 or below
 		else {
 			$strUnitID = $this->get_unitid_from_unitlabel($strUnitLabel);

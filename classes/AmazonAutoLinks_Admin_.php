@@ -96,10 +96,10 @@ class AmazonAutoLinks_Admin_ {
 	function admin_custom_css() {
 		
 		// for the plugin admin panel theming
-		if ($_GET['page'] != AMAZONAUTOLINKSKEY) return;
+		if ( !isset( $_GET['page'] ) || $_GET['page'] != AMAZONAUTOLINKSKEY ) return;
 			
 		// if the option page of this plugin is loaded
-		if (IsSet($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) || IsSet($_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton'])) {
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton'] ) || IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton']) ) {
 
 					$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
 					$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
@@ -122,21 +122,23 @@ class AmazonAutoLinks_Admin_ {
 					}    					
 					</style>';				
 
-		} else if ( $_GET['tab'] == 400 ) 	// for the upgrading to pro tab; the table needs additional styles
+		} else if ( isset( $_GET['tab'] ) && $_GET['tab'] == 400 ) 	// for the upgrading to pro tab; the table needs additional styles
 			echo '<link rel="stylesheet" type="text/css" href="' . AMAZONAUTOLINKSPLUGINURL . '/css/amazonautolinks_tab400.css' . '">';
 		
 		echo '<link rel="stylesheet" type="text/css" href="' . AMAZONAUTOLINKSPLUGINURL . '/css/amazonautolinks_tab200.css'. '">';
 			
 		// for category selection page
-		if ( $_GET['tab'] == 203 || $_GET['tab'] == 101 || $_POST['tab'] == 203 || $_POST['tab'] == 101 ) {
+		$numTab = isset( $_GET['tab'] ) ? $_GET['tab'] : '';
+		$numTab = isset( $_POST['tab'] ) ? $_POST['tab'] : $numTab;
+		if ( in_array( $numTab, array( 203, 101 ) ) ) {
 			$cssurl_wpadmin = admin_url( '/css/wp-admin.css?ver=') . get_bloginfo( 'version' ); // get_bloginfo( 'version' ));
 			$cssurl_colorsfresh = admin_url('/css/colors-fresh.css') . '?ver=' . get_bloginfo( 'version' );
 			$cssurl_catselect = AMAZONAUTOLINKSPLUGINURL . '/css/amazonautolinks_catselect.css';					
-		?>
+			?>
 			<link rel="stylesheet" href="<?php echo $cssurl_wpadmin; ?>" type="text/css" media="all" />
 			<link rel="stylesheet" id="colors-css" href="<?php echo $cssurl_colorsfresh; ?>" type="text/css" media="all" />
 			<link rel="stylesheet" href="<?php echo $cssurl_catselect; ?>" type="text/css" media="all" />	
-		<?php
+			<?php
 		}
 	}
 	function GetTabNumber() {
@@ -198,7 +200,7 @@ class AmazonAutoLinks_Admin_ {
 						<td valign="top" style="border: 0px;">
 						<?php
 							$this->oUserAd->InitializeBannerFeed( 'http://feeds.feedburner.com/GANLinkBanner160x600Random40' );
-							$this->oUserAd->ShowBannerAds( in_array( $_GET['tab'], array( 100, 400, '' ) ) ? 3 : 2 );				
+							$this->oUserAd->ShowBannerAds( !isset( $_GET['tab'] ) || in_array( $_GET['tab'], array( 100, 400, '' ) ) ? 3 : 2 );				
 							flush();
 						?>
 						</td>
@@ -339,7 +341,7 @@ class AmazonAutoLinks_Admin_ {
 		$mode = ( $numTab == 203 ) ? 'editunit' : 'newunit'; // or 101 -> newunit
 
 		// for the initial array components - $this->oOption->arrOptions[$mode] must be an array from the previous page (the caller page of the iframe)
-		if ( !is_array( $this->oOption->arrOptions[$mode]['categories'] ) ) $this->oOption->arrOptions[$mode]['categories'] = array();
+		if ( !isset( $this->oOption->arrOptions[$mode]['categories'] ) || !is_array( $this->oOption->arrOptions[$mode]['categories'] ) ) $this->oOption->arrOptions[$mode]['categories'] = array();
 	
 		/* POST Data */
 		// Verify nonce 
@@ -828,7 +830,10 @@ class AmazonAutoLinks_Admin_ {
 			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
 			if ($numTabNum == 202) {
 				echo '<h3>' . __('Edit Unit', 'amazon-auto-links') . '</h3>';	
-				$this->oAALforms->form_setunit($numTabNum, $this->oOption->arrOptions['editunit'], $this->oOption->arrOptions['tab202']['errors']); 
+				$this->oAALforms->form_setunit( $numTabNum, 
+					$this->oOption->arrOptions['editunit'], 
+					isset( $this->oOption->arrOptions['tab202']['errors'] ) ? $this->oOption->arrOptions['tab202']['errors'] : array() 
+				); 
 			} else if ($numTabNum == 203) 
 				$this->admin_tab203($numTabNum); // got to the category selection page
 			?>
@@ -865,9 +870,12 @@ class AmazonAutoLinks_Admin_ {
 		<h3><?php echo $this->tabcaptions[3]; ?></h3>		
 		<form method="post" action="">	
 			<?php
-			$this->oAALforms->embednonce($this->pluginkey, 'nonce'); 
-			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
-			$this->oAALforms->form_generaloptions($numTabNum, $this->oOption->arrOptions['general'], $this->oOption->arrOptions['tab300']['errors']); 
+			$this->oAALforms->embednonce( $this->pluginkey, 'nonce' ); 
+			$this->oAALforms->embedhiddenfield( $this->pluginkey, $numTabNum ); 
+			$this->oAALforms->form_generaloptions( $numTabNum, 
+				isset( $this->oOption->arrOptions['general'] ) ? $this->oOption->arrOptions['general'] : array(), 
+				isset( $this->oOption->arrOptions['tab300']['errors'] ) ? $this->oOption->arrOptions['tab300']['errors'] : array()
+				); 
 			?>
 		</form>				
 	<?php	
