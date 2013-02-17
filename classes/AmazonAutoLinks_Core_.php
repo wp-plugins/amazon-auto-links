@@ -118,7 +118,7 @@ class AmazonAutoLinks_Core_ {
 		*/
 	
 		// Do not continue if the disable option for pages is set.
-		if ( $this->arrUnitOptions['disableonhome'] && is_home() ) return;
+		if ( isset( $this->arrUnitOptions['disableonhome'] ) && $this->arrUnitOptions['disableonhome'] && is_home() ) return;
 		$arrPostIDsToBeDisabled = preg_split( '/\s?[,]\s?+/', isset( $this->arrUnitOptions['poststobedisabled'] ) ? $this->arrUnitOptions['poststobedisabled'] : '', -1, PREG_SPLIT_NO_EMPTY );
 		if ( is_object( $wp_query->post ) && in_array( $wp_query->post->ID, $arrPostIDsToBeDisabled ) )	return;
 	
