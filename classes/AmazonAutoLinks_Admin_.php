@@ -51,6 +51,8 @@ class AmazonAutoLinks_Admin_ {
 		// admin custom CSS
 		add_action( 'admin_head', array( &$this, 'admin_custom_css' ) );
 				
+		// sinve v1.2.1		
+		$this->ExportUnits();	// Export Units	- this must be done before the header is sent since it handles file download.
 	}
 	function localize() {
 
@@ -472,15 +474,23 @@ class AmazonAutoLinks_Admin_ {
 		}
 		
 		// Delete Units
-		if (isset($_POST[$this->pluginkey]['tab200']['tab200_submitted']) && isset($_POST[$this->pluginkey]['tab200']['deleteselectedunits'])) {
+		if ( isset( $_POST[$this->pluginkey]['tab200']['tab200_submitted'] ) && isset( $_POST[$this->pluginkey]['tab200']['deleteselectedunits'] ) ) {
 
 			// Delete units of the submitted unit keys
-			if ($this->oOption->delete_units($_POST[$this->pluginkey]['tab200']['delete'])) echo '<div class="updated"><p>' . __('Deleted the selected units.', 'amazon-auto-links') . '</p></div>';
+			if ( isset( $_POST[$this->pluginkey]['tab200']['delete'] ) && $this->oOption->delete_units( $_POST[$this->pluginkey]['tab200']['delete'] ) ) 
+				echo '<div class="updated"><p>' . __( 'Deleted the selected units.', 'amazon-auto-links' ) . '</p></div>';
 			
 			// also clean broken units (remove unlabeled units)
-			if ($this->oOption->clean_unlabeled_units()) echo '<div class="error settings-error"><p>' . __('There was a broken unit and deleted.', 'amazon-auto-links') . '</p></div>';
+			if ( $this->oOption->clean_unlabeled_units() ) 
+				echo '<div class="error settings-error"><p>' . __( 'There was a broken unit and deleted.', 'amazon-auto-links' ) . '</p></div>';
 
 		}
+		
+		// Import Units	
+		$this->ImportUnits();	
+		
+		// Export Units - this is done in the RegisterHooks() method since it has to be done before the header is sent.
+		
 		?>
 		<h3><?php echo $this->tabcaptions[2]; ?></h3>		
 		
@@ -497,14 +507,45 @@ class AmazonAutoLinks_Admin_ {
 		?>
 		<form method="post" action="<?php echo $strAction;?>" >
 			<?php $this->admin_tab200_unittable(); ?>				
-			<div style="float:right; margin-top:20px;">
-				<!-- Clear Unit Cache button -->		
-				<?php $this->oAALforms->form_submitbutton(200, 'clearcache', __('Clear Unit Cache', 'amazon-auto-links'), 'nonce', False); // the last parameter specifies that the form tag is not included ?>			
-				<!-- Delete Selected Units button -->
-				<?php $this->oAALforms->form_submitbutton(200, 'deleteselectedunits', __('Delete Selected Units', 'amazon-auto-links'), 'nonce', False); // the last parameter specifies that the form tag is not included ?>
-			</div>		
+			<div style="float:right; margin-top:20px; clear:right;">
+				<!-- Clear Unit Cache and Delete Selected buttons -->
+				<?php 
+					$this->oAALforms->form_submitbutton( 200, 'clearcache', __( 'Clear Unit Cache', 'amazon-auto-links' ), 'nonce', False ); // the last parameter specifies that the form tag is not included 
+					$this->oAALforms->form_submitbutton( 200, 'deleteselectedunits', __( 'Delete Selected Units', 'amazon-auto-links' ), 'nonce', False ); // the last parameter specifies that the form tag is not included
+				?>
+			</div>
+			<?php $this->admin_tab200_export_and_import_buttons(); ?>
 		</form>
 		<?php
+	}
+	function admin_tab200_export_and_import_buttons() {
+		// since v1.2.1
+		?>
+			<div style="float:right; margin-top:10px; clear:right;">
+				<!-- Export and Units button -->		
+				<?php 
+					echo '<span title="' . __( 'Get Pro to enable the Export feature!', 'amazon-auto-links' ) . '">';
+					
+					$this->oAALforms->form_submitbutton( 200, '', __( 'Export Selected Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
+					echo '</span>';
+				?>
+			</div>			
+			<div style="float:right; margin-top:10px; clear:right;">
+				<!-- Import Units button -->		
+				<?php 
+					echo '<span title="' . __( 'Get Pro to enable the Import feature!', 'amazon-auto-links' ) . '">';
+					echo '<input style="color: #CCC;" id="" class="" type="file"	name="import_units" disabled="disabled" />&nbsp;&nbsp;';
+					$this->oAALforms->form_submitbutton( 200, '', __( 'Import Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
+					echo '</span>';
+				?>
+			</div>				
+		<?php
+	}
+	function ImportUnits() {
+		// sinve v1.2.1
+	}
+	function ExportUnits() {
+		// sinve v1.2.1
 	}
 	function admin_tab200_unittable() {
 	
@@ -1031,11 +1072,11 @@ class AmazonAutoLinks_Admin_ {
 	
 		// called from $this->admin_page()
 		$this->tabcaptions = array(					// must set the key number so that the other extended class can remove an element without affecting other elements 
-			1 => __('New Unit', 'amazon-auto-links'),				// 1, for tab 100 - 199
-			2 => __('Manage Units', 'amazon-auto-links'),			// 2, for tab 200 - 299
-			3 => __('General Settings', 'amazon-auto-links'),		// 3, for tab 300 - 399
-			4 => __('Upgrade to Pro', 'amazon-auto-links'),				// 4, for tab 400 - 499
-			5 => __('Information', 'amazon-auto-links')			// 5, for tab 500 - 599
+			1 => __( 'New Unit', 'amazon-auto-links' ),				// 1, for tab 100 - 199
+			2 => __( 'Manage Units', 'amazon-auto-links' ),			// 2, for tab 200 - 299
+			3 => __( 'General Settings', 'amazon-auto-links' ),		// 3, for tab 300 - 399
+			4 => __( 'Upgrade to Pro', 'amazon-auto-links' ),				// 4, for tab 400 - 499
+			5 => __( 'Information', 'amazon-auto-links' )			// 5, for tab 500 - 599
 		);
 	}
 	function page_header() {

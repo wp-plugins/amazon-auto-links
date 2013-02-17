@@ -70,6 +70,9 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 
 == Changelog ==
 
+= 1.2.1 = 
+* Fixed: a warning message, undefined index, which appeared in the debug mode when the Delete Selected Units button was pressed.
+
 = 1.2.0 =
 * Fixed: some lines of code which caused warning messages when the WordPress debug mode is turned on.
 * Added: the ability to clean up once-off events upon plugin deactivation.

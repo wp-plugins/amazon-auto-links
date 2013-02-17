@@ -32,23 +32,21 @@ class AmazonAutoLinks_Forms_ {
 		else 
 			return null;
 	}
-	function verifynonce_in_tab($numTabNumber, $action='', $name='') {
+	function verifynonce_in_tab( $numTabNumber, $action='', $name='' ) {
 	
-		// veryfies nonce with the given options and also checks the specified hidden tag field is sent
+		// veryfies nonce with the given options and also checks whether the specified hidden tag field is sent
 		// the $_POST array's format is specifically designed for this plugin, $_POST[pluginkey][tabNNN][tabNNN_submitted], where NNN is the tab number.
 		if ( !$action ) 
 			$action = $this->pluginkey;	
 		if ( !$name )
 			$name = 'nonce';
 			
-		if ( function_exists('wp_verify_nonce') ) {
-			if(isset($_POST[$this->pluginkey]['tab' . $numTabNumber]['tab' . $numTabNumber . '_submitted']) && !wp_verify_nonce($_POST[$name], $action)){
-				return false;
-			} else  {
-				return true;
-			}	
-		} else 
-			return null;
+		if ( !function_exists( 'wp_verify_nonce' ) ) return null;
+		
+		if ( isset( $_POST[$this->pluginkey]['tab' . $numTabNumber]['tab' . $numTabNumber . '_submitted'] ) && !wp_verify_nonce( $_POST[$name], $action ) )	
+			return false;
+		
+		return true;
 	}
 	function embedhiddenfield($pluginkey, $tabnum) {
 	
@@ -59,24 +57,25 @@ class AmazonAutoLinks_Forms_ {
 			<input type="hidden" name="<?php echo $pluginkey; ?>[tab<?php echo $tabnum; ?>][tab<?php echo $tabnum; ?>_submitted]" value="1" />
 		<?php
 	}	
-	function field_submitbutton($fieldname, $dislayedvalue) {
+	function field_submitbutton( $strFieldName, $strDisplayedValue, $bEnable=True, $strClass="button-primary" ) {
 	
 		// note that this does not have a form tag.
+		$strDisable = $bEnable ? '' : 'disabled="disabled"';
 		?>
-		<input type="submit" class="button-primary" name="<?php echo $fieldname; ?>" value="<?php echo $dislayedvalue; ?>" />
+		<input type="submit" class="<?php echo $strClass; ?>" name="<?php echo $strFieldName; ?>" value="<?php echo $strDisplayedValue; ?>" <?php echo $strDisable; ?> />
 		<?php
 	}	
-	function form_submitbutton($numTab, $strNameKey, $strDisplayValue="", $strNonceKey="nonce", $bFormTag=True) {
+	function form_submitbutton( $numTab, $strNameKey, $strDisplayValue="", $strNonceKey="nonce", $bFormTag=True, $bEnable=True, $strButtonClass="button-primary" ) {
 	
 		// this is a single form button which links to the specified tab numbered page.
 		// note that it includes a form tab 
-		$strDisplayValue = $strDisplayValue ? $strDisplayValue : __("Go Back", 'amazon-auto-links');
-		if ($bFormTag)
+		$strDisplayValue = $strDisplayValue ? $strDisplayValue : __( "Go Back", 'amazon-auto-links' );
+		if ( $bFormTag )
 			echo '<form method="post" action="?page=' . $this->pageslug . '&tab=' . $numTab . '" >';
-		$this->embednonce($this->pluginkey, 'nonce');
-		$this->embedhiddenfield($this->pluginkey, $numTab); 
-		$this->field_submitbutton($this->pluginkey . '[tab' . $numTab . '][' . $strNameKey . ']', $strDisplayValue);
-		if ($bFormTag)
+		$this->embednonce( $this->pluginkey, $strNonceKey );
+		$this->embedhiddenfield( $this->pluginkey, $numTab ); 
+		$this->field_submitbutton( $this->pluginkey . '[tab' . $numTab . '][' . $strNameKey . ']', $strDisplayValue, $bEnable, $strButtonClass );
+		if ( $bFormTag )
 			echo '</form>';
 	}	
 	function clean_generaloptions($arrGeneralOptions) {
