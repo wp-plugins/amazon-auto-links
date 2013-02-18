@@ -70,18 +70,18 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 
 == Changelog ==
 
-= 1.2.1 = 
+= 1.2.1 - 02/18/2013 = 
 * Fixed: a bug that changing unit option values did not take effect when the Proceed button was pressed via the Manage Unit page.
 * Changed: product links to be disabled on the front page ( not only on the home page ) if the "Disable on the home page" option is enabled.
 * Fixed: warning messages, undefined index, which appeared in the debug mode when the Delete Selected Units button was pressed.
 
-= 1.2.0 =
+= 1.2.0 - 02/12/2013 =
 * Fixed: some lines of code which caused warning messages when the WordPress debug mode is turned on.
 * Added: the ability to clean up once-off events upon plugin deactivation.
 * Added: the option to disable product links per unit basis on certain pages including the home page.
 * Fixed: a bug that url cloak had not been working since v1.1.9.
 
-= 1.1.9 =
+= 1.1.9 - 01/24/2013 =
 * Updated: the Japanese localization file. 
 * Added: the Above and Below Post on Publish check boxes for the auto insert option. 
 * Fixed: the styles of the Manage Unit table by loading the stylesheet in all the setting tab pages of the plugin.
@@ -90,28 +90,28 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 * Changed: the timimng of registering classes to be extension-friendly.
 * Changed: code formatting to extend the plugin more easily.
 
-= 1.1.8 = 
+= 1.1.8 - 01/19/2013 = 
 * Added: the icons for the Operation column of the Manage Unit table .
 * Adjusted: the styles of the Manage Unit page in the admin page.
 * Fixed: an issue that R18 categories requiring additional redirects could not be browsed in the category selection page.
 
-= 1.1.7 =
+= 1.1.7 - 01/16/2013 =
 * Fixed: a bug that caches were not cleared with database tables that have a custom prefix.
 * Fixed: a bug that the Prefetch Category Lists option had not take effect since v1.1.3 removing the iframe preview page.
 
-= 1.1.6 =
+= 1.1.6 - 01/14/2013 =
 * Fixed: a minor bug that an error message did not appear properly when category links cannot be retrieved.
 * Added: Blacklist by title and description set in the General Settings page.
 
-= 1.1.5 =
+= 1.1.5 - 12/14/2012 =
 * Changed: to force the unit output to close any unclosed HTML tags.
 * Fixed: a bug that the plugin requirement check did not work as of v1.1.3.
 * Improved: the response speed when first accessing the setting page.
 
-= 1.1.4 =
+= 1.1.4 - 12/13/2012 =
 * Fixed: a bug that shortcode did not work as of v1.1.3.
 
-= 1.1.3 =
+= 1.1.3 - 12/13/2012 =
 * Supported: WordPress 3.5
 * Changed: the preview page not to use iframe so that "Could not locate admin.php" error would not occur.
 * Fixed: a bug that the style was not loaded in one of the tab page in the plugin setting page.
@@ -120,55 +120,55 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 * Added: the unit memory usage in the unit preview page.
 * Added: the ability to remove transients when the plug-in is deactivated. 
 
-= 1.1.2 =
+= 1.1.2 - 11/11/2012 =
 * Fixed: a bug which displayed the plugin memory usage in the page footer.
 
-= 1.1.1 = 
+= 1.1.1 - 11/02/2012 = 
 * Added: the prefetch category links option, which helps in some servers which sets a low value to the max simultaneous database connections.
 
-= 1.1.0 =
+= 1.1.0 - 10/26/2012 =
 * Fixed: a bug that url cloak option gets unchecked in the option page.
 * Fixed: a bug that credit option gets checked in the option page.
 * Fixed: an issue that encryption did not work on servers which disable the mcrypt extension.
 * Fixed: an issue that some form elements of the admin page did not appear on servers which disable short_open_tag.
 * Fixed: a bug that the AmazonAutoLinks() function did not retrieve the correct unit id. 
 
-= 1.0.9 =
+= 1.0.9 - 10/06/2012 =
 * Added: the link cloaking feature.
 
-= 1.0.8 =
+= 1.0.8 - 10/03/2012 =
 * Fixed: a bug that shorcode fails to display the unit saved in version 1.0.7 or later.
 * Added: the title length option.
 * Added: the link style option.
 * Added: the credit insert option.
 
-= 1.0.7 =
+= 1.0.7 - 10/02/2012 =
 * Fixed: an issue that the widget gets un-associated when the unit label gets changed.
 * Fixed: an issue that category caches were saved with the wrong name which resulted on not using the cache when available.
 * Fixed: an issue that the format of the img tag gets changed when the validation fails when setting up a unit.
 * Added: a donation link in the plugin listing page.
 
-= 1.0.6 =
+= 1.0.6 - 09/24/2012 =
 * Added: the rel attribute, rel="nofollow", in the a tag of product links.
 * Re-Added: the widget which enables to add units easily on the sidebar.
 
-= 1.0.5 =
+= 1.0.5 - 09/20/2012 =
 * Improved: the caching method. Now the caches of links are renewed in the background.
 
-= 1.0.4 =
+= 1.0.4 - 09/18/2012 =
 * Added: the settings link in the plugin list page of the administration panel.
 * Improved: the page load speed in the category selection page by reducing the cache elements.
 
-= 1.0.3 =
+= 1.0.3 - 09/16/2012 =
 * Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
 * Improved: the page load speed in the category selection page with caches.
 * Removed: the widget functionality since it produces a blank page in some systems and the cause and solution have not been discovered.
 
-= 1.0.2 =
+= 1.0.2 - 09/12/2012 =
 * Fixed: an issue that form buttons do not appear in the category selection page in WordPress version 3.1x or ealier.
 
-= 1.0.1 =
+= 1.0.1 - 09/10/2012 =
 * Added: the Widget option.
 
-= 1.0.0 =
+= 1.0.0 - 09/10/2012 =
 * Initial Release
