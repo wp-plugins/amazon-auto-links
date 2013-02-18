@@ -9,6 +9,7 @@ class AmazonAutoLinks_Contents_ {
 	function __construct( $strPluginkey , &$oOption ) {
 		
 		$this->pluginkey = $strPluginkey;
+		$this->pluginname = 'Amazon Auto Links';
 		
 		// the option array
 		$this->oOption = $oOption; 
