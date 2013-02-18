@@ -71,7 +71,9 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 == Changelog ==
 
 = 1.2.1 = 
-* Fixed: a warning message, undefined index, which appeared in the debug mode when the Delete Selected Units button was pressed.
+* Fixed: a bug that changing unit option values did not take effect when the Proceed button was pressed via the Manage Unit page.
+* Changed: product links to be disabled on the front page ( not only on the home page ) if the "Disable on the home page" option is enabled.
+* Fixed: warning messages, undefined index, which appeared in the debug mode when the Delete Selected Units button was pressed.
 
 = 1.2.0 =
 * Fixed: some lines of code which caused warning messages when the WordPress debug mode is turned on.

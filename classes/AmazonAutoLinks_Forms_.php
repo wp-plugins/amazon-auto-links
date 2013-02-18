@@ -118,11 +118,11 @@ class AmazonAutoLinks_Forms_ {
 		// if invalid, returns an array containing the error infomation
 		// called from and dependant on $this->adminpage()
 		$bInvalid = false;
-		$arrErrors = array();
+		$arrErrors = array( 'unitlabel' =>'', 'associateid' =>'' );	// defining the keys will prevent undefined index warnings.
 		
 		// check: tab100 -> unitlabel
-		if (strlen(trim($arrOptions['unitlabel'])) == 0)  {
-			$arrErrors['unitlabel'] .= ' ' . __('The unit label cannot be empty.', 'amazon-auto-links');
+		if ( strlen( trim( $arrOptions['unitlabel'] ) ) == 0)  {
+			$arrErrors['unitlabel'] .= ' ' . __( 'The unit label cannot be empty.', 'amazon-auto-links' );
 			$bInvalid = true;	
 		}			
 
@@ -143,7 +143,7 @@ class AmazonAutoLinks_Forms_ {
 		}
 
 		// check: tab100 -> associateid
-		if (strlen(trim($arrOptions['associateid'])) == 0) {
+		if ( strlen( trim( $arrOptions['associateid'] ) ) == 0 ) {
 			$arrErrors['associateid'] .= ' ' . __( 'Associate ID cannot be empty.', 'amazon-auto-links' );
 			$bInvalid = True;
 		}
@@ -235,8 +235,7 @@ class AmazonAutoLinks_Forms_ {
 		// called from admin_tab100() and admin_tab202()
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
-		if ( !is_array( $arrOptionsToDisplay ) ) 
-			$arrOptionsToDisplay = $this->oOption->unitdefaultoptions;
+		$arrOptionsToDisplay = is_array( $arrOptionsToDisplay ) ? $arrOptionsToDisplay + $this->oOption->GetDefaultUnitOptionKeys() : $this->oOption->unitdefaultoptions ;
 		if ( !is_array( $arrErrors ) ) 
 			$arrErrors = array();
 					
@@ -258,6 +257,7 @@ class AmazonAutoLinks_Forms_ {
 			$this->field_element_credit( $numTabNum, $arrOptionsToDisplay['credit'] ); 
 			$this->field_element_urlcloaking( $numTabNum, $arrOptionsToDisplay['urlcloak'] ); 
 			$this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); 
+			// $this->field_element_disableonfront( $numTabNum, $arrOptionsToDisplay['disableonfront'] ); 
 			$this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); 
 			?>
 			</tbody>
@@ -585,6 +585,7 @@ class AmazonAutoLinks_Forms_ {
 	<?php	
 	}
 	function field_element_disableonhome( $numTabnum, $bValue="" ) { 
+		// since v1.2.0
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][disableonhome]';	
 		$bValue = ( $bValue != '' ) ? $bValue : $this->oOption->unitdefaultoptions['disableonhome'];
 	?>
@@ -596,12 +597,29 @@ class AmazonAutoLinks_Forms_ {
 				<!-- the hidden field before the checkbox is necessary to send unchecked values -->
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
 				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty( $bValue ) ? 'Checked' : '' ?> /> 
-				<?php _e( 'Disable on the home page.', 'amazon-auto-links' ); ?>			
+				<?php _e( 'Disable on the home and the front page.', 'amazon-auto-links' ); ?>
+			</td>
+		</tr>
+	<?php
+			
+	}
+	function field_element_disableonfront( $numTabnum, $bValue="" ) { 
+		// since v1.2.1 - deprecated 
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][disableonfront]';	
+		$bValue = ( $bValue != '' ) ? $bValue : $this->oOption->unitdefaultoptions['disableonfront'];
+		
+		// continuous from the above field_element_disableonhome() method.
+	?>
+				<!-- the hidden field before the checkbox is necessary to send unchecked values -->
+				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty( $bValue ) ? 'Checked' : '' ?> /> 
+				<?php _e( 'Disable on the front page.', 'amazon-auto-links' ); ?>			
 			</td>
 		</tr>
 	<?php			
-	}
+	}	
 	function field_element_poststobedisabled( $numTabnum, $strValue="" ) {
+		// since v1.2.0
 		// Product links in the posts set with this option will not be displayed.
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][poststobedisabled]';	
 		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['poststobedisabled'];
@@ -628,7 +646,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Cache Expiration', 'amazon-auto-links'); ?><br />
 			</th>
 			<td>
-				<input disabled style="background-color: #eee; color: #999;" type="text" size="30" value="<?php echo $numValue ; ?>" />
+				<input disabled="disabled" style="background-color: #eee; color: #999;" type="text" size="30" value="<?php echo $numValue ; ?>" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
 				&nbsp;<font color="#666">( <?php _e('in seconds.', 'amazon-auto-links'); ?> <?php _e('Default', 'amazon-auto-links'); ?> : <?php echo $this->oOption->unitdefaultoptions['cacheexpiration']; ?> )</font>	
 			</td>
@@ -646,7 +664,7 @@ class AmazonAutoLinks_Forms_ {
 			<span style="margin-left:1em; color:#666;">%item% - <?php _e('item', 'amazon-auto-links'); ?><br />
 			</th>
 			<td>
-				<textarea disabled style="background-color: #eee; color: #999;" rows="4" cols="80" ><?php echo $strValue; ?></textarea>
+				<textarea disabled="disabled" style="background-color: #eee; color: #999;" rows="4" cols="80" ><?php echo $strValue; ?></textarea>
 				<textarea style="display:none" name="<?php echo $strFieldName; ?>" rows="4" cols="80"><?php echo $strValue; ?></textarea>
 			</td>
 		</tr>			
@@ -678,7 +696,7 @@ class AmazonAutoLinks_Forms_ {
 				</div>
 			</th>
 			<td>
-				<textarea disabled style="background-color: #eee; color: #999;" rows="4" cols="80" ><?php echo $strValue; ?></textarea>
+				<textarea disabled="disabled" style="background-color: #eee; color: #999;" rows="4" cols="80" ><?php echo $strValue; ?></textarea>
 				<textarea style="display:none" name="<?php echo $strFieldName; ?>" rows="4" cols="80"><?php echo $strValue; ?></textarea>
 			</td>
 		</tr>	
@@ -709,7 +727,7 @@ class AmazonAutoLinks_Forms_ {
 				</div>
 			</th>
 			<td>
-				<textarea disabled style="background-color: #eee; color: #999;" rows="4" cols="80"><?php echo $strValue; ?></textarea>
+				<textarea disabled="disabled" style="background-color: #eee; color: #999;" rows="4" cols="80"><?php echo $strValue; ?></textarea>
 				<textarea style="display:none" name="<?php echo $strFieldName; ?>" rows="4" cols="80"><?php echo $strValue; ?></textarea>
 			</td>
 		</tr>	
@@ -893,5 +911,32 @@ class AmazonAutoLinks_Forms_ {
 		<?php			
 	}	
 	function field_element_license( $numTabnum, $strValue="" ) {}	// since v1.1.9, for Pro
+	
+	/*
+	 * Manage Units Tab
+	 * */
+	function form_import_export_buttons() {
+		// since v1.2.1
+		?>
+			<div style="float:right; margin-top:10px; clear:right;">
+				<!-- Export and Units button -->		
+				<?php 
+					echo '<span title="' . __( 'Get Pro to enable the Export feature!', 'amazon-auto-links' ) . '">';
+					
+					$this->form_submitbutton( 200, '', __( 'Export Selected Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
+					echo '</span>';
+				?>
+			</div>			
+			<div style="float:right; margin-top:10px; clear:right;">
+				<!-- Import Units button -->		
+				<?php 
+					echo '<span title="' . __( 'Get Pro to enable the Import feature!', 'amazon-auto-links' ) . '">';
+					echo '<input style="color: #CCC;" id="" class="" type="file"	name="import_units" disabled="disabled" />&nbsp;&nbsp;';
+					$this->form_submitbutton( 200, '', __( 'Import Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
+					echo '</span>';
+				?>
+			</div>				
+		<?php
+	}	
 }
 ?>

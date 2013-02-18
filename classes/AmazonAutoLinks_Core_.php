@@ -117,11 +117,18 @@ class AmazonAutoLinks_Core_ {
 			$this->arrUnitOptions['poststobedisabled']	// disable option
 		*/
 	
+// echo '<pre>Unit Label: ' . print_r( $this->arrUnitOptions['unitlabel'], true ) . '</pre>';		
+// echo '<pre>' . print_r( $this->arrUnitOptions['disableonhome'], true ) . '</pre>';		
+// echo '<pre>is_home: ' . print_r( is_home(), true ) . '</pre>';		
+// echo '<pre>' . print_r( $this->arrUnitOptions['disableonfront'], true ) . '</pre>';		
+// echo '<pre>is_front_page: ' . print_r( is_front_page(), true ) . '</pre>';			
+	
 		// Do not continue if the disable option for pages is set.
-		if ( isset( $this->arrUnitOptions['disableonhome'] ) && $this->arrUnitOptions['disableonhome'] && is_home() ) return;
+		if ( isset( $this->arrUnitOptions['disableonhome'] ) && !empty( $this->arrUnitOptions['disableonhome'] ) && ( is_home() || is_front_page() ) ) return;	// since v1.2.0
+		// if ( isset( $this->arrUnitOptions['disableonfront'] ) && !empty( $this->arrUnitOptions['disableonfront'] ) && is_front_page() ) return;	// since v1.2.1
 		$arrPostIDsToBeDisabled = preg_split( '/\s?[,]\s?+/', isset( $this->arrUnitOptions['poststobedisabled'] ) ? $this->arrUnitOptions['poststobedisabled'] : '', -1, PREG_SPLIT_NO_EMPTY );
 		if ( is_object( $wp_query->post ) && in_array( $wp_query->post->ID, $arrPostIDsToBeDisabled ) )	return;
-	
+		
 		try {
 
 			/* Setup urls */
@@ -141,7 +148,7 @@ class AmazonAutoLinks_Core_ {
 			$this->i = 0;
 
 			foreach ($this->feed->get_items(0, 0) as $item) {
-		
+	
 				/* DOM Object for description */
 				$dom = $this->load_dom_from_htmltext($item->get_description(), $this->arrUnitOptions['mblang']);
 

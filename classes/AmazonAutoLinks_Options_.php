@@ -47,6 +47,7 @@ class AmazonAutoLinks_Options_ {
 		'credit'			=> True,
 		'urlcloak'			=> False,	// since v1.0.9
 		'disableonhome'		=> False,	// since v1.2.0 - True/False. determines whether product links should appear on the home page.
+		// 'disableonfront'	=> False,	// since v1.2.1 - True/False. determines whether product links should appear on the front page.
 		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
 	);	
 	public $generaldefaultoptions = array(
@@ -218,23 +219,26 @@ class AmazonAutoLinks_Options_ {
 		
 		// for backward compatiblity for v1.0.6 or below, delete the option key of unit label since it is saved as ID in the above line
 		$strUnitLabel = $this->arrOptions['units'][$strUnitID]['unitlabel'];
-		if (is_array($this->arrOptions['units'][$strUnitLabel])) unset($this->arrOptions['units'][$strUnitLabel]);				
+		if ( isset( $this->arrOptions['units'][$strUnitLabel] ) && is_array( $this->arrOptions['units'][$strUnitLabel] ) ) 
+			unset( $this->arrOptions['units'][$strUnitLabel] );				
 	
 		// save it
 		$this->update();
 	}	
 
-	function store_temporary_editunit_option($strUnitLabel) {
+	function store_temporary_editunit_option( $strUnitLabel ) {
 	
-		// since v1.0.7, migrated from AmazonAutoLinks_Admin_
+		// since v1.0.7, moved from AmazonAutoLinks_Admin_
 		// called from the AmazonAutoLinks_Admin class to store the temporay editing data in the options['editunit'] array.
 		// the user modifies this temprorary copied data and saves it if it is validated after pressing the form submit button.
 	
 		if ( isset( $this->arrOptions['units'][$strUnitLabel] ) && is_array( $this->arrOptions['units'][$strUnitLabel] ) ) 
-			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitLabel];	// backward compatibility for v1.0.6 or below
+			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitLabel];	// backward compatibility for v1.0.6 or below, which the unit label was used for the array key.
 		else {
-			$strUnitID = $this->get_unitid_from_unitlabel($strUnitLabel);
-			$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitID];
+			$strUnitID = $this->get_unitid_from_unitlabel( $strUnitLabel );
+			if ( isset( $this->arrOptions['units'][$strUnitID] ) )
+				$this->arrOptions['editunit'] =  $this->arrOptions['units'][$strUnitID];
+			else echo '<div class="error">' . __( 'Unexpected problem occurred. Please go back to the previous page.', 'amazon-auto-links' ) . ' </div>';
 		}
 		$this->update();
 		
@@ -321,6 +325,19 @@ class AmazonAutoLinks_Options_ {
 		}
 		print_r($arrDebug);
 		*/
+	}
+	
+	function DoesUnitLabelExist( $strSubjectUnitLabel ) {	// since v1.2.1
+		foreach( $this->arrOptions['units'] as $strUnitID => $arrUnitOption ) 
+			if ( $strSubjectUnitLabel == $arrUnitOption['unitlabel'] ) return True;
+	}
+	
+	function GetDefaultUnitOptionKeys() {	// since v1.2.1
+	
+		// creates and returns an array with keys of the default unit option. All values are set null so that it can be used to merge the keys.
+		$arrDefaultUnitOptionKeys = array();
+		foreach( $this->unitdefaultoptions as $strKey => $v ) $arrDefaultUnitOptionKeys[$strKey] = null;
+		return $arrDefaultUnitOptionKeys;
 	}
 }
 ?>

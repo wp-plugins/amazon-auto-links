@@ -34,14 +34,14 @@ class AmazonAutoLinks_Contents_ {
 			'label' => '',
 			// 'numitems' => 10,
 		), $atts));
-		$strUnitID = $this->oOption->get_unitid_from_unitlabel($label);
-		if (!$strUnitID) {
+		$strUnitID = $this->oOption->get_unitid_from_unitlabel( $label );
+		if ( !$strUnitID ) {
 			echo $this->pluginname . ' ';
 			_e('Error: No such unit label exists.', 'amazon-auto-links');
+			echo ':&nbsp;' . $label ;
 			return;		
 		}
 		
-		// $oAAL = new AmazonAutoLinks_Core($this->oOption->arrOptions['units'][$label]);
 		$oAAL = new AmazonAutoLinks_Core($label);
 		return $oAAL->fetch();			
 	}	
@@ -72,24 +72,23 @@ class AmazonAutoLinks_Contents_ {
 		
 	}
 
-	function insertinpost($content) {
-		// if (is_home()) return $content;
+	function insertinpost( $content ) {
 		static $oAALs = array();
 		
-		foreach($this->oOption->arrOptions['units'] as $strUnitID => $arrUnitOptions) {
-			if ($arrUnitOptions['insert']['postabove']) {	
-				if (!array_key_exists( $strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
+		foreach( $this->oOption->arrOptions['units'] as $strUnitID => $arrUnitOptions ) {
+			if ( $arrUnitOptions['insert']['postabove'] ) {	
+				if ( !array_key_exists( $strUnitID, $oAALs ) ) $oAALs[$strUnitID] = new AmazonAutoLinks_Core( $arrUnitOptions );	
 				$content = $oAALs[$strUnitID]->fetch() . $content;
 			}
 			if ($arrUnitOptions['insert']['postbelow']) {
-				if (!array_key_exists( $strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core($arrUnitOptions);
+				if (!array_key_exists( $strUnitID, $oAALs)) $oAALs[$strUnitID] = new AmazonAutoLinks_Core( $arrUnitOptions );
 				$content = $content . $oAALs[$strUnitID]->fetch();			
 			}
 		}
-		unset($oAALs);
-		return trim($content);
+		unset( $oAALs );
+		return trim( $content );
 	}
-	function insertinexcerpt($content){
+	function insertinexcerpt( $content ){
 		foreach($this->oOption->arrOptions['units'] as $arrUnitOptions) {
 			if ($arrUnitOptions['insert']['excerptabove']) {
 				$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);

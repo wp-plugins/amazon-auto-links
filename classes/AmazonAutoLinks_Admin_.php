@@ -170,7 +170,7 @@ class AmazonAutoLinks_Admin_ {
 		}	
 		
 		// if the "Proceed" button in the edit unit page is pressed,
-		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ) return 203;
+		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ) return 202;	// it still needs to go to admin_tab202() to check errors of submitted data
 
 		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab'] ) ) return $_POST[AMAZONAUTOLINKSKEY]['tab'];			// set in the category selection page. ( AmazonAutoLinks_Forms_SelectCategories::RenderFormCategorySelectionPreview() )
 
@@ -217,8 +217,7 @@ class AmazonAutoLinks_Admin_ {
 	} 	// admin_page() end
 	/* ------------------------------------------ Tab 100 : Create Unit --------------------------------------------- */
 	function IsReachedLimitNumUnits($num=3) {
-		if (count($this->oOption->arrOptions['units']) >= $num) return true;
-		
+		if ( count( $this->oOption->arrOptions['units'] ) >= $num ) return true;
 		// else
 		return false;	
 	}
@@ -229,7 +228,7 @@ class AmazonAutoLinks_Admin_ {
 			determine whether the user is just landing or caming back from the preview(proceeding) page
 		*/
 			
-		// If the hidden form field value indicates that the user sumited POST data into this page from the specified tag number.
+		// If the hidden form field value indicates that the user submited POST data into this page from the specified tag number.
 		if ($this->IsPostSentFrom(100)) {
 
 			// if the Proceed button is pressed, determine which tab to go next;
@@ -324,16 +323,16 @@ class AmazonAutoLinks_Admin_ {
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
 		// $this->oAALforms_selectcategories->form_selectcategories_iframe(101, $this->oOption->arrOptions['newunit']);
-		$this->admin_tab_selectcategories(101);
+		$this->admin_tab_selectcategories( 101 );
 	}
-	function admin_tab_selectcategories($numTab) {
+	function admin_tab_selectcategories( $numTab ) {
 
 		/* Since v1.1.3
 		 * Select Category Page - reached after pressing the Proceed button
 		 * similar to admin_tab203()
 		 * */
 	 
-		// declare variable
+		// declare variables
 		$bReachedLimit = false;
 
 		// $this->oOption->arrOptions['newunit'] is used so no need these evaluations actually		
@@ -487,7 +486,7 @@ class AmazonAutoLinks_Admin_ {
 		}
 		
 		// Import Units	
-		$this->ImportUnits();	
+		if ( $strMsg = $this->ImportUnits() ) echo $strMsg;
 		
 		// Export Units - this is done in the RegisterHooks() method since it has to be done before the header is sent.
 		
@@ -505,7 +504,7 @@ class AmazonAutoLinks_Admin_ {
 		// So speficy where to go after submitting the form.
 		$strAction = '?page=' . $this->pageslug . '&tab=' . $numTabNum ;  
 		?>
-		<form method="post" action="<?php echo $strAction;?>" >
+		<form method="post" action="<?php echo $strAction;?>" enctype="multipart/form-data" >
 			<?php $this->admin_tab200_unittable(); ?>				
 			<div style="float:right; margin-top:20px; clear:right;">
 				<!-- Clear Unit Cache and Delete Selected buttons -->
@@ -514,35 +513,26 @@ class AmazonAutoLinks_Admin_ {
 					$this->oAALforms->form_submitbutton( 200, 'deleteselectedunits', __( 'Delete Selected Units', 'amazon-auto-links' ), 'nonce', False ); // the last parameter specifies that the form tag is not included
 				?>
 			</div>
-			<?php $this->admin_tab200_export_and_import_buttons(); ?>
+			<?php $this->oAALforms->form_import_export_buttons(); ?>
 		</form>
-		<?php
-	}
-	function admin_tab200_export_and_import_buttons() {
-		// since v1.2.1
-		?>
-			<div style="float:right; margin-top:10px; clear:right;">
-				<!-- Export and Units button -->		
-				<?php 
-					echo '<span title="' . __( 'Get Pro to enable the Export feature!', 'amazon-auto-links' ) . '">';
-					
-					$this->oAALforms->form_submitbutton( 200, '', __( 'Export Selected Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
-					echo '</span>';
-				?>
-			</div>			
-			<div style="float:right; margin-top:10px; clear:right;">
-				<!-- Import Units button -->		
-				<?php 
-					echo '<span title="' . __( 'Get Pro to enable the Import feature!', 'amazon-auto-links' ) . '">';
-					echo '<input style="color: #CCC;" id="" class="" type="file"	name="import_units" disabled="disabled" />&nbsp;&nbsp;';
-					$this->oAALforms->form_submitbutton( 200, '', __( 'Import Units', 'amazon-auto-links' ), 'nonce', False, False, 'button-secondary' ); 
-					echo '</span>';
-				?>
-			</div>				
 		<?php
 	}
 	function ImportUnits() {
 		// sinve v1.2.1
+		return null;
+		
+		// define messages for the localization.
+		__( 'The file is bigger than this PHP installation allows.', 'amazon-auto-links' );
+		__( 'The file is bigger than this form allows.', 'amazon-auto-links' );
+		__( 'Only part of the file was uploaded.', 'amazon-auto-links' );
+		__( 'No file was uploaded.', 'amazon-auto-links' );
+		__( 'Import Error: Wrong file type.', 'amazon-auto-links' );
+		__( 'Import Error: Wrong file type.', 'amazon-auto-links' );
+		__( 'Import Error: Wrong text format.', 'amazon-auto-links' );
+		__( 'Options were imported.', 'amazon-auto-links' );		
+		__( 'The following unit was inserted:', 'amazon-auto-links' );
+		__( 'The following unit option is corrupted:', 'amazon-auto-links' );
+		
 	}
 	function ExportUnits() {
 		// sinve v1.2.1
@@ -774,7 +764,7 @@ class AmazonAutoLinks_Admin_ {
 	
 	/* ------------------------------------------ Tab 202 : Edit Units --------------------------------------------- */
 	function admin_tab202($numTabNum=202) {
-	
+
 		// This page is for editing existing unit options. The components are similar to tab 100, creating a new unit.
 		// this page is directed by the tab number in the url, in other words, the $_GET array
 		// it does not bypass the method, admin_tab200()
@@ -783,16 +773,15 @@ class AmazonAutoLinks_Admin_ {
 		// if the edit query is not set, go to tab 200
 		// if neither arrived by clicking the edit link nor by pressing the proceed button of the setting,
 		if (!IsSet($_GET['edit']) && !IsSet($_POST[$this->pluginkey]['tab' . $numTabNum]['proceedbutton'])) {	
-			$this->admin_tab200();
+			$this->admin_tab200();			
 			return;	// do not continue 
 		}	
-
+	
 		// if the 'Proceed' button is pressed
-		if (IsSet($_POST[$this->pluginkey]['tab202']['proceedbutton'])) {
-		
+		if ( IsSet( $_POST[$this->pluginkey]['tab202']['proceedbutton'] ) ) {
+	
 			// validate the submitted values
-			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];
-		
+			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];	
 			$this->oOption->arrOptions['tab202']['errors'] = $this->oAALforms->validate_unitoptions($arrSubmittedFormValues, 'edit');
 			if ($this->oOption->arrOptions['tab202']['errors']) {	// if it's invalid
 				
@@ -816,12 +805,13 @@ class AmazonAutoLinks_Admin_ {
 				$this->oOption->update();
 
 				// go to the next page, which is the page to select categories
-				$numTabNum = 203;	
-			}
+				$numTabNum = 203;						
+			}					
+			
 		}
 		// if the save button is pressed
 		else if (IsSet($_POST[$this->pluginkey]['tab202']['savebutton'])) {
-		
+									
 			$arrSubmittedFormValues = $_POST[$this->pluginkey]['tab202'];
 	
 			// validate the sumitted values and if it's okey, save the options to the database and go to Tab 200.
@@ -847,16 +837,17 @@ class AmazonAutoLinks_Admin_ {
 				return; // do not continue			
 			}
 		} else {
-		
+							
 			// no button is pressed, meaning new landing
 			$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['edit']);	// note that the unit label is passed , not ID
 			
 			// this stores the temporary unit option in 'editunit' option key; the user modifies it and it will be used to update the unit option
-			$this->oOption->store_temporary_editunit_option($strUnitLabel);	// this method includes update_option()
+			// $this->oOption->arrOptions['editunit'] will be assigned the unit array.
+			$this->oOption->store_temporary_editunit_option( $strUnitLabel );	// this method includes update_option()
 			
 			// schedule prefetch; the parameter is empty, which means prefetch the root pages.
 			$this->oAALCatCache->schedule_prefetch();
-		}
+		}		
 		?>
 		
 		<!-- Go Back Button -->
@@ -865,7 +856,7 @@ class AmazonAutoLinks_Admin_ {
 		<?php } ?>
 		
 		<!-- Edit Unit Form  -->
-		<form method="post" action="">	
+		<form method="post" name="tab202" action="">	
 			<?php
 			$this->oAALforms->embednonce($this->pluginkey, 'nonce'); 
 			$this->oAALforms->embedhiddenfield($this->pluginkey, $numTabNum); 
@@ -875,8 +866,10 @@ class AmazonAutoLinks_Admin_ {
 					$this->oOption->arrOptions['editunit'], 
 					isset( $this->oOption->arrOptions['tab202']['errors'] ) ? $this->oOption->arrOptions['tab202']['errors'] : array() 
 				); 
-			} else if ($numTabNum == 203) 
-				$this->admin_tab203($numTabNum); // got to the category selection page
+			} else if ( $numTabNum == 203 )  {
+				$this->admin_tab203( $numTabNum ); // got to the category selection page
+			}
+					
 			?>
 		</form>
 		<?php	
@@ -886,9 +879,9 @@ class AmazonAutoLinks_Admin_ {
 		
 	}
 	function admin_tab203($numTab=203) {
-		// similar to admin_tab101
+		// similar to admin_tab101		
 		$this->admin_tab_selectcategories($numTab);
-		// $this->oAALforms_selectcategories->form_selectcategories_iframe($numTab, $this->oOption->arrOptions['editunit']);
+	
 	}
 	/* ------------------------------------------ Tab 300: General Settings --------------------------------------------- */
 	function admin_tab300($numTabNum=300) {
@@ -1015,6 +1008,11 @@ class AmazonAutoLinks_Admin_ {
 						<td align="center">3</td>
 						<td align="center"><strong><?php _e('Unlimited', 'amazon-auto-links'); ?></strong></td>
 					</tr>		
+					<tr>
+						<td><?php _e( 'Export and Import Units', 'amazon-auto-links' ); ?></td>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Unavailable', 'amazon-auto-links'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Available', 'amazon-auto-links'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>						
 				</tbody>
 			</table>
 		</div>
@@ -1098,10 +1096,10 @@ class AmazonAutoLinks_Admin_ {
 		echo '<h2 style="height:1.8em; margin-bottom:16px;">' . $this->pluginname . $strClassVer . '</h2>';
 				
 		// tab menu
-		$this->tab_menu($numCurrentTab = $this->GetTabNumber());	
+		$this->tab_menu( $numCurrentTab = $this->GetTabNumber() );	
 		
 		// text
-		$this->oUserAd->InitializeTextFeed('http://feeds.feedburner.com/GANLinkTextRandom40');
+		$this->oUserAd->InitializeTextFeed( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
 		$this->oUserAd->ShowTextAd();
 		flush();
 		
