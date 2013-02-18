@@ -279,12 +279,14 @@ class AmazonAutoLinks_Core_ {
 		// Character Encodings etc.
 		// $this->feed->handle_content_type();		// <-- this breaks XML validation when the feed items are fetched and displayed as XML such as used in the the_content_feed filter.			
 	}	
-	function load_dom_from_htmltext($rawdescription, $lang) {
+	function load_dom_from_htmltext( $rawdescription, $lang ) {
 		$dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;
-		mb_language($lang); // <-- without this, the characters get broken
-		$description = @mb_convert_encoding($rawdescription, 'HTML-ENTITIES', 'AUTO');	
+		mb_language( $lang ); // <-- without this, the characters get broken
+// $strDetectedEncoding =  mb_detect_encoding( $rawdescription, "auto") . '<br />';	
+// $description = @mb_convert_encoding( $rawdescription, 'HTML-ENTITIES', $strDetectedEncoding );	
+		$description = @mb_convert_encoding( $rawdescription, 'HTML-ENTITIES', 'AUTO' );	
 		$description = '<div>' . $description . '</div>';		// this prevents later when using saveXML() from inserting the comment <!-- xml version .... -->
 		@$dom->loadhtml( $description );
 		return $dom;
@@ -352,17 +354,19 @@ class AmazonAutoLinks_Core_ {
 		$htmldescription = implode("&nbsp;", $arrDescription);
 		return html_entity_decode(trim(strip_tags($htmldescription)), ENT_QUOTES, 'UTF-8');		// not sure about the encoding
 	}	
-	function modify_links($node, $titleattribute) {
-		foreach ($node->getElementsByTagName('a') as $nodeA) {
-			$strHref = $nodeA->getAttribute('href');
-			if (empty($strHref)) continue;
-			$strHref = $this->modify_url($strHref);
-			$strHref = $this->cloak_url($strHref);
+	function modify_links( $node, $titleattribute ) {
+		foreach ($node->getElementsByTagName( 'a' ) as $nodeA ) {
+			$strHref = $nodeA->getAttribute( 'href' );
+			if ( empty( $strHref ) ) continue;
+			$strHref = $this->modify_url( $strHref );
+			$strHref = $this->cloak_url( $strHref );
 // echo 'modify_links: ' . $strHref . '<br />';			
-			$bResult = $nodeA->setAttribute('href', $strHref);
+
+			// Reported Issue: Warning: DOMElement::setAttribute() [domelement.setattribute]: string is not in UTF-8
+			$bResult = @$nodeA->setAttribute( 'href', $strHref );		
 			// if (empty($bResult)) echo "error setting the url: " . $strHref;
-			$nodeA->setAttribute('rel', 'nofollow');
-			$nodeA->setAttribute('title', $titleattribute);
+			@$nodeA->setAttribute( 'rel', 'nofollow' );
+			@$nodeA->setAttribute( 'title', $titleattribute );
 		}
 	}	
 	function modify_url($strURL) {

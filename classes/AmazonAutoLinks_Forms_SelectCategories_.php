@@ -319,14 +319,13 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 			// e.g. http://localhost/me.php?href=http://....  -> http://localhost/me.php
 			$strSelfURL = $this->oAALfuncs->selfURLwithoutQuery();
 			$strNewLink = $strSelfURL . '?href=' . $this->oAALfuncs->urlencrypt($href) . $strQueries;	
-			$nodeA->setAttribute('href', $strNewLink);
+			@$nodeA->setAttribute('href', $strNewLink);
 		}	
 		return true;
 	}
-	function set_attributes_by_tagname($oNode, $strTagName, $strAtr, $strNewValue) {
-		Foreach( $oNode->getElementsByTagName($strTagName) as $node) { 
-			$node->setAttribute($strAtr, $strNewValue);
-		}
+	function set_attributes_by_tagname( $oNode, $strTagName, $strAtr, $strNewValue ) {
+		Foreach( $oNode->getElementsByTagName( $strTagName ) as $node ) 
+			@$node->setAttribute( $strAtr, $strNewValue );
 	}
 	function breadcrumb($doc, $strRoot) {
 	
