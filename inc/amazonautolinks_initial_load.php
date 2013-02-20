@@ -15,24 +15,20 @@ function AmazonAutoLinks_LoadPlugin() {
 
 	// Admin Pages
 	// this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
-	$oAALAdmin = new AmazonAutoLinks_Admin( $oAALOptions );
-	$oAALAdmin->RegisterHooks();
+	new AmazonAutoLinks_Admin( $oAALOptions );
 
 	// Contents Hooks
 	// this registers the method, RegisterHooks, of the AmazonAutoLinks_Contents class
-	$oAALContents = new AmazonAutoLinks_Contents( AMAZONAUTOLINKSKEY, $oAALOptions );
-	$oAALContents->RegisterHooks();
+	new AmazonAutoLinks_Contents( AMAZONAUTOLINKSKEY, $oAALOptions );
 
 	// URL redirects for URL cloaking
-	$oAALRedirects = new AmazonAutoLinks_Redirects( $oAALOptions );
-	$oAALRedirects->Redirect();
+	new AmazonAutoLinks_Redirects( $oAALOptions );
 
 	// Load actions to hook events for WordPress cron jobs
 	add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );	// 'AmazonAutoLinks_Events');
 
 	// Widgets
-	// todo: find a way to avoid using create_function() 
-	add_action( 'widgets_init', create_function( '', 'register_widget( "AmazonAutoLinks_Widget" );' ) );
+	add_action( 'widgets_init', 'AmazonAutoLinks_Widget::RegisterWidget' );
 
 	// Plugin Requirements
 	// do not use register_activation_hook(); deactivate_plugins() will fail for some reasons.
@@ -45,7 +41,6 @@ register_activation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_SetupTrans
 
 // Clean up transients upon plugin deactivation
 register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTransients' );
-
 
 function AmazonAutoLinks_CleanTransients() {
 	
@@ -92,24 +87,6 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient_timeout%_aal_%')" );
 	
 	// $wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_feed_%')" );	// this is for feed cache 
-}
-
-function AmazonAutoLinks_Log($strMsg, $strFunc='', $strFileName='log.html') {
-
-	return; // if you like to see the plugin workings, comment out this line and the below line and you'll find a log file in the plugin directory.
-	// if (!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) return;	// if the access is not from localhost, do not process.
-
-	// for debugging
-	if ($strFunc=='') $strFunc = __FUNCTION__;
-	$strPath = AMAZONAUTOLINKSPLUGINDIR . '/' . $strFileName;
-	if (!file_exists($strPath)) file_put_contents($strPath, '');	// create a file if not exist
-	$strLog = date('Y m d h:i:s A') . ': ' . $strFunc . ': ' . $strMsg . '<br />' . PHP_EOL;
-	$arrLines = file($strPath);
-	$arrLines = array_reverse($arrLines);
-	array_push($arrLines, $strLog);
-	$arrLines = array_reverse($arrLines);
-	$arrLines = array_splice($arrLines, 0, 100);   // extract the first 100 elements
-	file_put_contents($strPath, implode('', $arrLines));	
 }
 
 function AmazonAutoLinks($strUnitLabel) {
@@ -181,10 +158,10 @@ function AmazonAutoLinks_RegisterClasses() {
 		
 		// Declare classes 	
 		if ( class_exists( $strClassNamePro ) && !class_exists( $strClassName ) ) 
-			eval( "class $strClassName extends $strClassNamePro {};" );	// extend the pro class
+			eval( "class $strClassName extends $strClassNamePro {}" );
 		else if ( class_exists( $strFileName ) && !class_exists( $strClassName ) ) 	// if the pro class does not exist and the given class name has not been declared,
-			eval( "class $strClassName extends $strFileName {};" );		
-		
+			eval( "class $strClassName extends $strFileName {}" );
+			
 	} 
 }
 

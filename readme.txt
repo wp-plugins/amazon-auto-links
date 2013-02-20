@@ -16,7 +16,7 @@ Still manually searching products and pasting affiliate links? What happens if t
 
 The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazon locales and works even on JavaScript disabled browsers. Insert the ads as widget or place generated shortcode or PHP code where the links should appear.
 
-<h4>Features</h4>
+= Features =
 * Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the product links to appear.
 * Widget. Just put it in the sidebar and select the unit you created. The product links will appear in where you wanted.
@@ -29,6 +29,9 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 * URL cloaking. You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons.
 * Disable on certain pages. You can disable product links on the pages you do not want to by specifying the post IDs or if it is the front page, just check the checkbox.
   
+= Localization = 
+* Japanese
+
 == Installation ==
 
 1. Upload **`amazonautolinks.php`** and other files compressed in the zip folder to the **`/wp-content/plugins/`** directory.
@@ -69,6 +72,12 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.2.2 =
+* Added: the Debug Log option and page. 
+* Changed: the default value of the Prefetch Category Lists option to Off.
+* Fixed: the Japanese localization file name.
+* Disabled: the warining message to occur:  Warning: DOMElement::setAttribute() [domelement.setattribute]: string is not in UTF-8.
 
 = 1.2.1 - 02/18/2013 = 
 * Fixed: a bug that changing unit option values did not take effect when the Proceed button was pressed via the Manage Unit page.

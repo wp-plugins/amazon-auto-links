@@ -10,7 +10,8 @@ class AmazonAutoLinks_Redirects_ {
 		
 		// the option array
 		$this->oOption = $oOption;		
-		
+	
+		$this->Redirect();
 	}
 	function Redirect() {
 		

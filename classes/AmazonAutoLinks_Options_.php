@@ -49,6 +49,8 @@ class AmazonAutoLinks_Options_ {
 		'disableonhome'		=> False,	// since v1.2.0 - True/False. determines whether product links should appear on the home page.
 		// 'disableonfront'	=> False,	// since v1.2.1 - True/False. determines whether product links should appear on the front page.
 		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
+		'categories'		=> array(),
+		'blacklist_categories' => array(),	// since v1.2.2
 	);	
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,
@@ -57,7 +59,8 @@ class AmazonAutoLinks_Options_ {
 		'blacklist_description'	=> '',
 		'donate'			=> 0,
 		'cloakquery'		=> 'productlink',
-		'prefetch'			=> 1,
+		'prefetch'			=> 0,
+		'enablelog'			=> 0,	// since v1.2.2
 		'license'			=> '', // for Pro
 	);		
 	public $arrCountryURLs = array(
@@ -96,6 +99,13 @@ class AmazonAutoLinks_Options_ {
 		'ES' => '[NiN6GUQ/AvRkTbtgl4zD6FiSNRpeygeJHgRpJPIBiGo=]',
 		'US' => '[fRmuq3rruO3Tw8y29lU1m6mxwAZ1XxxyDOD1L2UvIU4=]'
 	);
+	
+	// since v1.2.2 
+	// if the "enable log" option is set to On, plugin activity logs will be stored in this array 
+	// and it will be stored in the database at the destructor.
+	public $arrLogs = array();	
+	protected $strLogOptionKey = 'amazonautolinks_logs';	// use a different key from the main option key.
+	
 	function __construct( $pluginkey ) {
 	
 		// Include classes
@@ -106,6 +116,32 @@ class AmazonAutoLinks_Options_ {
 		$this->pageslug = $pluginkey;	
 		
 		$this->load_settings();
+		
+		// Log class - the log class is instanciated only by the option class. The other classes should use the methods through the option object.
+		// this is because this option class is the only one that talks to all classes.
+		$this->oLog = new AmazonAutoLinks_DebugLog( $this->arrLogs, $this->arrOptions['general']['enablelog'] );	// since v1.2.2
+		add_action( 'shutdown', array( $this, 'UpdateLog' ) );
+	}
+	function UpdateLog() {
+		
+		// since v1.2.2		
+		// handle the log		
+		if ( !isset( $this->arrOptions['general']['enablelog'] ) ) return;
+		if ( empty( $this->arrOptions['general']['enablelog'] ) ) return;	
+		if ( count( $this->oLog->arrLogs ) == 0 ) return;
+		
+		$numAllowedNumberofLog = 300;		// setting this like 1000 will cause MySQL Database Gone Away errors.
+		$arrOldLog = ( array ) get_option( $this->strLogOptionKey );
+		$arrNewLog = $this->oLog->arrLogs + $arrOldLog;
+		$arrNewLog = array_slice( $arrNewLog, 0, $numAllowedNumberofLog );   
+		$bIsUpdated = update_option( $this->strLogOptionKey, $arrNewLog );
+		
+	}
+	function ClearDebugLog() {
+		update_option( $this->strLogOptionKey, array() );
+	}
+	function GetDebugLogs() {	// since v1.2.2
+		return ( array ) get_option( $this->strLogOptionKey );
 	}
 	function get_token($country) {
 		if (isset($this->arrTokens[$country]))
@@ -129,7 +165,7 @@ class AmazonAutoLinks_Options_ {
 			"units"		=> array(),		// stores created unit info.
 			"general"	=> $this->generaldefaultoptions,		// stores the general options
 		);
-		$this->arrOptions = array_merge($arrOption_default, $this->arrOptions);
+		$this->arrOptions = array_merge( $arrOption_default, $this->arrOptions );
 		$this->set_support_rate();
 		$this->update();
 	}		
@@ -151,6 +187,14 @@ class AmazonAutoLinks_Options_ {
 		$this->arrOptions['units'][$strUnitID] = $this->arrOptions[$NewOrEdit];
 		return $this->update();
 	}
+	function add_blacklist_category( $NewOrEdit, $strCatName, $arrCatInfo ) {
+		// since v1.2.2
+		return 0;
+	}
+	function delete_blacklist_categories( $NewOrEdit, $arrBlackCategories ) {
+		// since v1.2.2
+		return 0;
+	}	
 	function add_category($NewOrEdit, $strCatName, $arrCatInfo) {
 	
 		// adds category to the preview option array, either $options['newunit'] or $options['editunit'].
@@ -158,13 +202,12 @@ class AmazonAutoLinks_Options_ {
 		// returns the number of current added categories
 		
 		$numCategories = count($this->arrOptions[$NewOrEdit]['categories']);
-		if ($numCategories >= 3) 
-			return -1;
+		if ( $numCategories >= 3 ) return -1;
 		$this->arrOptions[$NewOrEdit]['categories'][$strCatName] = $arrCatInfo;
 		$this->update();
 		return count($this->arrOptions[$NewOrEdit]['categories']);
-	}		
-	function delete_categories($NewOrEdit, $arrCategories) {
+	}
+	function delete_categories( $NewOrEdit, $arrCategories ) {
 	
 		// deletes categories passed as an array, $arrCategories
 		// this method is called from the select category page. Whether the option key, EditUnit or NewUnit must be specified.

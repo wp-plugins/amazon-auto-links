@@ -28,13 +28,17 @@ class AmazonAutoLinks_Admin_ {
 	
 		// cache class
 		$this->oAALCatCache = new AmazonAutoLinks_CategoryCache( $this->pluginkey, $oOption );
-		
+			
 		// properties
 		$this->wp_version = & $GLOBALS["wp_version"];
+		
+		// register hooks
+		$this->RegisterHooks();
 	}
 	function RegisterHooks() {
 		
-		// since v1.1.3 , moved from the constructor to instantiate the option class in the very beginning of the plugin.
+		// since v1.1.3 
+		// not sure anymore --> moved from the constructor to instantiate the option class in the very beginning of the plugin.
 		
 		// localize hook only for admin page (admin_init). if the entire page-load should be hooked, including regular pages, use 'init' instead
 		add_action( 'admin_init', array( &$this, 'localize' ) );
@@ -356,22 +360,56 @@ class AmazonAutoLinks_Admin_ {
 				$_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryname'],	//	$strCatName: the submitted category breadcrumb name
 				array(	// $arrCatInfo
 					'feedurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryfeedurl'],
-					'pageurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategorypageurl'])
+					'pageurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategorypageurl']
+				)
 			);
-			if ($numSelectedCategories == -1) {
+			if ( $numSelectedCategories == -1 ) {
 				$bReachedLimit = True;
 				$numSelectedCategories = 3;
 			}
+		}
+		// check if the "Exclude Current Category" button is pressed
+		else if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['addcurrentcategory_to_blacklist'] ) ) {
+			
+			$numBlackListCategories = $this->oOption->add_blacklist_category(
+				$mode,
+				$_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryname'],	//	$strCatName: the submitted category breadcrumb name
+				array(	// $arrCatInfo
+					'feedurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategoryfeedurl'],
+					'pageurl' => $_POST[AMAZONAUTOLINKSKEY][$mode]['addcategorypageurl']
+				)			
+			);
+			if ( $numBlackListCategories == -1 ) {
+				$bReachedLimit = True;
+				$numBlackListCategories = 3;
+				// 	$numBlackListCategories is set and may be used for something but currently not be used by any.
+			}	
+			$numSelectedCategories = count( $this->oOption->arrOptions[$mode]['categories'] ); 
 		}		
 		// check if the "Delete Checked Categories" button is pressd
-		else if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['deletecategories']) && IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['categories'] ) ) {
-			$numSelectedCategories = $this->oOption->delete_categories(
-				$mode,		// NewUnit or EditUnit
-				$_POST[AMAZONAUTOLINKSKEY][$mode]['categories']	//	array holding the category names to delete
-			);
+		else if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['deletecategories']) ) {
+			if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['categories'] ) ) {
+				$numSelectedCategories = $this->oOption->delete_categories(
+					$mode,		// NewUnit or EditUnit
+					$_POST[AMAZONAUTOLINKSKEY][$mode]['categories']	//	array holding the category names to delete
+				);				
+			}
+			if ( IsSet( $_POST[AMAZONAUTOLINKSKEY][$mode]['blacklist_categories'] ) ) {
+				$numSelectedCategories = $this->oOption->delete_blacklist_categories(
+					$mode,		// NewUnit or EditUnit
+					$_POST[AMAZONAUTOLINKSKEY][$mode]['blacklist_categories']	//	array holding the category names to delete
+				);		
+			}
 		}
+
 		// new landing, just count the number of categories
 		else $numSelectedCategories = count( $this->oOption->arrOptions[$mode]['categories'] ); 
+	
+		// make sure that if no categories are selected, exclude categories is removed or initialized.
+		if ( $numSelectedCategories == 0 ) {
+			$this->oOption->arrOptions[$mode]['blacklist_categories'] = array();
+			$this->oOption->update();
+		} 
 	
 		// insert the IsPreview flag so that it won't trigger background cache renewal events.
 		$this->oOption->arrOptions[$mode]['IsPreview'] = True;	// this won't be saved unless update_option() is used after this line, so the actual unit option won't have this value
@@ -394,10 +432,12 @@ class AmazonAutoLinks_Admin_ {
 	
 		// Edit the href attribute to add the query.	
 		// adds a query in the link urls like, ?href=[encrypted_url], so that in a next page load, $_GET['href'] tells where to look up
-		$arrGETQuery = array( 'mode' => $mode,			// newunit or editunit
- 							  'page' => $_GET['page'],	// &page=amazonautolinks
-							  'tab' => $numTab,			// 101 or 203
-							 );
+		$arrGETQuery = array(
+			'mode' => $mode,			// newunit or editunit
+		  'page' => $_GET['page'],	// &page=amazonautolinks
+		  'tab' => $numTab,			// 101 or 203
+		);
+		
 		if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
 
 			// if the category block could not be read, try renewing the cache 
@@ -433,20 +473,25 @@ class AmazonAutoLinks_Admin_ {
 		$strRssLink = $this->oAALforms_selectcategories->get_rss_link($doc);	// echo '<pre>RSS: ' . $strRssLink . '</pre>';
 
 		// the unit preview & selection form
-		$this->oAALforms_selectcategories->RenderFormCategorySelectionPreview($mode
-																			, $numSelectedCategories
-																			, $strRssLink
-																			, $strBreadcrumb
-																			, $strURL
-																			, $bReachedLimit
-																			, $strSidebarHTML
-																			, $numTab);
+		$this->oAALforms_selectcategories->RenderFormCategorySelectionPreview(	
+				$mode
+			,	$numSelectedCategories
+			,	$strRssLink
+			,	$strBreadcrumb
+			,	$strURL
+			,	$this->IsReachedLimitAddedCats( $bReachedLimit )
+			,	$strSidebarHTML
+			,	$numTab 
+		);
 												
 		// schedule pre-fetch sub-category links
 		$this->oAALCatCache->schedule_prefetch($strURL);												
 			
 	} // end of tab101
-	
+	function IsReachedLimitAddedCats( $num ) {
+		// for the Pro version
+		return $num;		
+	}
 	/* ------------------------------------------ Tab 200 : Manage Units --------------------------------------------- */
 	function admin_tab200($numTabNum=200) {
 		global $table_prefix;
@@ -887,14 +932,14 @@ class AmazonAutoLinks_Admin_ {
 	function admin_tab300($numTabNum=300) {
 		
 		/* Check GET and POST arrays */
-		$bResult = $this->IsPostSentFrom($numTabNum);
-		if (is_null($bResult)) {
-			echo '<div class="error settings-error"><p>' . __('Nonce verification failed.', 'amazon-auto-links') . '</p></div>'; // passed validation
+		$bResult = $this->IsPostSentFrom( $numTabNum );
+		if ( is_null( $bResult ) ) {
+			echo '<div class="error settings-error"><p>' . __( 'Nonce verification failed.', 'amazon-auto-links' ) . '</p></div>'; // passed validation
 			return;	// do not continue 
 		}
-		if ($bResult) {		// means there are some data sent
-			if ($this->savesubmittion(300, "savebutton", "general"))
-				echo '<div class="updated"><p>' . __('Options are saved.', 'amazon-auto-links') . '</p></div>'; // passed validation
+		if ( $bResult ) {		// means there are some data sent
+			if ( $this->savesubmittion( 300, "savebutton", "general" ) )
+				echo '<div class="updated"><p>' . __('Options were saved.', 'amazon-auto-links') . '</p></div>'; // passed validation
 			else
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazon-auto-links') . '</p></div>'; // failed validation
 		} 
@@ -1013,6 +1058,11 @@ class AmazonAutoLinks_Admin_ {
 						<td align="center"><img title="<?php _e('Unavailable', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Unavailable', 'amazon-auto-links'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
 						<td align="center"><img title="<?php _e('Available', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Available', 'amazon-auto-links'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
 					</tr>						
+					<tr>
+						<td><?php _e( 'Exclude Sub Categories', 'amazon-auto-links' ); ?></td>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Unavailable', 'amazon-auto-links'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Available', 'amazon-auto-links'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>					
 				</tbody>
 			</table>
 		</div>
@@ -1055,6 +1105,61 @@ class AmazonAutoLinks_Admin_ {
 
 	<?php
 	}
+	function admin_tab600( $numTab=600 ) {
+		// for Log page.
+		// since v1.2.2
+// not finished yet
+// $this->oOption->oLog->Append( 'this is a test!' );
+// $arrOldLogs = ( array ) get_option( 'amazonautolinks_logs' );
+// echo 'Direct Access To the Option DB: <pre>' . print_r( $arrOldLogs, true ) . '</pre>';
+// echo 'oLog: <pre>' . print_r( $this->oOption->oLog->arrLogs, true ) . '</pre>';
+// echo '<pre>' . print_r( $_POST, true ) . '</pre>';
+		if ( !$this->oAALforms->verifynonce_in_tab( $numTab ) ) return;
+
+		if ( isset( $_POST['amazonautolinks']['tab600']['clear_debuglog'] ) )
+			$this->oOption->ClearDebugLog();
+		
+		
+		?>
+		<form method="post" action="">	
+			<?php
+			$this->oAALforms->embednonce( $this->pluginkey, 'nonce' ); 
+			$this->oAALforms->embedhiddenfield( $this->pluginkey, $numTab ); 
+			echo '<div style="float:right; margin: 20px 0 10px 20px;">';
+			$this->oAALforms->form_submitbutton( 600, 'clear_debuglog', __( 'Clear Log', 'amazon-auto-links' ), 'nonce', False, True, 'button-secondary' );
+			echo '</div>';
+			?>
+		</form>			
+		<?php
+		echo '<h3>';
+		echo isset( $this->tabcaptions[6] ) ? $this->tabcaptions[6] : __( 'Debug Log', 'amazon-auto-links' );
+		echo '</h3>';
+		/* Available Keys
+			[message] => ''
+			[time] => 2013-02-12 07:52:12 AM
+			[color]
+			[file] => ***.php
+			[line] => 6
+			[function] => Info
+			[class] => Debug
+			[type] =>	
+		*/
+		$i = 0;
+		foreach ( $this->oOption->GetDebugLogs() as $id => $arrLog ) {
+		
+			if ( empty( $arrLog ) ) continue;
+			++$i;
+			$arrLog['file'] = basename( $arrLog['file'] );
+			echo "<div>"
+				."<div style='margin-right: 10px; width: 20px; text-align:right; display:inline; float:left;'>{$i}.</div>" 
+				."<div style='margin: 0 10px 0 0; text-align:left; display:inline; float:left;'><strong>{$arrLog['time']}:</strong></div>"
+				."<div style='float:left;'>Line:</div><div style='display:inline; width: 30px; text-align:right; margin-right: 10px; float:left;'>{$arrLog['line']}</div>"
+				."{$arrLog['file']} {$arrLog['function']} "
+				."{$arrLog['message']}</div>";
+				
+			if ( $i > 300 ) break;
+		}
+	}
 	function donation_info() {
 	
 		// since v1.0.7
@@ -1073,9 +1178,20 @@ class AmazonAutoLinks_Admin_ {
 			1 => __( 'New Unit', 'amazon-auto-links' ),				// 1, for tab 100 - 199
 			2 => __( 'Manage Units', 'amazon-auto-links' ),			// 2, for tab 200 - 299
 			3 => __( 'General Settings', 'amazon-auto-links' ),		// 3, for tab 300 - 399
-			4 => __( 'Upgrade to Pro', 'amazon-auto-links' ),				// 4, for tab 400 - 499
-			5 => __( 'Information', 'amazon-auto-links' )			// 5, for tab 500 - 599
+			4 => __( 'Upgrade to Pro', 'amazon-auto-links' ),		// 4, for tab 400 - 499
+			5 => __( 'Information', 'amazon-auto-links' ),			// 5, for tab 500 - 599
 		);
+
+		// since v1.2.2
+		// the options are updated after rendering the heading tabs, so it needs to check the submitted value before that.
+		if ( isset( $this->oOption->arrOptions['general']['enablelog'] ) && !empty(	$this->oOption->arrOptions['general']['enablelog'] ) )
+			$this->tabcaptions[6] = __( 'Debug Log', 'amazon-auto-links' );
+		if ( isset( $_POST[$this->pluginkey]['tab300']['savebutton'] ) ) {
+			if ( empty( $_POST[$this->pluginkey]['tab300']['enablelog'] ) )	
+				unset( $this->tabcaptions[6] );
+			else 
+				$this->tabcaptions[6] = __( 'Debug Log', 'amazon-auto-links' );
+		}
 	}
 	function page_header() {
 	
@@ -1110,17 +1226,16 @@ class AmazonAutoLinks_Admin_ {
 		// called from $this->admin_page() but can be independently used
 		echo '<div class="icon32" style="background-image: url(' . plugins_url( 'img/logo_AmazonAutoLinks36.gif' , dirname(__FILE__ )) . ');"><br /></div>';
 	}	
-	function tab_menu($numCurrentTab) {
+	function tab_menu( $numCurrentTab ) {
 	
 		// called from $this->admin_page(), dependant on admin_page() 
 		// This method should be called from the administration page. It displays the tabbed menu placed on top of the page.
 		
 		$numFlooredTabNum = round( floor( $numCurrentTab / 100 ) * 100, -2 );		// this converts tab numbers to the floored rounded number. e.g. 399 becomes 300 
-		$numTabs = count($this->tabcaptions);		// stores how many tabs are available
+		$numTabs = count( $this->tabcaptions );		// stores how many tabs are available
 		echo '<h2 class="nav-tab-wrapper">';
-		foreach($this->tabcaptions as $numTab => $strTabCaption) {
-			if ($numTab == 0)
-				continue;
+		foreach( $this->tabcaptions as $numTab => $strTabCaption ) {
+			if ($numTab == 0) continue;
 			$strActive = ( $numFlooredTabNum == $numTab * 100) ? 'nav-tab-active' : '';		// checks if the current tab number matches the iteration number. If not matchi, then assign blank; otherwise put the active class name.
 			echo '<a class="nav-tab ' . $strActive . '" href="?page=' . $this->pageslug . '&tab=' . $numTab * 100 . '">' . $strTabCaption . '</a>';
 		}
@@ -1189,7 +1304,7 @@ class AmazonAutoLinks_Admin_ {
 		else 
 			return false;
 	}	
-	function savesubmittion($numTab, $strButton, $strOption) {
+	function savesubmittion( $numTab, $strButton, $strOption ) {
 		
 		// $numTab: indicates which page tab number to deal with
 		// $strButton: indicates what form button is pressed
@@ -1197,9 +1312,8 @@ class AmazonAutoLinks_Admin_ {
 		// returns false if the validation fails; returns true if the opsions are updated.
 		
 		// if the button is not pressed, go back
-		if (!IsSet($_POST[$this->pluginkey]['tab' . $numTab][$strButton]))
-			return;	
-		
+		if ( !IsSet($_POST[$this->pluginkey]['tab' . $numTab][$strButton] ) ) return;
+			
 		// validate the submitted data
 		$arrSubmittedOptions = $_POST[$this->pluginkey]['tab' . $numTab];
 		

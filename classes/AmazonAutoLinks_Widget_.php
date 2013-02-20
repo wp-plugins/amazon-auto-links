@@ -13,6 +13,10 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 		);
 	}
 
+	static function RegisterWidget() {
+		register_widget( "AmazonAutoLinks_Widget" );
+	}
+
 	public function widget( $args, $instance ) {
 		extract( $args );
 		$title = apply_filters( 'widget_title', $instance['title'] );

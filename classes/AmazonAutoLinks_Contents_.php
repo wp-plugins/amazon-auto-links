@@ -14,6 +14,8 @@ class AmazonAutoLinks_Contents_ {
 		// the option array
 		$this->oOption = $oOption; 
 			
+		// register hooks
+		$this->RegisterHooks();
 	}
 	function RegisterHooks() {
 		

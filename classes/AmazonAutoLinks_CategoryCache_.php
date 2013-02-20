@@ -8,7 +8,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		It is like link prefetching functionality.
 		
 		This class uses the 'amazonautolinks_catcache_events' key for the option which is separated from
-		the plugin main option key, 'amazon-auto-links' because cron tasks constantly updates the 
+		the plugin main option key, 'amazonautolinks' because cron tasks constantly updates the 
 		option in the background, it should not affect other processes using the main option and
 		vice versa.
 */
@@ -67,6 +67,10 @@ class AmazonAutoLinks_CategoryCache_ {
 	
 		// format the event option
 		$this->formatoption();
+		
+		// character encoding - since v1.2.2
+		$this->strCharEncoding = get_bloginfo( 'charset' );
+				
 	}
 	function formatoption() {
 		$arrCatCacheEvents = get_option('amazonautolinks_catcache_events');
@@ -107,12 +111,12 @@ class AmazonAutoLinks_CategoryCache_ {
 		$cron_url = site_url('?amazonautolinks_cache=category');	// $cron_url = site_url('wp-cron.php?doing_wp_cron=0');
         wp_remote_post( $cron_url, array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
 		echo '<!-- ' . __METHOD__ . ': ' . $strMsg . ' -->';
-		AmazonAutoLinks_Log($strMsg, __METHOD__ );	
+		$this->oOption->oLog->Append( $strMsg, __METHOD__ );	
 		
 	}	
 	function schedule_prefetch_from_url_array($arrURLs, $arrEvents) {
 		$i = 0;
-		foreach($arrURLs as $strURL) {
+		foreach( ( array ) $arrURLs as $strURL) {
 		
 			// make sure the urls ends with a trailing slash
 			$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);
@@ -122,14 +126,14 @@ class AmazonAutoLinks_CategoryCache_ {
 			if ( $html ) {
 			// if( false !== $html ) {		// if ( true === ( $value = get_transient( $this->eventkey($strURL) ) ) ) <-- not sure this doesn't work
 				echo '<!-- The transient for the url already exists, not scheduling prefetch. : ' . $this->eventkey($strURL) . ' : ' .  $strURL . ' -->';
-				// AmazonAutoLinks_Log('Transient already exists, not scheduling prefetch : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
+				// $this->oOption->oLog->Append('Transient already exists, not scheduling prefetch : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
 				continue;
 			}
 		
 			// if the url is being scheduled now, skip it 
 			if (in_array($strURL, $arrEvents)) {
 				echo '<!-- The transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL . ' -->';
-				// AmazonAutoLinks_Log('transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
+				// $this->oOption->oLog->Append('transient is in the event que. : ' . $this->eventkey($strURL) . ' : ' .  $strURL, __METHOD__ );
 				continue;
 			}
 				
@@ -141,16 +145,16 @@ class AmazonAutoLinks_CategoryCache_ {
 		}
 		
 		echo '<!-- ' . $i . ' url(s) are scheduled to pre-fetch. -->';
-		AmazonAutoLinks_Log($i . ' url(s) are scheduled to pre-fetch.', __METHOD__ );
+		$this->oOption->oLog->Append( $i . ' url(s) are scheduled to pre-fetch.' );
 		if ($i == 0) {
-			AmazonAutoLinks_Log('Not calling a background process because 0 event is scheduled.', __METHOD__ );
+			$this->oOption->oLog->Append( 'Not calling a background process because 0 event is scheduled.' );
 			return;
 		}
 
 		// run the WordPress Cron silently before the user loads another page.
-		AmazonAutoLinks_Log('Line befeore run_in_background.', __METHOD__ );
+		$this->oOption->oLog->Append( 'Line befeore run_in_background.' );
 		$this->run_in_background('run the WordPress Cron silently before the user loads another page.', __METHOD__);
-		AmazonAutoLinks_Log('Line after run_in_background.', __METHOD__ );		
+		$this->oOption->oLog->Append( 'Line after run_in_background.' );		
 	}
 	function schedule_prefetch_event_now($strURL) {
 		
@@ -163,7 +167,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		
 		// the value in the first parameter, time(), means do it right away. But actually it will be executed in the next page load.
 		wp_schedule_single_event(time(), $strKey);	
-		AmazonAutoLinks_Log('prefetch task scheduled: ' . $strKey . ': ' . $strURL, __METHOD__ );
+		$this->oOption->oLog->Append( 'prefetch task scheduled: ' . $strKey . ': ' . $strURL );
 		echo '<!-- Amazon Auto Links: the prefetch task is scheduled just now: ' . $strKey . ': ' . $strURL . ' -->'; 
 	}
 	function set_catcache_url($strURL) {
@@ -185,7 +189,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$strTransient = $this->eventkey($strURL); // the char lengths for the transient key must be within 45, which is the limitation set by WordPress.
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
-			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __METHOD__);
+			$this->oOption->oLog->Append( 'page cache already exists: ' . $strURL . ' : ' . $strTransient );
 			$this->unset_event($strURL);
 			return false;
 		}		
@@ -193,7 +197,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		// if the cache is empty
 		$html = $this->extract_necessary_parts_for_category($strURL);
 		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
-		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __METHOD__);
+		$this->oOption->oLog->Append( 'page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient );
 		$this->unset_event($strURL);
 		return true;		
 	}
@@ -206,12 +210,18 @@ class AmazonAutoLinks_CategoryCache_ {
 	function load_dom_from_url($strURL) {
 	
 		// loads the dom object from a given url.
-		mb_language($this->detect_lang($strURL)); 
+		// mb_language($this->detect_lang($strURL)); 
 		// $html = $this->oAALfuncs->get_html($strURL);	//<-- not sure why it was using non caching method
-		$html = $this->get_html($strURL);
-		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
-		$doc = new DOMDocument();	
-		@$doc->loadHTML($html);		
+		$strHTML = $this->get_html( $strURL );
+		// $html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
+		
+		$strDetectedEncoding =  @mb_detect_encoding( $strHTML, 'AUTO' );	// changed in v1.2.2
+		$strHTML = @mb_convert_encoding( $strHTML, $this->strCharEncoding , $strDetectedEncoding );	
+		$strHTML = @mb_convert_encoding( $strHTML, 'HTML-ENTITIES', $this->strCharEncoding ); 	
+		
+		// $doc = new DOMDocument();	
+		$doc = new DOMDocument( '1.0', $this->strCharEncoding );
+		@$doc->loadHTML( $strHTML );		
 		return $doc;
 	}	
 	function get_htmltext_from_id($doc, $strID) {
@@ -219,7 +229,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$nodeID = $xPath->query("//*[@id='" . $strID . "']")->item(0);
 		// $nodeID = $doc->getElementById($strID);
 		if (!$nodeID) {
-			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __METHOD__);
+			$this->oOption->oLog->Append('ERROR: ' . $strID . ' node cannot be created.' );
 			return;				
 		}
 		return trim($doc->saveXML($nodeID));
@@ -227,7 +237,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	function renew_category_cache($strURL) {
 	
 		// called from amazonautolinks_selectcategory.php to renew the cache when it fails to load the category block
-		AmazonAutoLinks_Log('renewing cache: ' . $strURL , __METHOD__);
+		$this->oOption->oLog->Append('renewing cache: ' . $strURL );
 		$strTransient = $this->eventkey($strURL);
 		delete_transient($strTransient);
 		$html = $this->extract_necessary_parts_for_category($strURL);
@@ -240,7 +250,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$html = get_transient($strTransient);	
 		if( $html ) { // if cache is available, do nothing
 			// echo '<!-- ' . __METHOD__ . ': page cache already exists: ' . $strTransient . ' : ' . $strURL . ' -->';
-			AmazonAutoLinks_Log('page cache already exists: ' . $strURL . ' : ' . $strTransient, __METHOD__);
+			$this->oOption->oLog->Append('page cache already exists: ' . $strURL . ' : ' . $strTransient );
 			$this->unset_event($strURL);
 			return false;
 		}
@@ -249,7 +259,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$html = $this->oAALfuncs->get_html($strURL);
 		set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// 2 day lifetime
 		echo '<!-- ' . __METHOD__ . ': page is cached: ' . $strTransient . ' : ' . $strURL . ' -->';
-		AmazonAutoLinks_Log('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient, __METHOD__);
+		$this->oOption->oLog->Append('page is cached. Unsetting the event.: ' . $strURL . ' : ' . $strTransient );
 		$this->unset_event($strURL);
 		return true;
 	} 
@@ -277,11 +287,11 @@ class AmazonAutoLinks_CategoryCache_ {
 			$html = $this->oAALfuncs->get_html($strURL);
 			set_transient($strTransient, $this->oAALfuncs->encrypt($html), 60*60*48 );	// the storing data must be encrypted; otherwise, the data gets sanitized by WordPress and crrupts the cache
 			echo '<!-- Transient is now saved: ' . $strTransient . ' -->' ;
-			AmazonAutoLinks_Log('Transient is now saved: ' . $strTransient , __METHOD__ );
+			$this->oOption->oLog->Append('Transient is now saved: ' . $strTransient  );
 			return $html;
 		}
 		echo '<!-- Amazon Auto Links : transient is used: ' . $strTransient . ' : ' . $strURL . ' -->';	
-		AmazonAutoLinks_Log('Transient is used: ' . $strURL , __METHOD__ );		
+		$this->oOption->oLog->Append('Transient is used: ' . $strURL );		
 		return $this->oAALfuncs->decrypt($html);	
 	}
 	function get_subcategories_from_url($strURL) {
@@ -289,13 +299,21 @@ class AmazonAutoLinks_CategoryCache_ {
 		// retrieves subcategory urls from the given url and returns an array containing the subcategory urls
 		
 		// Without spcifying the encoding with mb_language(), the characters get broken.
-		// I don't know if there are other workarounds. Let me know if anybody finds a solution for this, please contact to Michael Uno: michael@michaeluno.jp
-		mb_language($this->detect_lang($strURL)); 
+		// mb_language($this->detect_lang($strURL)); 
 		// $html = $this->oAALfuncs->get_html($strURL);	//<-- not sure why it was using the non-caching method
-		$html = $this->get_html($strURL);
-		$html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
-		$doc = new DOMDocument();	
-		@$doc->loadHTML($html);	
+		$strHTML = $this->get_html($strURL);
+
+		$strDetectedEncoding =  @mb_detect_encoding( $strHTML, 'AUTO' );	// changed in v1.2.2
+		$strHTML = @mb_convert_encoding( $strHTML, $this->strCharEncoding , $strDetectedEncoding );	
+		$strHTML = @mb_convert_encoding( $strHTML, 'HTML-ENTITIES', $this->strCharEncoding ); 	
+		
+		// $doc = new DOMDocument();	
+		$doc = new DOMDocument( '1.0', $this->strCharEncoding );
+		@$doc->loadHTML( $strHTML );		
+		
+		// $html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');
+		// $doc = new DOMDocument();	
+		// @$doc->loadHTML($html);	
 		return $this->get_subcategories_from_dom($doc);
 	}
 	function get_subcategories_from_dom($doc) {
@@ -356,7 +374,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		$xPath = new DOMXPath($doc); 	
 		$nodeID = $xPath->query("//*[@id='" . $strID . "']")->item(0);
 		if (!$nodeID) {
-			AmazonAutoLinks_Log('ERROR: ' . $strID . ' node cannot be created.', __METHOD__);
+			$this->oOption->oLog->Append('ERROR: ' . $strID . ' node cannot be created.' );
 			return;				
 		}
 		return $nodeID;

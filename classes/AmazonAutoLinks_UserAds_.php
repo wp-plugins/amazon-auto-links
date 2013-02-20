@@ -19,6 +19,7 @@ class AmazonAutoLinks_UserAds_
 		
 		// import global variables
 		$this->current_user = & $GLOBALS["current_user"];
+		
 	}
 	function check_user_countrycode() {
 		
@@ -30,12 +31,12 @@ class AmazonAutoLinks_UserAds_
 		if ( get_option('_transient_aal_mod_usercountry_' . $strUserID) + 60*60*24*2 < time() ) {
 			
 			// this means two days passed since the last saved date 
-			AmazonAutoLinks_Log('The transient "_transient_aal_mod_usercountry_' . $strUserID . '" is expired or not set yet. Renew it: ' . $modtime , __METHOD__);		
+			$this->oOption->oLog->Append('The transient "_transient_aal_mod_usercountry_' . $strUserID . '" is expired or not set yet. Renew it: ' . $modtime );		
 			
 			// schedule an event to retrieve/renew the user country code in the background.
 			$cron_url = site_url('?amazonautolinks_cache=usercountrycode&userid=' . $strUserID);	// $cron_url = site_url('wp-cron.php?doing_wp_cron=0');
 			wp_remote_post( $cron_url, array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
-			AmazonAutoLinks_Log('called the background process: ' . $cron_url, __METHOD__);	
+			$this->oOption->oLog->Append('called the background process: ' . $cron_url );	
 		}
 
 		// get the transient.
@@ -64,7 +65,7 @@ class AmazonAutoLinks_UserAds_
 	}
 	function setup_unitoption($strCountryCode='US') {
 
-		AmazonAutoLinks_Log('called: ' . $strCountryCode, __METHOD__);		
+		$this->oOption->oLog->Append('called: ' . $strCountryCode );		
 		
 		// this method is only calld in the background from AmazonAutoLinks_Event
 		// user ad unit option
@@ -91,19 +92,19 @@ class AmazonAutoLinks_UserAds_
 			// generate feed urls for this country from the root category
 			// this is heavy and takes time. so the script may be timed out
 			$oAALCategoryCache = new AmazonAutoLinks_CategoryCache($this->pluginkey, $this->oOption);
-			AmazonAutoLinks_Log('Retrieving category urls: ' . $arrUnitOptions['countryurl'], __METHOD__);
+			$this->oOption->oLog->Append('Retrieving category urls: ' . $arrUnitOptions['countryurl'] );
 			$arrCatUrls = $oAALCategoryCache->get_subcategories_from_url($arrUnitOptions['countryurl']);
 			shuffle($arrCatUrls);		// get_rsslink_from_urls() gets stuck at completing a certain number of urls and does not complete it by one call but it stores caches by url so shuffle it and strart from un-saved elements
 			$arrCatUrls = array_splice($arrCatUrls, 0, 10);		// limit the number to 10 urls; otherwise, it might exeeds maximum DB connection
-			AmazonAutoLinks_Log('retrieving rss urls.' . implode(', ', $arrCatUrls), __METHOD__);		
+			$this->oOption->oLog->Append('retrieving rss urls.' . implode(', ', $arrCatUrls) );		
 			$arrUnitOptions['feedurls'] = $oAALCategoryCache->get_rsslink_from_urls($arrCatUrls);	// the option key, "feedurls" is only used for this class
-			AmazonAutoLinks_Log('completed retrieving the rss urls.', __METHOD__);		
+			$this->oOption->oLog->Append( 'completed retrieving the rss urls.' );		
 		}
 
 		// save the update
 		$arrUserAdsOptions[$strCountryCode] = $arrUnitOptions;
 		update_option('amazonautolinks_userads', $arrUserAdsOptions);
-		AmazonAutoLinks_Log('The user ad unit option is successfully saved: ' . $strCountryCode, __METHOD__);		
+		$this->oOption->oLog->Append('The user ad unit option is successfully saved: ' . $strCountryCode );		
 	}
 	function get_unitoption($strCountryCode) {
 		$arrUserAdOptions = get_option('amazonautolinks_userads');
@@ -113,7 +114,7 @@ class AmazonAutoLinks_UserAds_
 			
 			$cron_url = site_url('?amazonautolinks_cache=userads&country=' . $strCountryCode);	// $cron_url = site_url('wp-cron.php?doing_wp_cron=0');
 			wp_remote_post( $cron_url, array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
-			AmazonAutoLinks_Log('called the background process: ' . $cron_url, __METHOD__);				
+			$this->oOption->oLog->Append('called the background process: ' . $cron_url );				
 			return;
 		}
 		return $arrUserAdOptions[$strCountryCode];
@@ -123,11 +124,11 @@ class AmazonAutoLinks_UserAds_
 		$strCountryCode = $this->check_user_countrycode();			// if the country code cache is not ready, it will return 'US'
 		$arrUnitOptions = $this->get_unitoption($strCountryCode);	// if the cache of the user ad unit option is not ready, it will return false
 		if (!$arrUnitOptions)  {
-			AmazonAutoLinks_Log('The user ad is not ready: ' . $strCountryCode, __METHOD__);				
+			$this->oOption->oLog->Append('The user ad is not ready: ' . $strCountryCode );				
 			return;	// now it should be preparing the unit option
 		}
 		if (!is_array($arrUnitOptions['feedurls'])) {
-			AmazonAutoLinks_Log('The option is not formated correctly: ' . $strCountryCode, __METHOD__);	
+			$this->oOption->oLog->Append('The option is not formated correctly: ' . $strCountryCode );	
 
 			// clean the broken unit
 			$arrUserAdOptions = get_option('amazonautolinks_userads');
@@ -137,7 +138,7 @@ class AmazonAutoLinks_UserAds_
 			// reschedule the unit setup
 			$cron_url = site_url('?amazonautolinks_cache=userads&country=' . $strCountryCode);	// $cron_url = site_url('wp-cron.php?doing_wp_cron=0');
 			wp_remote_post( $cron_url, array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
-			AmazonAutoLinks_Log('rescheduled the user ad unit option setup in the background process: ' . $cron_url, __METHOD__);			
+			$this->oOption->oLog->Append('rescheduled the user ad unit option setup in the background process: ' . $cron_url );			
 			
 			return;	// now it should be preparing the unit option
 		}
@@ -177,7 +178,7 @@ class AmazonAutoLinks_UserAds_
 		$arrUnitOptions['imgformat'] = '<img src="%imgurl%" alt="%textdescription%" style="float:left; margin-right:8px;"/>';
 		$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
 		$output = $oAAL->fetch();
-		if (!$output) AmazonAutoLinks_Log('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey], __METHOD__);	
+		if (!$output) $this->oOption->oLog->Append('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey] );	
 		echo $output;
 	}	
 	function InitializeTextFeed( $arrUrls ) {

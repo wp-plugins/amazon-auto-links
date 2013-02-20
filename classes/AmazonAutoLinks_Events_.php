@@ -3,18 +3,18 @@ class AmazonAutoLinks_Events_ {
 	/*
 		Since: v1.0.5
 		Description: this class loads saved events to hook actions with add_action() for WP Cron tasks.
+		Used hooks: 
+			aal_setuptransients - set ups transients used by the activation hook.
 	*/
 	public $arrFuncRef = array();	// store md5 hash strings associating with the unit label.
 	function __construct( &$oOption ) {		
-	
-		// AmazonAutoLinks_Log( 'instanciated ' . ($bIsManualLoad ? 'manually.' : 'automatically.') , __METHOD__);
 
 		// as of v1.1.3 $bIsManualLoad is removed
 		$this->oOption = $oOption;
 		
-		
 		// For the plugin activation hook
 		add_action( 'aal_setuptransients', array( $this, 'SetupTransients' ) );	 // this must be loaded to execute the callback function		
+		
 	}
 	
 	function LoadEvents() {
@@ -44,24 +44,25 @@ class AmazonAutoLinks_Events_ {
 	function __call( $strMethodName, $arguments ) {
 	
 		// This is called from the feed cache events 
-		// $strMethodName is a md5 hashed string of unit label with a prefix of 'aal_func_'. $arguments are not passed.
+		// $strMethodName is a md5 hashed string of unit label with the prefix of 'aal_func_'. $arguments are not passed.
 		
 		
 		$arrOptions = $this->oOption->arrOptions;	// $arrOptions = get_option('amazon-auto-links');
 		
 		$strUnitLabel = $this->arrFuncRef[$strMethodName];
 		$strEventName = 'aal_feed_' . md5( $strUnitLabel );
-		AmazonAutoLinks_Log( 'unset method name is called: ' . $strMethodName . ' This reads to: ' . $strUnitLabel, __METHOD__ );
+		$this->oOption->oLog->Append( 'An unset method name is called: ' . $strMethodName . ', which reads to: ' . $strUnitLabel );
 		
 		// renew the cache
 		$oAAL = new AmazonAutoLinks_Core( $strUnitLabel );	// now the class accepts a unit label to be passed in the parameter
 		$oAAL->cache_rebuild();
 		
+		$oAAL->GetBlackASINs( false );	// false to not to use the transients, which renews the cache
 		// schedule the next event so that it will be reccursive
 		$strUnitID = $oAAL->get_unitid_from_unitlabel($strUnitLabel);
 		$numLifetime = $arrOptions['units'][$strUnitID]['cacheexpiration'];
 		wp_schedule_single_event(time() + $numLifetime, $strEventName);
-		AmazonAutoLinks_Log( 'Unit Label, "' . $strUnitLabel . '", is renewed and rescheduled the cache renew event at ' . $numLifetime . ' seconds from now: ' . date('Y m d h:i:s A', time() + $numLifetime), __METHOD__);
+		$this->oOption->oLog->Append( 'Unit Label, "' . $strUnitLabel . '", is renewed and rescheduled the cache renew event at ' . $numLifetime . ' seconds from now: ' . date('Y m d h:i:s A', time() + $numLifetime) );
 	}
 	
 	function load_feed_cache_events() {
@@ -78,7 +79,8 @@ class AmazonAutoLinks_Events_ {
 			add_action( $strEventName, array( &$this, $strFunctionName ) );	// this sets the method name as the hash name of unit label and if the method is triggered, __call() is called.
 			$i++;
 		}	
-		AmazonAutoLinks_Log( $i . ' action(s) of feed cache events is(are) hooked. This simply means there are ' . $i . ' unit(s).', __METHOD__);
+		// if ( $i > 0 )
+			// $this->oOption->oLog->Append( $i . ' action(s) of feed cache events is(are) hooked. This simply means there are ' . $i . ' unit(s).', __METHOD__ );
 	}
 	function schedule_feed_cache_rebuild( $strUnitLabel, $numInterval ) {
 		
@@ -88,14 +90,14 @@ class AmazonAutoLinks_Events_ {
 		$strEventName = 'aal_feed_' . $strActionHashName;
 		add_action( $strEventName, array( &$this, $strFunctionName ) );	// this sets the method name as the hash name of unit label
 		wp_schedule_single_event( time() + $numInterval, $strEventName );	
-		AmazonAutoLinks_Log( $strUnitLabel . ' is scheduled to rebuild its feed cache at ' . $numInterval . ' seconds from now.', __METHOD__ );
+		$this->oOption->oLog->Append( $strUnitLabel . ' is scheduled to rebuild its feed cache at ' . $numInterval . ' seconds from now.' );
 	}
 	function reschedule_feed_cache_rebuild($numTimeStamp, $strUnitLabel, $numInterval) {
 		
 		// this method is called by the AmazonAutoLinks_Core class when it is detected that the user changed the cache expiration time setting.
 		$strActionHashName = md5($strUnitLabel);
 		wp_unschedule_event($numTimeStamp, 'aal_feed_' . $strActionHashName);	
-		AmazonAutoLinks_Log( $strUnitLabel . ' is unscheduled.', __METHOD__);
+		$this->oOption->oLog->Append( $strUnitLabel . ' is unscheduled.', __METHOD__);
 		$this->schedule_feed_cache_rebuild($strUnitLabel, $numInterval);
 	}
 	
@@ -118,7 +120,8 @@ class AmazonAutoLinks_Events_ {
 		}	
 		
 		// this is mostly for debugging.
-		AmazonAutoLinks_Log( $i . ' action(s) is(are) hooked.', __METHOD__);
+		if ( $i > 0 )	
+			$this->oOption->oLog->Append( $i . ' action(s) is(are) hooked.', __METHOD__ );
 	}		
 	function cache_category() {
 		
@@ -133,7 +136,7 @@ class AmazonAutoLinks_Events_ {
 		$arrEvents = array_splice($arrCatCacheEvents, 0, 5);   // take out 5 elements from the beggining of the array
 		if (count($arrEvents) == 0)	{
 			// echo '<!-- Amazon Auto Links: no events are scheduled. Returning. -->';
-			AmazonAutoLinks_Log('No events are scheduled. Returning.', __METHOD__);
+			$this->oOption->oLog->Append('No events are scheduled. Returning.' );
 			return; // if nothing extracted, return
 		}
 			
@@ -147,7 +150,7 @@ class AmazonAutoLinks_Events_ {
 			if ($oAALCatCache->cache_category($strURL)) $i++;
 		
 		echo '<!-- ' . __METHOD__ . ': ' . $i . ' number of page(s) are cached: -->';
-		AmazonAutoLinks_Log($i . ' number of page(s) are cached', __METHOD__);
+		$this->oOption->oLog->Append($i . ' number of page(s) are cached' );
 
 		// Do not update the option! Since the process can be stopped by any reason and do not complete caching.
 		// So let cache_html() update the option when the passed url is cached.
@@ -158,7 +161,7 @@ class AmazonAutoLinks_Events_ {
 			$oAALCatCache->run_in_background('Background Process: There are '. count($arrCatCacheEvents) .' remaining events. Keep fetching!');
 		}
 		else 
-			AmazonAutoLinks_Log('All done!', __METHOD__);
+			$this->oOption->oLog->Append( 'All done!' );
 	}
 
 	/* For User Country Code*/
@@ -180,11 +183,11 @@ class AmazonAutoLinks_Events_ {
 		
 		// lock this call for one minute
 		if (get_transient('aal_userad_setunit') !== false){
-			AmazonAutoLinks_Log('The user ad setup unit is already in process. Returning.', __METHOD__);		
+			$this->oOption->oLog->Append( 'The user ad setup unit is already in process. Returning.' );		
 			return;
 		}
 		set_transient('aal_userad_setunit', time(), 60 );	
-		AmazonAutoLinks_Log('setting up the unit option for a user ad: ' . $strCountryCode, __METHOD__);		
+		$this->oOption->oLog->Append('setting up the unit option for a user ad: ' . $strCountryCode );		
 		
 		// creates a unit option with the key name of the given county code and saves it in the option with the "amazonautolinks_userads" key.
 		$oAALUserAds = new AmazonAutoLinks_UserAds('amazon-auto-links');

@@ -760,6 +760,7 @@ class AmazonAutoLinks_Forms_ {
 				$this->field_element_blacklist_by_description( $numTabNum, $arrOptionsToDisplay['blacklist_description'] );
 				$this->field_element_cloakquery( $numTabNum, $arrOptionsToDisplay['cloakquery'] );
 				$this->field_element_prefetch( $numTabNum, $arrOptionsToDisplay['prefetch'] );
+				$this->field_element_enbalelog( $numTabNum, isset( $arrOptionsToDisplay['enablelog'] ) ? $arrOptionsToDisplay['enablelog'] : false );	// since v1.2.2
 				$this->field_element_license( $numTabNum, isset( $arrOptionsToDisplay['license'] ) ? $arrOptionsToDisplay['license'] : '' ); // since v1.1.9			
 				
 				// for addons since v1.1.8
@@ -798,7 +799,10 @@ class AmazonAutoLinks_Forms_ {
 				<option value="30" <?php echo $strValue == '30' ? 'Selected' : ''; ?>><?php _e('30%', 'amazon-auto-links'); ?></option>
 				<option value="50" <?php echo $strValue == '50' ? 'Selected' : ''; ?>><?php _e('50%', 'amazon-auto-links'); ?></option>
 				</select>		
-				&nbsp;<font color="#666">( <?php _e('The percentage that the associate ID is altered with the plugin developers\'.', 'amazon-auto-links'); ?> )</font>
+				&nbsp;
+				<span class="description">
+				<font color="#666">( <?php _e('The percentage that the associate ID is altered with the plugin developers\'.', 'amazon-auto-links'); ?> )</font>
+				</span>
 			</td>
 		</tr>
 		<?php // syntax stylizing fixer '
@@ -815,9 +819,12 @@ class AmazonAutoLinks_Forms_ {
 				<select name="<?php echo $strFieldName; ?>">
 				<option value="0" <?php echo $strValue == '0' ? 'Selected' : ''; ?>><?php _e('Not Yet', 'amazon-auto-links'); ?></option>
 				<option value="1" <?php echo $strValue == '1' ? 'Selected' : ''; ?>><?php _e('Yes, I have', 'amazon-auto-links'); ?></option>
-				</select>		
-				&nbsp;<font color="#666">( <?php _e('Please conside donation.', 'amazon-auto-links'); ?> )</font>							
+				</select>
+				&nbsp;
+				<span class="description">
+				<font color="#666">( <?php _e('Please conside donation.', 'amazon-auto-links'); ?> )</font>							
 				<?php if ($strValue == 0) _e('Please consider donation.', 'amazon-auto-links'); ?>
+				</span>
 			</td>
 		</tr>
 		<?php
@@ -832,7 +839,9 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Black List', 'amazon-auto-links'); ?>&nbsp;<?php _e('by ASIN', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<span class="description">
 				<font color="#666">( <?php _e('Enter ASINs that are not to be displayed, separated by commas.', 'amazon-auto-links'); ?> e.g. 12345678901, B001AAAA0A )</font>							
+				</span>
 			</td>
 		</tr>
 		<?php
@@ -848,7 +857,9 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Black List', 'amazon-auto-links'); ?>&nbsp;<?php _e('by Title', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<span class="description">
 				<font color="#666">( <?php _e('Enter strings, separated by commas so that product links whose title contains them will not be displayed.', 'amazon-auto-links'); ?> e.g. adult, XXX )</font>
+				</span>
 			</td>
 		</tr>
 		<?php
@@ -864,7 +875,9 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Black List', 'amazon-auto-links'); ?>&nbsp;<?php _e('by Description', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
+				<span class="description">
 				<font color="#666">( <?php _e('Enter strings, separated by commas so that product links whose description text contains them will not be displayed.', 'amazon-auto-links'); ?> e.g. adult, XXX )</font>
+				</span>	
 			</td>
 		</tr>
 		<?php
@@ -880,19 +893,20 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Cloak URL Query Parameter', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="20" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  />
-				<br />&nbsp;<font color="#666">( 
+				<br />&nbsp;<font color="#666">
+				<span class="description">( 
 				<?php _e('Define the query parameter for URL cloaking.', 'amazon-auto-links'); ?>
 				&nbsp;
 				<?php
 				_e('Default: ', 'amazon-auto-links'); 
 				echo $this->oOption->generaldefaultoptions['cloakquery']; 
 				?>  
-				)</font>	
+				)</font></span>
 			</td>
 		</tr>
 		<?php
 	}
-	function field_element_prefetch($numTabnum, $numValue="") {
+	function field_element_prefetch( $numTabnum, $numValue="" ) {
 	
 		// called from form_generaloptions()
 		// since v1.1.1
@@ -905,11 +919,32 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> <?php _e('On' ,'amazon-auto-links'); ?> &nbsp;&nbsp;&nbsp;
 				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazon-auto-links'); ?>&nbsp;&nbsp;
-				(<font color="#666"><?php _e('Default: On.', 'amazon-auto-links');?>&nbsp;<?php _e('Set it off if links do not appear in the preview in some categories.', 'amazon-auto-links');?></font> )<br />
+				<span class="description">
+					(<font color="#666"><?php _e( 'Default: Off.', 'amazon-auto-links' );?>&nbsp;<?php _e( 'Set it off if links do not appear in the preview in some categories. Set it on for faster browsing in the setting page.', 'amazon-auto-links' );?></font> )
+					<br />
+				</span>
 			</td>
 		</tr>	
 		<?php			
 	}	
+	function field_element_enbalelog( $numTabnum, $numValue='' ) {
+		// since v1.2.2
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][enablelog]';
+		$numValue = $numValue == "" ? $this->oOption->generaldefaultoptions['enablelog'] : $numValue;
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e( 'Enable Debug Log', 'amazon-auto-links' ); ?></th>
+			<td>
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> <?php _e('On' ,'amazon-auto-links'); ?> &nbsp;&nbsp;&nbsp;
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazon-auto-links'); ?>&nbsp;&nbsp;
+				<span class="description">
+					(<font color="#666"><?php _e( 'Default: Off.', 'amazon-auto-links' );?>&nbsp;
+					<?php _e( 'This option is mostly for developers. You may occasionally need to set it On to troubleshoot or report bugs.', 'amazon-auto-links' );?></font> )
+				</span><br />
+			</td>
+		</tr>	
+		<?php
+	}
 	function field_element_license( $numTabnum, $strValue="" ) {}	// since v1.1.9, for Pro
 	
 	/*
