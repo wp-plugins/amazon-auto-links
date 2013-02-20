@@ -51,6 +51,7 @@ class AmazonAutoLinks_Options_ {
 		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
 		'categories'		=> array(),
 		'blacklist_categories' => array(),	// since v1.2.2
+		'multicolumn'		=> False,	// since v1.2.2 but not implemented yet
 	);	
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,

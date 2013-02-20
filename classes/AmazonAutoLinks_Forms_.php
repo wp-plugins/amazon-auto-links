@@ -232,7 +232,7 @@ class AmazonAutoLinks_Forms_ {
 	}
 	function form_setunit($numTabNum, $arrOptionsToDisplay="", $arrErrors="") {
 	
-		// called from admin_tab100() and admin_tab202()
+		// called from either admin_tab100() or admin_tab202()
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
 		$arrOptionsToDisplay = is_array( $arrOptionsToDisplay ) ? $arrOptionsToDisplay + $this->oOption->GetDefaultUnitOptionKeys() : $this->oOption->unitdefaultoptions ;
@@ -257,12 +257,21 @@ class AmazonAutoLinks_Forms_ {
 			$this->field_element_credit( $numTabNum, $arrOptionsToDisplay['credit'] ); 
 			$this->field_element_urlcloaking( $numTabNum, $arrOptionsToDisplay['urlcloak'] ); 
 			$this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); 
-			// $this->field_element_disableonfront( $numTabNum, $arrOptionsToDisplay['disableonfront'] ); 
 			$this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); 
+			
+			// for addons since v1.2.2
+			$strAdditionalFormsFields = '';
+			echo apply_filters( 'aalhook_admin_form_addnewunit_fields',  $strAdditionalFormsFields );
 			?>
 			</tbody>
 		</table>
-		<?php $this->oUserAd->ShowTextAd(); // oUserAd must be instantiated prior to this method call ?>
+		<?php
+		// for addons since v1.2.2
+		do_action( 'aalhook_admin_form_addnewunit_table' );
+		
+		// oUserAd must be instantiated prior to this method call 
+		$this->oUserAd->ShowTextAd(); 
+		?>
 		<p class="submit">
 			<?php 
 				$strFieldName = $this->pluginkey . '[tab' . $numTabNum . '][proceedbutton]';
@@ -277,13 +286,22 @@ class AmazonAutoLinks_Forms_ {
 		<?php $this->get_pro_description(); ?>
 		<table class="form-table" style="clear:left; width:auto;" >	
 			<tbody>
-				<?php $this->field_element_cacheexpiration($numTabNum, $arrOptionsToDisplay['cacheexpiration']); ?>
-				<?php $this->field_element_containerformat($numTabNum, $arrOptionsToDisplay['containerformat']); ?>
-				<?php $this->field_element_itemformat($numTabNum, $arrOptionsToDisplay['itemformat']); ?>		
-				<?php $this->field_element_imgformat($numTabNum, $arrOptionsToDisplay['imgformat']); ?>		
+				<?php 
+					$this->field_element_cacheexpiration( $numTabNum, $arrOptionsToDisplay['cacheexpiration'] );
+					$this->field_element_containerformat( $numTabNum, $arrOptionsToDisplay['containerformat'] );
+					$this->field_element_itemformat( $numTabNum, $arrOptionsToDisplay['itemformat'] );	
+					$this->field_element_imgformat( $numTabNum, $arrOptionsToDisplay['imgformat'] );
+					$this->field_element_multicolumn( $numTabNum, $arrOptionsToDisplay['multicolumn'] );	// not implemented yet
+					
+					// for addons since v1.2.2
+					$strAdditionalFormsFields = '';
+					echo apply_filters( 'aalhook_admin_form_acvancedoption_fields',  $strAdditionalFormsFields );
+				?>
 			</tbody>
 		</table>						
-
+		<?php
+		do_action( 'aalhook_admin_form_advancedoption_table' );	// for addons since v1.2.2
+		?>
 		<p class="submit">
 			<?php 
 			$this->field_submitbutton($strFieldName, __('Proceed', 'amazon-auto-links')); 
@@ -715,7 +733,7 @@ class AmazonAutoLinks_Forms_ {
 		// called from form_setunit()
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imgformat]';	
 		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['imgformat'];
-	?>
+		?>
 		<tr valign="top">
 			<th scope="row" rowspan="2">
 				<?php _e('Image Format', 'amazon-auto-links'); ?><br /><br />
@@ -739,9 +757,11 @@ class AmazonAutoLinks_Forms_ {
 				</div>
 			</td>
 		</tr>	
-	<?php
+		<?php
 	}	
-	
+	function field_element_multicolumn( $numTabnum, $strValue="" ) {
+		// not implemented yet
+	}
 	/*------------------------------------ General Settings ----------------------------------------*/
 	function form_generaloptions($numTabNum, $arrOptionsToDisplay="", $arrErrors="") {
 	
