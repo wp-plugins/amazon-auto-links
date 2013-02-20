@@ -456,8 +456,8 @@ class AmazonAutoLinks_Admin_ {
 // print '<pre>' . print_r( $this->oOption->arrOptions[$mode], true ). '</pre>' ;
 				
 				if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
-					echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazon-auto-links') . ' : ' . $strURL . '</div>';
-					echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ) );
+					echo '<div class="error" style="padding:10px; margin:10px;">' . __('Error: Links could not be modified in this url. Please consult the plugin developer.', 'amazon-auto-links') . ' : ' . $strURL . '<br />' . $strRedirectURL . '</div>';
+					echo htmlspecialchars( $doc->saveXML( $doc->getElementsByTagName('body')->item(0) ), ENT_COMPAT | ENT_HTML401, get_bloginfo( 'charset' ) );
 					Exit;
 				}
 			}
