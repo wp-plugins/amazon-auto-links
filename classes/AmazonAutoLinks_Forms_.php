@@ -971,11 +971,12 @@ class AmazonAutoLinks_Forms_ {
 	}
 	function field_element_license( $numTabnum, $strValue="" ) {}	// since v1.1.9, for Pro
 	function field_element_capability( $numTabnum, $strValue="" ) {	// since v1.2.4
-		
-		if ( !is_super_admin() && !is_admin() ) return;
-		
+
+		if( !current_user_can( 'manage_options' ) ) return;		// only super admin or admin can set this.
+	
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][capability]';
 		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['capability'];
+		
 		?>
 		<tr valign="top">
 			<th scope="row"><?php _e( 'Access Right to Setting Page', 'amazon-auto-links'); ?></th>

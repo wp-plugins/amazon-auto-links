@@ -76,7 +76,7 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 = 1.2.4 =
 * Added: the "Access Right to Setting Page" option in the General Settings page that sets the access level for the admin page of the plugin.
 
-= 1.2.3 =
+= 1.2.3 - 02/21/2013 =
 * Fixed: a bug that title sorting was not accurately performed when the title contained HTML tags or encoded differently from other titles.
 * Changed: the name of the sort option, Title, to Title Ascending.
 * Added: the Title Descending sort order option.

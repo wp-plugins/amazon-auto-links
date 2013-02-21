@@ -947,8 +947,8 @@ class AmazonAutoLinks_Admin_ {
 				echo '<div class="error settings-error"><p>' . __('Some form information needs to be corrected.', 'amazon-auto-links') . '</p></div>'; // failed validation
 		} 
 		// else no data submitted, meaning the user just arrived at this page.
-		
-	?>
+
+		?>
 		<h3><?php echo $this->tabcaptions[3]; ?></h3>		
 		<form method="post" action="">	
 			<?php
