@@ -769,7 +769,9 @@ class AmazonAutoLinks_Forms_ {
 		// called from admin_tab300()
 		// if the option is not set, put the default value
 		// it's premised that this method is called inside a form tag. e.g. <form> ..  $oClass->form_setunit() .. </form>
-		if ( !is_array( $arrOptionsToDisplay ) ) $arrOptionsToDisplay = $this->oOption->generaldefaultoptions;
+		// Merging with the array returned from GetDefaultGeneralOptionKeys() ensures the necessary keys to prevent undefined index warnings
+		// and therefore, isset() to check the key won't be necessary.
+		$arrOptionsToDisplay = is_array( $arrOptionsToDisplay ) ? $arrOptionsToDisplay + $this->oOption->GetDefaultGeneralOptionKeys() : $this->oOption->generaldefaultoptions;
 		if ( !is_array( $arrErrors ) ) $arrErrors = array();		
 		?>	
 		<table class="form-table" style="clear:left; width:auto;">
@@ -781,8 +783,9 @@ class AmazonAutoLinks_Forms_ {
 				$this->field_element_blacklist_by_description( $numTabNum, $arrOptionsToDisplay['blacklist_description'] );
 				$this->field_element_cloakquery( $numTabNum, $arrOptionsToDisplay['cloakquery'] );
 				$this->field_element_prefetch( $numTabNum, $arrOptionsToDisplay['prefetch'] );
-				$this->field_element_enbalelog( $numTabNum, isset( $arrOptionsToDisplay['enablelog'] ) ? $arrOptionsToDisplay['enablelog'] : false );	// since v1.2.2
-				$this->field_element_license( $numTabNum, isset( $arrOptionsToDisplay['license'] ) ? $arrOptionsToDisplay['license'] : '' ); // since v1.1.9			
+				$this->field_element_enbalelog( $numTabNum, $arrOptionsToDisplay['enablelog'] );	// since v1.2.2
+				$this->field_element_capability( $numTabNum, $arrOptionsToDisplay['capability'] );	// since v1.2.4
+				$this->field_element_license( $numTabNum, $arrOptionsToDisplay['license'] ); // since v1.1.9			
 				
 				// for addons since v1.1.8
 				$strAdditionalFormsFields = '';
@@ -967,7 +970,29 @@ class AmazonAutoLinks_Forms_ {
 		<?php
 	}
 	function field_element_license( $numTabnum, $strValue="" ) {}	// since v1.1.9, for Pro
-	
+	function field_element_capability( $numTabnum, $strValue="" ) {	// since v1.2.4
+		
+		if ( !is_super_admin() && !is_admin() ) return;
+		
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][capability]';
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['capability'];
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e( 'Access Right to Setting Page', 'amazon-auto-links'); ?></th>
+			<td>
+				<select name="<?php echo $strFieldName; ?>">
+				<option value="manage_options" <?php echo $strValue == 'manage_options' ? 'Selected' : ''; ?>><?php _e( 'Administrator', 'amazon-auto-links' ); ?></option>
+				<option value="edit_pages" <?php echo $strValue == 'edit_pages' ? 'Selected' : ''; ?>><?php _e( 'Editor', 'amazon-auto-links' ); ?></option>
+				<option value="publish_posts" <?php echo $strValue == 'publish_posts' ? 'Selected' : ''; ?>><?php _e( 'Author', 'amazon-auto-links' ); ?></option>
+				<option value="edit_posts" <?php echo $strValue == 'edit_posts' ? 'Selected' : ''; ?>><?php _e( 'Contributor', 'amazon-auto-links' ); ?></option>
+				<option value="read" <?php echo $strValue == 'read' ? 'Selected' : ''; ?>><?php _e( 'Subscriber', 'amazon-auto-links' ); ?></option>
+				</select>		
+				&nbsp;<span class="description"><font color="#666">( <?php _e( 'Select the access level to this setting page.', 'amazon-auto-links' ); ?> )</font></span>
+			</td>
+		</tr>
+		<?php
+	}
+
 	/*
 	 * Manage Units Tab
 	 * */

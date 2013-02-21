@@ -72,6 +72,7 @@ class AmazonAutoLinks_Admin_ {
 		}	
 	}
 	function embed_settings_link($arrLinks) {
+		
 		$settings_link = '<a href="options-general.php?page=' . $this->pageslug . '">' . __('Settings', 'amazon-auto-links') . '</a>'; 
 		array_unshift($arrLinks, $settings_link); 
 		return $arrLinks; 	
@@ -92,9 +93,9 @@ class AmazonAutoLinks_Admin_ {
 		add_options_page(
 			$this->pluginname,		// page title
 			$this->classver == 'pro' ? $this->pluginname . ' Pro' : $this->pluginname,		// menu item name
-			'manage_options',		// privilege
+			isset( $this->oOption->arrOptions['general']['capability'] ) ? $this->oOption->arrOptions['general']['capability'] : 'manage_options',	// capability
 			$this->pageslug,		// pageslug
-			array($this, 'adminpage')
+			array( $this, 'adminpage' )
 		);
 	}
 	

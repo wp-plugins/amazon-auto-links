@@ -64,6 +64,7 @@ class AmazonAutoLinks_Options_ {
 		'prefetch'			=> 0,
 		'enablelog'			=> 0,	// since v1.2.2
 		'license'			=> '', // for Pro
+		'capability'		=> 'manage_options',	// since v1.2.3 - for Pro
 	);		
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
@@ -104,7 +105,7 @@ class AmazonAutoLinks_Options_ {
 	
 	// since v1.2.2 
 	// if the "enable log" option is set to On, plugin activity logs will be stored in this array 
-	// and it will be stored in the database at the destructor.
+	// and it will be stored in the database with the shutdown hook.
 	public $arrLogs = array();	
 	protected $strLogOptionKey = 'amazonautolinks_logs';	// use a different key from the main option key.
 	
@@ -120,7 +121,7 @@ class AmazonAutoLinks_Options_ {
 		$this->load_settings();
 		
 		// Log class - the log class is instanciated only by the option class. The other classes should use the methods through the option object.
-		// this is because this option class is the only one that talks to all classes.
+		// this is because this option class is the only one that talks to all the classes.
 		$this->oLog = new AmazonAutoLinks_DebugLog( $this->arrLogs, $this->arrOptions['general']['enablelog'] );	// since v1.2.2
 		add_action( 'shutdown', array( $this, 'UpdateLog' ) );
 	}
@@ -139,7 +140,7 @@ class AmazonAutoLinks_Options_ {
 		$bIsUpdated = update_option( $this->strLogOptionKey, $arrNewLog );
 		
 	}
-	function ClearDebugLog() {
+	function ClearDebugLog() {	// since v1.2.2
 		update_option( $this->strLogOptionKey, array() );
 	}
 	function GetDebugLogs() {	// since v1.2.2
@@ -152,8 +153,7 @@ class AmazonAutoLinks_Options_ {
 	function load_settings() {
 	
 		// create an option array, if it is the first time of loading this plugin
-		$this->arrOptions = get_option( $this->optionkey );	
-		$this->arrOptions = is_array($this->arrOptions) ? $this->arrOptions : array();
+		$this->arrOptions = ( array ) get_option( $this->optionkey );	
 		$arrOption_default = array(
 			"tab100"	=> array(),		// for tab 100
 			"tab101"	=> array(),		// for tab 101
@@ -169,7 +169,7 @@ class AmazonAutoLinks_Options_ {
 		);
 		$this->arrOptions = array_merge( $arrOption_default, $this->arrOptions );
 		$this->set_support_rate();
-		$this->update();
+		// $this->update();	<-- not sure why it was updating here. This should be redundant.
 	}		
 	function set_support_rate() {
 		return;	// do nothing for the standard version
@@ -383,6 +383,11 @@ class AmazonAutoLinks_Options_ {
 		$arrDefaultUnitOptionKeys = array();
 		foreach( $this->unitdefaultoptions as $strKey => $v ) $arrDefaultUnitOptionKeys[$strKey] = null;
 		return $arrDefaultUnitOptionKeys;
+	}
+	function GetDefaultGeneralOptionKeys() {	// since v1.2.4
+		$arrDefaultGeneralOptionKeys = array();
+		foreach( $this->generaldefaultoptions as $strKey => $v ) $arrDefaultGeneralOptionKeys[$strKey] = null;
+		return $arrDefaultGeneralOptionKeys;
 	}
 }
 ?>
