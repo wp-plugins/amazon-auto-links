@@ -499,8 +499,8 @@ class AmazonAutoLinks_Forms_ {
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedbelow]" 		 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptabove]"	 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptbelow]"	 value="0" />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo isset( $arrValues['postabove_static'] ) && $arrValues['postabove_static'] ? 'Checked' : '' ?>> <span class="description"><?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo isset( $arrValues['postbelow_static'] ) && $arrValues['postbelow_static'] ? 'Checked' : '' ?>> <span class="description"><?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo isset( $arrValues['postabove_static'] ) && $arrValues['postabove_static'] ? 'Checked' : '' ?>>&nbsp;<?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;<span class="description">(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo isset( $arrValues['postbelow_static'] ) && $arrValues['postbelow_static'] ? 'Checked' : '' ?>>&nbsp;<?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;<span class="description">(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove]" 		 value="1" <?php echo $arrValues['postabove'] ? 		'Checked' : '' ?>> <?php _e('Above Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow]"		 value="1" <?php echo $arrValues['postbelow'] ? 		'Checked' : '' ?>> <?php _e('Below Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[excerptabove]" 	 value="1" <?php echo $arrValues['excerptabove'] ? 		'Checked' : '' ?>> <?php _e('Above Excerpt', 'amazon-auto-links');?><br />
@@ -755,6 +755,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<input type="checkbox" name="" value="1" disabled="disabled" style="background-color: #eee; color: #999;" /> 
 				<?php _e( 'Keep the fetched titles intact.', 'amazon-auto-links' ); ?>
+				<span class="description">(<?php _e( 'The heading numbering will appear in the title.', 'amazon-auto-links');?> )</span><br />
 			</td>
 		</tr>
 		<?php		
