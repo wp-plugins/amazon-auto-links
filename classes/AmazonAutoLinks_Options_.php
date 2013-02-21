@@ -53,6 +53,7 @@ class AmazonAutoLinks_Options_ {
 		'blacklist_categories' => array(),	// since v1.2.2
 		'multicolumn'		=> False,	// since v1.2.2 but not implemented yet
 		'keeprawtitle'		=> False,	// since v1.2.3 - for Pro
+		'titlenumbering'	=> False,	// since v1.2.4 - for Pro
 	);	
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,

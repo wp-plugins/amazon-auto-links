@@ -209,7 +209,7 @@ class AmazonAutoLinks_Core_ {
 		} catch (Exception $e) { $this->i = 0; }
 		
 		// schedule a background cache renewal event
-		if ( empty($this->arrUnitOptions['IsPreview']) ) $this->schedule_cache_rebuild();
+		if ( empty( $this->arrUnitOptions['IsPreview'] ) ) $this->schedule_cache_rebuild();
 		
 		// end the function by returning the result
 		return $this->format_output($output);
@@ -451,7 +451,7 @@ class AmazonAutoLinks_Core_ {
 
 		// removes the heading numbering. e.g. #3: Product Name -> Product Name
 		// Do not use "substr($strTitle, strpos($strTitle, ' '))" since some title contains double-quotes and they mess up html formats
-		if ( ! $this->arrUnitOptions['keeprawtitle'] )
+		if ( ! $this->arrUnitOptions['titlenumbering'] )
 			$strTitle = trim(preg_replace('/#\d+?:\s+?/i', '', $strTitle));
 		
 		// title character length	// since v1.0.7

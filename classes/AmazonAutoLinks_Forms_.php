@@ -291,7 +291,7 @@ class AmazonAutoLinks_Forms_ {
 					$this->field_element_containerformat( $numTabNum, $arrOptionsToDisplay['containerformat'] );
 					$this->field_element_itemformat( $numTabNum, $arrOptionsToDisplay['itemformat'] );	
 					$this->field_element_imgformat( $numTabNum, $arrOptionsToDisplay['imgformat'] );
-					$this->field_element_keeprawtitle( $numTabNum, $arrOptionsToDisplay['keeprawtitle'] );	// since v1.2.3
+					$this->field_element_keeprawtitle( $numTabNum, array( $arrOptionsToDisplay['keeprawtitle'], $arrOptionsToDisplay['titlenumbering'] ) );	// since v1.2.3 and v1.2.4
 					$this->field_element_multicolumn( $numTabNum, $arrOptionsToDisplay['multicolumn'] );	// not implemented yet
 					
 					// for addons since v1.2.2
@@ -745,7 +745,7 @@ class AmazonAutoLinks_Forms_ {
 		</tr>	
 		<?php
 	}	
-	function field_element_keeprawtitle( $numTabNum, $bValue='' ) {
+	function field_element_keeprawtitle( $numTabNum, $arrValues='' ) {
 		// since v1.2.3 - for Pro
 		?>
 		<tr valign="top">
@@ -754,8 +754,11 @@ class AmazonAutoLinks_Forms_ {
 			</th>
 			<td>
 				<input type="checkbox" name="" value="1" disabled="disabled" style="background-color: #eee; color: #999;" /> 
-				<?php _e( 'Keep the fetched titles intact.', 'amazon-auto-links' ); ?>
-				<span class="description">(<?php _e( 'The heading numbering will appear in the title.', 'amazon-auto-links');?> )</span><br />
+				<?php _e( 'When sorting.', 'amazon-auto-links' ); ?>
+				<span class="description">(<?php _e( 'This will be useful to sort items by rank.', 'amazon-auto-links');?> )</span><br />
+				<input type="checkbox" name="" value="1" disabled="disabled" style="background-color: #eee; color: #999;" /> 
+				<?php _e( 'When displaying.', 'amazon-auto-links' ); ?>				
+				<span class="description">(<?php _e( 'The heading numbering will appear.', 'amazon-auto-links');?> e.g. #1. Product Name... )</span><br />
 			</td>
 		</tr>
 		<?php		
