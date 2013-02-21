@@ -73,6 +73,11 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 
 == Changelog ==
 
+= 1.2.3 =
+* Fixed: a bug that title sorting was not accurately performed when the title contained HTML tags or encoded differently from other titles.
+* Changed: the name of the sort option, Title, to Title Ascending.
+* Added: the Title Descending sort order option.
+
 = 1.2.2 - 02/21/2013 =
 * Added: the Debug Log option and page. 
 * Changed: the default value of the Prefetch Category Lists option to Off.
@@ -85,10 +90,10 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 * Fixed: warning messages, undefined index, which appeared in the debug mode when the Delete Selected Units button was pressed.
 
 = 1.2.0 - 02/12/2013 =
-* Fixed: some lines of code which caused warning messages when the WordPress debug mode is turned on.
-* Added: the ability to clean up once-off events upon plugin deactivation.
+* Fixed: some lines of code which caused warning messages when the WordPress debug mode was turned on.
+* Added: the ability to clean up remaining once-off events upon plugin deactivation.
 * Added: the option to disable product links per unit basis on certain pages including the home page.
-* Fixed: a bug that url cloak had not been working since v1.1.9.
+* Fixed: a bug that url cloak had not been working as of 1.1.9.
 
 = 1.1.9 - 01/24/2013 =
 * Updated: the Japanese localization file. 
@@ -136,30 +141,30 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 * Added: the prefetch category links option, which helps in some servers which sets a low value to the max simultaneous database connections.
 
 = 1.1.0 - 10/26/2012 =
-* Fixed: a bug that url cloak option gets unchecked in the option page.
-* Fixed: a bug that credit option gets checked in the option page.
-* Fixed: an issue that encryption did not work on servers which disable the mcrypt extension.
-* Fixed: an issue that some form elements of the admin page did not appear on servers which disable short_open_tag.
-* Fixed: a bug that the AmazonAutoLinks() function did not retrieve the correct unit id. 
+* Fixed: a bug that url cloak option was forced to be unchecked in the option page.
+* Fixed: a bug that credit option was forced to be checked in the option page.
+* Fixed: an issue that encryption did not work on servers which disables the mcrypt extension.
+* Fixed: an issue that some form elements of the admin page did not appear on servers with the short_open_tag setting disabled.
+* Fixed: a bug that the AmazonAutoLinks() function did not retrieve the correct unit ID. 
 
 = 1.0.9 - 10/06/2012 =
 * Added: the link cloaking feature.
 
 = 1.0.8 - 10/03/2012 =
-* Fixed: a bug that shorcode fails to display the unit saved in version 1.0.7 or later.
+* Fixed: a bug that shortcode failed to display the unit saved in version 1.0.7 or later.
 * Added: the title length option.
 * Added: the link style option.
 * Added: the credit insert option.
 
 = 1.0.7 - 10/02/2012 =
-* Fixed: an issue that the widget gets un-associated when the unit label gets changed.
+* Fixed: an issue that the widget got un-associated when the unit label got changed.
 * Fixed: an issue that category caches were saved with the wrong name which resulted on not using the cache when available.
-* Fixed: an issue that the format of the img tag gets changed when the validation fails when setting up a unit.
+* Fixed: an issue that the format of the img tag got changed when the validation failed when setting up a unit.
 * Added: a donation link in the plugin listing page.
 
 = 1.0.6 - 09/24/2012 =
 * Added: the rel attribute, rel="nofollow", in the a tag of product links.
-* Re-Added: the widget which enables to add units easily on the sidebar.
+* Re-added: the widget which enables to add units easily on the sidebar.
 
 = 1.0.5 - 09/20/2012 =
 * Improved: the caching method. Now the caches of links are renewed in the background.
@@ -169,12 +174,12 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 * Improved: the page load speed in the category selection page by reducing the cache elements.
 
 = 1.0.3 - 09/16/2012 =
-* Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly and the edit and view page links were broken.
+* Fixed: an issue that in below PHP v5.2.4, the link descriptions could not be retrieved properly; as a result, the edit and view page links were broken.
 * Improved: the page load speed in the category selection page with caches.
-* Removed: the widget functionality since it produces a blank page in some systems and the cause and solution have not been discovered.
+* Removed: the widget functionality since it produced a blank page in some systems and the cause and solution could not be found.
 
 = 1.0.2 - 09/12/2012 =
-* Fixed: an issue that form buttons do not appear in the category selection page in WordPress version 3.1x or ealier.
+* Fixed: an issue that form buttons did not appear in the category selection page in WordPress version 3.1x or ealier.
 
 = 1.0.1 - 09/10/2012 =
 * Added: the Widget option.

@@ -62,6 +62,8 @@ class AmazonAutoLinks_Core_ {
 				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitID];
 			}
 		}
+		$this->arrUnitOptions = $this->arrUnitOptions + $this->oOption->GetDefaultUnitOptionKeys();	// this prevents undefined index warnings.
+		
 		$this->arrGeneralOptions = $arrGeneralOptions ? $arrGeneralOptions : $this->oOption->arrOptions['general'];
 		
 	}
@@ -373,8 +375,13 @@ class AmazonAutoLinks_Core_ {
 	function set_feed( $urls, $numLifetime, $oFeed='' ) {
 	
 		$oFeed = empty( $oFeed ) ? $this->feed : $oFeed;
+		
 		// Set Sort Order
-		$oFeed->set_sortorder($this->arrUnitOptions['sortorder']);
+		$oFeed->set_sortorder( $this->arrUnitOptions['sortorder'] );
+		$oFeed->set_charset_for_sort( $this->strCharEncoding );
+		
+		// Set title state
+		$oFeed->set_keeprawtitle( $this->arrUnitOptions['keeprawtitle'] );
 		
 		// Set urls
 		$oFeed->set_feed_url($urls);
@@ -444,7 +451,8 @@ class AmazonAutoLinks_Core_ {
 
 		// removes the heading numbering. e.g. #3: Product Name -> Product Name
 		// Do not use "substr($strTitle, strpos($strTitle, ' '))" since some title contains double-quotes and they mess up html formats
-		$strTitle = trim(preg_replace('/#\d+?:\s?/i', '', $strTitle));
+		if ( ! $this->arrUnitOptions['keeprawtitle'] )
+			$strTitle = trim(preg_replace('/#\d+?:\s+?/i', '', $strTitle));
 		
 		// title character length	// since v1.0.7
 		if (isset($this->arrUnitOptions['titlelength']) && $this->arrUnitOptions['titlelength'] >= 0) {
@@ -504,7 +512,7 @@ class AmazonAutoLinks_Core_ {
 	}
 	function linkstyle($strURL, $numStyle) {
 
-		// sinve v1.0.8 $numStyle should be 1 to 4 indicating the url style of the link		
+		// since v1.0.8 $numStyle should be 1 to 4 indicating the url style of the link		
 		switch ($numStyle) {
 			case 1: // http://www.amazon.[domain-suffix]/[product-name]/dp/[asin]/ref=[...]?tag=[associate-id]
 
@@ -664,7 +672,7 @@ class AmazonAutoLinks_Core_ {
 	}		
 	
 	// for the Amazon Auto Links Feed API extention
-	// sinve v1.1.8
+	// since v1.1.8
 	function output_rss() {
 
 		do_action( 'aalhook_output_rss', $this, $this->arrUnitOptions );

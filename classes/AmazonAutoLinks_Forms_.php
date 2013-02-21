@@ -291,6 +291,7 @@ class AmazonAutoLinks_Forms_ {
 					$this->field_element_containerformat( $numTabNum, $arrOptionsToDisplay['containerformat'] );
 					$this->field_element_itemformat( $numTabNum, $arrOptionsToDisplay['itemformat'] );	
 					$this->field_element_imgformat( $numTabNum, $arrOptionsToDisplay['imgformat'] );
+					$this->field_element_keeprawtitle( $numTabNum, $arrOptionsToDisplay['keeprawtitle'] );	// since v1.2.3
 					$this->field_element_multicolumn( $numTabNum, $arrOptionsToDisplay['multicolumn'] );	// not implemented yet
 					
 					// for addons since v1.2.2
@@ -326,7 +327,7 @@ class AmazonAutoLinks_Forms_ {
 				<input type="text" size="30" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  />
 				<input type="hidden" name="<?php echo $strPriorUnitLabel; ?>" value="<?php echo $strValue; ?>" />
 				
-				&nbsp;<font color="#666">( <?php _e('String value to identify the ad unit.', 'amazon-auto-links'); ?> e.g. unit-1 )</font>							
+				&nbsp;<span class="description"><font color="#666">( <?php _e('String value to identify the ad unit.', 'amazon-auto-links'); ?> e.g. unit-1 )</font></span>
 				<?php echo $strWarning ? '<font color="red">*' . $strWarning . '</font>' : '' ;  //this message is shown when the field is set blank. ?>
 			</td>
 		</tr>
@@ -353,7 +354,7 @@ class AmazonAutoLinks_Forms_ {
 				<option value="ES" <?php echo $strValue == 'ES' ? 'Selected' : ''; ?>>ES - <?php _e('Spain', 'amazon-auto-links'); ?></option>
 				<option value="US" <?php echo $strValue == 'US' ? 'Selected' : ''; ?>>US - <?php _e('United States', 'amazon-auto-links'); ?></option>
 				</select>		
-				&nbsp;<font color="#666">( <?php _e('Select the country for the associate ID.', 'amazon-auto-links'); ?> )</font>							
+				&nbsp;<span class="description"><font color="#666">( <?php _e('Select the country for the associate ID.', 'amazon-auto-links'); ?> )</font></span>
 			</td>
 		</tr>
 		<?php
@@ -368,7 +369,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Associate ID', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="30" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>" />
-				&nbsp;<font color="#666">( e.g. <?php echo $this->myassociateid() ;?> )</font>	
+				&nbsp;<span class="description"><font color="#666">( e.g. <?php echo $this->myassociateid() ;?> )</font></span>
 				<?php echo $strWarning ? '<font color="red">*' . $strWarning . '</font>' : ''; ?>
 			</td>
 		</tr>		
@@ -387,7 +388,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Number of Items to Show', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" size="30" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666">( <?php _e('Default', 'amazon-auto-links');?>: <?php echo $this->oOption->unitdefaultoptions['numitems']; ?> <?php _e('Max', 'amazon-auto-links'); ?> : 10 )</font>	
+				&nbsp;<span class="description"><font color="#666">( <?php _e('Default', 'amazon-auto-links');?>: <?php echo $this->oOption->unitdefaultoptions['numitems']; ?> <?php _e('Max', 'amazon-auto-links'); ?> : 10 )</font></span>
 			</td>
 		</tr>							
 	<?php
@@ -402,7 +403,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Image Size', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666"><?php _e('in pixel.', 'amazon-auto-links');?> ( <?php _e('Accepts upto 500. Set 0 for no image.', 'amazon-auto-links');?> <?php _e('Default', 'amazon-auto-links');?> : <?php echo $this->oOption->unitdefaultoptions['imagesize']; ?> )</font>
+				&nbsp;<span class="description"><font color="#666"><?php _e('in pixel.', 'amazon-auto-links');?> ( <?php _e('Accepts upto 500. Set 0 for no image.', 'amazon-auto-links');?> <?php _e('Default', 'amazon-auto-links');?> : <?php echo $this->oOption->unitdefaultoptions['imagesize']; ?> )</font></span>
 			</td>
 		</tr>	
 	<?php
@@ -414,14 +415,15 @@ class AmazonAutoLinks_Forms_ {
 		$strValue = $strValue ? $strValue : $this->oOption->unitdefaultoptions['sortorder'];
 	?>
 		<tr valign="top">
-			<th scope="row"><?php _e('Sort Order', 'amazon-auto-links'); ?></th>
+			<th scope="row"><?php _e( 'Sort Order', 'amazon-auto-links' ); ?></th>
 			<td>
 				<select name="<?php echo $strFieldName; ?>">
-					<option value="date" <?php echo $strValue == 'date' ? 'Selected' : '' ?> ><?php _e('Date', 'amazon-auto-links');?></option>
-					<option value="title" <?php echo $strValue == 'title' ? 'Selected' : '' ?> ><?php _e('Title', 'amazon-auto-links');?></option>
-					<option value="random" <?php echo $strValue == 'random' ? 'Selected' : '' ?> ><?php _e('Random', 'amazon-auto-links');?></option>
+					<option value="date" <?php echo $strValue == 'date' ? 'Selected' : '' ?> ><?php _e( 'Date', 'amazon-auto-links' );?></option>
+					<option value="title" <?php echo $strValue == 'title' ? 'Selected' : '' ?> ><?php _e( 'Title Ascending', 'amazon-auto-links' );?></option>
+					<option value="title_descending" <?php echo $strValue == 'title_descending' ? 'Selected' : '' ?> ><?php _e( 'Title Descending', 'amazon-auto-links' );?></option>
+					<option value="random" <?php echo $strValue == 'random' ? 'Selected' : '' ?> ><?php _e( 'Random', 'amazon-auto-links' );?></option>
 				</select>		
-				&nbsp;<font color="#666">( <?php _e('Defines how the product links are sorted.', 'amazon-auto-links');?> )</font>							
+				&nbsp;<span class="description"><font color="#666">( <?php _e('Defines how the product links are sorted.', 'amazon-auto-links');?> )</font></span>
 			</td>
 		</tr>	
 	<?php
@@ -435,7 +437,7 @@ class AmazonAutoLinks_Forms_ {
 		<tr valign="top">
 			<th scope="row">
 				<?php _e('Ad Types', 'amazon-auto-links'); ?><br /><br />
-				<span style="margin-left:1em; padding-right:2em; color:#666;"><?php _e('It is recommended to check only a few for faster page loading.', 'amazon-auto-links'); ?><br />
+				<span class="description" style="margin-left:1em; padding-right:2em; color:#666;"><?php _e('It is recommended to check only a few for faster page loading.', 'amazon-auto-links'); ?><br />
 			</th>
 			<td>
 				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
@@ -448,7 +450,7 @@ class AmazonAutoLinks_Forms_ {
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[bestsellers]" 	value="1" <?php echo $arrValue['bestsellers'] ? 'Checked' : '' ?>> <?php _e('Best Sellers', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[hotnewreleases]"	value="1" <?php echo $arrValue['hotnewreleases'] ? 'Checked' : '' ?>> <?php _e('Hot New Releases', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[moverandshakers]" value="1" <?php echo $arrValue['moverandshakers'] ? 'Checked' : '' ?>> <?php _e('Mover & Shakers', 'amazon-auto-links');?><br />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[toprated]" 		value="1" <?php echo $arrValue['toprated'] ? 'Checked' : '' ?>> <?php _e('Top Rated', 'amazon-auto-links');?>&nbsp;&nbsp;&nbsp;&nbsp;<font color="#666">( <?php _e('This may not be available in some countries.', 'amazon-auto-links'); ?>)</font><br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[toprated]" 		value="1" <?php echo $arrValue['toprated'] ? 'Checked' : '' ?>> <?php _e('Top Rated', 'amazon-auto-links');?>&nbsp;&nbsp;&nbsp;&nbsp;<span class="description"><font color="#666">( <?php _e('This may not be available in some countries.', 'amazon-auto-links'); ?>)</font></span><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[mostwishedfor]"	value="1" <?php echo $arrValue['mostwishedfor'] ? 'Checked' : '' ?>> <?php _e('Most Wished For', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[giftideas]" 		value="1" <?php echo $arrValue['giftideas'] ? 'Checked' : '' ?>> <?php _e('Gift Ideas', 'amazon-auto-links');?><br />
 			</td>
@@ -468,7 +470,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
-				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> ref=nosim <span style="color:#666;">( <?php _e('Inserts ref=nosim in the link url. For more information, visit the following page:', 'amazon-auto-links'); ?> <a href='https://affiliate-program.amazon.co.uk/gp/associates/help/t5/a21'>amazon associates</a> )</span>
+				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo $bValue ? 'Checked' : '' ?>> ref=nosim <span class="description" style="color:#666;">( <?php _e('Inserts ref=nosim in the link url. For more information, visit the following page:', 'amazon-auto-links'); ?> <a href='https://affiliate-program.amazon.co.uk/gp/associates/help/t5/a21'>amazon associates</a> )</span>
 			</td>
 		</tr>		
 	<?php
@@ -483,7 +485,7 @@ class AmazonAutoLinks_Forms_ {
 		<tr valign="top">
 			<th scope="row">
 				<?php _e('Where To Insert', 'amazon-auto-links'); ?><br /><br />
-				<span style="margin-left:1em; padding-right:2em; color:#666;"><?php _e( 'Check where items should be inserted.', 'amazon-auto-links' ); ?><br />
+				<span class="description" style="margin-left:1em; padding-right:2em; color:#666;"><?php _e( 'Check where items should be inserted.', 'amazon-auto-links' ); ?><br />
 			</th>
 			<td>		
 				<!-- the hidden fields before the checkboxes are necessary to send unchecked values -->
@@ -497,8 +499,8 @@ class AmazonAutoLinks_Forms_ {
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedbelow]" 		 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptabove]"	 value="0" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>[feedexcerptbelow]"	 value="0" />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo isset( $arrValues['postabove_static'] ) && $arrValues['postabove_static'] ? 'Checked' : '' ?>> <?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
-				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo isset( $arrValues['postbelow_static'] ) && $arrValues['postbelow_static'] ? 'Checked' : '' ?>> <?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)<br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove_static]" value="1" <?php echo isset( $arrValues['postabove_static'] ) && $arrValues['postabove_static'] ? 'Checked' : '' ?>> <span class="description"><?php _e('Above Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
+				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow_static]" value="1" <?php echo isset( $arrValues['postbelow_static'] ) && $arrValues['postbelow_static'] ? 'Checked' : '' ?>> <span class="description"><?php _e('Below Post on Publish', 'amazon-auto-links');?>&nbsp;(<?php _e('this insters links into the database so they will be static.', 'amazon-auto-links');?>)</span><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postabove]" 		 value="1" <?php echo $arrValues['postabove'] ? 		'Checked' : '' ?>> <?php _e('Above Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[postbelow]"		 value="1" <?php echo $arrValues['postbelow'] ? 		'Checked' : '' ?>> <?php _e('Below Post', 'amazon-auto-links');?><br />
 				<input type="checkbox" name="<?php echo $strFieldName; ?>[excerptabove]" 	 value="1" <?php echo $arrValues['excerptabove'] ? 		'Checked' : '' ?>> <?php _e('Above Excerpt', 'amazon-auto-links');?><br />
@@ -539,7 +541,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"><?php _e('Title Length', 'amazon-auto-links'); ?></th>
 			<td>
 				<input type="text" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666"><?php _e('It is used to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazon-auto-links');?> <?php _e('Default', 'amazon-auto-links');?> : <?php echo $this->oOption->unitdefaultoptions['titlelength']; ?></font>
+				&nbsp;<span class="description"><font color="#666"><?php _e('It is used to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazon-auto-links');?> <?php _e('Default', 'amazon-auto-links');?> : <?php echo $this->oOption->unitdefaultoptions['titlelength']; ?></font></span>
 			</td>
 		</tr>	
 	<?php	
@@ -585,7 +587,7 @@ class AmazonAutoLinks_Forms_ {
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][urlcloak]';	
 		$bValue = ($bValue != '') ? $bValue : $this->oOption->unitdefaultoptions['urlcloak'];
 		$strCloakQuery = empty($this->oOption->arrOptions['general']['cloakquery']) ? $this->oOption->generaldefaultoptions['cloakquery'] : $this->oOption->arrOptions['general']['cloakquery'];
-	?>
+		?>
 		<tr valign="top">
 			<th scope="row">
 				<?php _e('URL Cloak', 'amazon-auto-links'); ?>						
@@ -600,13 +602,13 @@ class AmazonAutoLinks_Forms_ {
 				?>
 			</td>
 		</tr>
-	<?php	
+		<?php	
 	}
 	function field_element_disableonhome( $numTabnum, $bValue="" ) { 
 		// since v1.2.0
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][disableonhome]';	
 		$bValue = ( $bValue != '' ) ? $bValue : $this->oOption->unitdefaultoptions['disableonhome'];
-	?>
+		?>
 		<tr valign="top">
 			<th scope="row">
 				<?php _e( 'Where to be Disabled', 'amazon-auto-links' ); ?>						
@@ -618,24 +620,8 @@ class AmazonAutoLinks_Forms_ {
 				<?php _e( 'Disable on the home and the front page.', 'amazon-auto-links' ); ?>
 			</td>
 		</tr>
-	<?php
-			
+		<?php
 	}
-	function field_element_disableonfront( $numTabnum, $bValue="" ) { 
-		// since v1.2.1 - deprecated 
-		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][disableonfront]';	
-		$bValue = ( $bValue != '' ) ? $bValue : $this->oOption->unitdefaultoptions['disableonfront'];
-		
-		// continuous from the above field_element_disableonhome() method.
-	?>
-				<!-- the hidden field before the checkbox is necessary to send unchecked values -->
-				<input type="hidden" name="<?php echo $strFieldName; ?>" value="0" />			
-				<input type="checkbox" name="<?php echo $strFieldName; ?>" value="1"  <?php echo !empty( $bValue ) ? 'Checked' : '' ?> /> 
-				<?php _e( 'Disable on the front page.', 'amazon-auto-links' ); ?>			
-			</td>
-		</tr>
-	<?php			
-	}	
 	function field_element_poststobedisabled( $numTabnum, $strValue="" ) {
 		// since v1.2.0
 		// Product links in the posts set with this option will not be displayed.
@@ -646,7 +632,7 @@ class AmazonAutoLinks_Forms_ {
 			<th scope="row"></th>
 			<td>
 				<input type="text" size="80" name="<?php echo $strFieldName; ?>" value="<?php echo $strValue; ?>"  /><br />&nbsp;
-				<font color="#666">( <?php _e( 'Enter post IDs, separated by commas so that the Unit will not be displayed in the posts/pages.', 'amazon-auto-links' ); ?> e.g. 123,135,235 )</font>
+				<span class="description"><font color="#666">( <?php _e( 'Enter post IDs, separated by commas so that the Unit will not be displayed in the posts/pages.', 'amazon-auto-links' ); ?> e.g. 123,135,235 )</font></span>
 			</td>
 		</tr>
 		<?php		
@@ -666,7 +652,7 @@ class AmazonAutoLinks_Forms_ {
 			<td>
 				<input disabled="disabled" style="background-color: #eee; color: #999;" type="text" size="30" value="<?php echo $numValue ; ?>" />
 				<input type="hidden" name="<?php echo $strFieldName; ?>" value="<?php echo $numValue; ?>" />
-				&nbsp;<font color="#666">( <?php _e('in seconds.', 'amazon-auto-links'); ?> <?php _e('Default', 'amazon-auto-links'); ?> : <?php echo $this->oOption->unitdefaultoptions['cacheexpiration']; ?> )</font>	
+				&nbsp;<span class="description"><font color="#666">( <?php _e('in seconds.', 'amazon-auto-links'); ?> <?php _e('Default', 'amazon-auto-links'); ?> : <?php echo $this->oOption->unitdefaultoptions['cacheexpiration']; ?> )</font></span>
 			</td>
 		</tr>		
 	<?php
@@ -759,6 +745,20 @@ class AmazonAutoLinks_Forms_ {
 		</tr>	
 		<?php
 	}	
+	function field_element_keeprawtitle( $numTabNum, $bValue='' ) {
+		// since v1.2.3 - for Pro
+		?>
+		<tr valign="top">
+			<th scope="row">
+				<?php _e( 'Keep Raw Title', 'amazon-auto-links' ); ?>						
+			</th>
+			<td>
+				<input type="checkbox" name="" value="1" disabled="disabled" style="background-color: #eee; color: #999;" /> 
+				<?php _e( 'Keep the fetched titles intact.', 'amazon-auto-links' ); ?>
+			</td>
+		</tr>
+		<?php		
+	}
 	function field_element_multicolumn( $numTabnum, $strValue="" ) {
 		// not implemented yet
 	}

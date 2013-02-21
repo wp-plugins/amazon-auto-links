@@ -6,8 +6,17 @@ class AmazonAutoLinks_SimplePie_ extends SimplePie
 {
 	public $classver = 'standard';
 	public $sortorder = 'date';
+	public static $bKeepRawTitle = false;
+	public static $strCharEncoding = 'UTF-8';
+	
 	public function set_sortorder($sortorder) {
 		$this->sortorder = $sortorder;
+	}
+	public function set_keeprawtitle( $bKeepRawTitle ) {
+		self::$bKeepRawTitle = $bKeepRawTitle;		
+	}
+	public function set_charset_for_sort( $strCharEncoding ) {
+		self::$strCharEncoding = $strCharEncoding;		
 	}
 	
 	/* overriding the default SimplePie method, get_items() of v 1.2.1 */
@@ -115,6 +124,9 @@ class AmazonAutoLinks_SimplePie_ extends SimplePie
 					else if ($this->sortorder == 'title') {
 						usort($this->data['items'], array(get_class($this), 'sort_items_by_title'));
 					}
+					else if ( $this->sortorder == 'title_descending' ) {
+						usort( $this->data['items'], array( get_class( $this ), 'sort_items_by_title_descending' ) );
+					}					
 					else  {
 						usort($this->data['items'], array(get_class($this), 'sort_items_by_random'));
 					}
@@ -228,7 +240,10 @@ class AmazonAutoLinks_SimplePie_ extends SimplePie
 					else if ($this->sortorder == 'title') {
 						usort($this->data['items'], array(get_class($this), 'sort_items_by_title'));
 					}
-					else  {
+					else if ( $this->sortorder == 'title_descending' ) {
+						usort( $this->data['items'], array( get_class( $this ), 'sort_items_by_title_descending' ) );
+					}
+					else {
 						usort($this->data['items'], array(get_class($this), 'sort_items_by_random'));
 					}
 					
@@ -252,23 +267,27 @@ class AmazonAutoLinks_SimplePie_ extends SimplePie
 		}
 	}
 	
-	public static function sort_items_by_random($a, $b)
-	{
+	public static function sort_items_by_random($a, $b) {
 		return rand(-1, 1);
 	}	
-	public static function sort_items_by_title($a, $b)
-	{
-		$a_title = preg_replace('/#\d+?:\s?/i', '', $a->get_title());
-		$b_title = preg_replace('/#\d+?:\s?/i', '', $b->get_title());
-		return strcmp($a_title,$b_title);
+	public static function sort_items_by_title($a, $b) {
+		$a_title = ( self::$bKeepRawTitle ) ? $a->get_title() : preg_replace('/#\d+?:\s?/i', '', $a->get_title());
+		$b_title = ( self::$bKeepRawTitle ) ? $b->get_title() : preg_replace('/#\d+?:\s?/i', '', $b->get_title());
+		$a_title = html_entity_decode( trim( strip_tags( $a_title ) ), ENT_COMPAT | ENT_HTML401, self::$strCharEncoding );
+		$b_title = html_entity_decode( trim( strip_tags( $b_title ) ), ENT_COMPAT | ENT_HTML401, self::$strCharEncoding );
+		return strnatcasecmp( $a_title, $b_title );	
 	}
-	
-	function set_force_cache_class($class = 'SimplePie_Cache')
-	{
+	public static function sort_items_by_title_descending($a, $b) {
+		$a_title = ( self::$bKeepRawTitle ) ? $a->get_title() : preg_replace('/#\d+?:\s?/i', '', $a->get_title());
+		$b_title = ( self::$bKeepRawTitle ) ? $b->get_title() : preg_replace('/#\d+?:\s?/i', '', $b->get_title());
+		$a_title = html_entity_decode( trim( strip_tags( $a_title ) ), ENT_COMPAT | ENT_HTML402, self::$strCharEncoding );
+		$b_title = html_entity_decode( trim( strip_tags( $b_title ) ), ENT_COMPAT | ENT_HTML402, self::$strCharEncoding );
+		return strnatcasecmp( $b_title, $a_title );
+	}
+	function set_force_cache_class($class = 'SimplePie_Cache') {
 		$this->cache_class = $class;
 	}
-	function set_force_file_class($class = 'SimplePie_File')
-	{
+	function set_force_file_class($class = 'SimplePie_File') {
 		$this->file_class = $class;
 	}	
 }

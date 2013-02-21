@@ -618,8 +618,10 @@ class AmazonAutoLinks_Admin_ {
 							echo '<td>' . $unit['associateid'] . '</td>';
 						else if ($i==3)
 							echo '<td>' . $unit['imagesize'] . '</td>';
-						else if ($i==4)
-							echo '<td>' . ucfirst($unit['sortorder']) . '</td>';
+						else if ($i==4) {
+							$strSortOrder =  ( $unit['sortorder'] == 'title' ) ? 'Title Ascending' : $unit['sortorder'];
+							echo '<td>' . ucfirst( $strSortOrder ) . '</td>';
+						}
 						else if ($i==5) {
 							echo '<td>';	
 							if (is_array($unit['feedtypes'])) {
