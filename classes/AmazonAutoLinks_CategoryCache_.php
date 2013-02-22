@@ -1,8 +1,14 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.3
+ * @description	Builds category cashes.
+*/
 class AmazonAutoLinks_CategoryCache_ {
-/*
-	Since: v1.0.3
-	Description:
+	/*
+	Details:
 		This class is used to build category caches for the category selection page.
 		The methods are called in a run-once scheduled event prior to user's opening the page.
 		It is like link prefetching functionality.
@@ -11,7 +17,7 @@ class AmazonAutoLinks_CategoryCache_ {
 		the plugin main option key, 'amazonautolinks' because cron tasks constantly updates the 
 		option in the background, it should not affect other processes using the main option and
 		vice versa.
-*/
+	*/
 	protected $pluginname = 'Amazon Auto Links';
 	protected $pluginkey = 'amazon-auto-links';
 	protected $eventoptionkey = 'amazonautolinks_catcache_events';
@@ -369,7 +375,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	}
 	function get_node_from_id($doc, $strID) {
 		
-		// sinve v1.0.7
+		// since v1.0.7
 		// since getElementByID constantly returned false for unknow reason, use xpath
 		$xPath = new DOMXPath($doc); 	
 		$nodeID = $xPath->query("//*[@id='" . $strID . "']")->item(0);
@@ -381,7 +387,7 @@ class AmazonAutoLinks_CategoryCache_ {
 	}
 	function get_feed_url_from_dom($domRssLinks) {
 
-		// sinve v1.0.7
+		// since v1.0.7
 		// this method is similar to the get_rss_link() method defined in AmazonAutoLinks_Forms_SelectCategories
 		
 		$nodeH3 = $domRssLinks->getElementsByTagName('h3')->item(0); // remove the first h3 tag

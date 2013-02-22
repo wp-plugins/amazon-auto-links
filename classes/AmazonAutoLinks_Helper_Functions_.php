@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	MISC. functions for various purposes.
+*/
 class AmazonAutoLinks_Helper_Functions_
 {
 	/* 

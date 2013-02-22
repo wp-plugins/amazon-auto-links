@@ -48,7 +48,7 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 = What would be the benefit to upgrade to the pro version? =
 
-With the pro version, unlimited numbers of units can be created. Also the number of categories per unit, the number of items to display per unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)
+With the pro version, unlimited numbers of units can be created. Also the number of categories per unit, the number of items to display per unit are unrestriceted as well. Plus, it's possible to change the design of the links by editing the HTML format. Please consider upgrading it. [Amazon Auto Links Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro) As of Pro 2.0.6, links can be displayed in multiple columns.
 
 = I selected the category but it still says "Please select a category from the list on the left." and no preview is shown. What should I do? =
 
@@ -57,12 +57,12 @@ Please try setting the **Prefetch Link Categgories** option to **Off**.
 = I get a blank white page after adding a unit to the theme. What is it? What should I do? =
 
 It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to embed the following code in your wp-config.php or functions.php
-`define('WP_MEMORY_LIMIT', '128M');`
+`define( 'WP_MEMORY_LIMIT', '128M' );`
 The part, 128M, should be changed accordingly.
 
-= I want to display product links in multiple columns. Is it possible? = 
+= I want to display product links horizontally in multiple columns. Is it possible? = 
 
-Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/responsive-column-widgets/).
+Yes, with [Pro](http://michaeluno.jp/en/amazon-auto-links/amazon-auto-links-pro)! 
 
 == Screenshots ==
 
@@ -72,6 +72,11 @@ Please try [Responsive Column Widget](http://wordpress.org/extend/plugins/respon
 4. **Widget Sample**
 
 == Changelog ==
+
+= 1.2.5 =
+* Added: the version number to appear in the footer of the plugin setting pages.
+* Added: the ability to remove all used option values of the plugin upon plugin deactivation, which can be set in General Settings.
+* Fixed: the warning message, undefined index, save, which occurrd in the debug mode when posting a new post.
 
 = 1.2.4 =
 * Added: the "Access Right to Setting Page" option in the General Settings page that sets the access level for the admin page of the plugin.

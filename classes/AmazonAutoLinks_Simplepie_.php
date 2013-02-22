@@ -1,4 +1,12 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	Extends the SimplePie library.
+*/
+
 // make sure that SimplePie has been already loaded
 require_once (ABSPATH . WPINC . '/class-feed.php');		//<-- very importat. Without this line, the cache setting breaks.
 

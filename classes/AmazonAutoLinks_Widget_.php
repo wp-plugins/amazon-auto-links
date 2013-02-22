@@ -1,10 +1,13 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.6
+ * @description	Creates a widget.
+*/
 class AmazonAutoLinks_Widget_ extends WP_Widget {
 
-	/*
-		Since: v1.0.6
-		Description: Creates a widget.
-	*/
 	public function __construct() {
 		parent::__construct(
 	 		'amazonautolinks_widget', 
@@ -28,14 +31,14 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 		if ( ! empty( $title ) ) echo $before_title . $title . $after_title;
 		
 		/* START WIDGET CODE */
-		$oAALOptions = new AmazonAutoLinks_Options(AMAZONAUTOLINKSKEY);
+		$oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 		
 		if (isset($instance['unit'])) {	
 			
 			// backward compatiblity v 1.0.6 or below
 			foreach ($oAALOptions->arrOptions['units'] as $strUnitKey => $arrUnitOption) {
 				if ($arrUnitOption['unitlabel'] == $unit || (isset($arrUnitOption['id']) && $arrUnitOption['id'] == $strUnitID)) {
-					$oAAL = new AmazonAutoLinks_Core($oAALOptions->arrOptions['units'][$strUnitKey]);
+					$oAAL = new AmazonAutoLinks_Core( $oAALOptions->arrOptions['units'][$strUnitKey], $oAALOptions );
 // echo 'found the match: ' . $unit . '<br />';								
 					break;
 				}
@@ -44,7 +47,7 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 		else {		// there is no problem	
 			// && !isset($oAALOptions->arrOptions['units'][$strUnitID])
 // echo 'called normally: ' . $strUnitID . '<br />';			
-			$oAAL = new AmazonAutoLinks_Core($oAALOptions->arrOptions['units'][$strUnitID]); // the constructor accepts a unit option in the first parameter
+			$oAAL = new AmazonAutoLinks_Core( $oAALOptions->arrOptions['units'][$strUnitID], $oAALOptions ); // the constructor accepts a unit option in the first parameter
 		}
 		
 		if ($oAAL) echo $oAAL->fetch();

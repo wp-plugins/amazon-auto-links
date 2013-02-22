@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	Displays form elements for the category selection page.
+*/
 class AmazonAutoLinks_Forms_SelectCategories_ {
 
 	/*  
@@ -114,8 +121,8 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		$this->oOption->arrOptions[$mode]['blacklist_categories'] = isset( $this->oOption->arrOptions[$mode]['blacklist_categories'] ) ? $this->oOption->arrOptions[$mode]['blacklist_categories'] : array();
 		
 		// instantiate the core object
-		$oAALCatPreview = new AmazonAutoLinks_Core( $this->oOption->arrOptions[$mode], $this->oOption->arrOptions['general'] );		// instantiate after setting the $mode variable
-		$oAALUnitPreview = new AmazonAutoLinks_Core( $this->oOption->arrOptions[$mode], $this->oOption->arrOptions['general'] );
+		$oAALCatPreview = new AmazonAutoLinks_Core( $this->oOption->arrOptions[$mode], $this->oOption );		// instantiate after setting the $mode variable
+		$oAALUnitPreview = new AmazonAutoLinks_Core( $this->oOption->arrOptions[$mode], $this->oOption );
 		
 		?>		
 		<form action="" method="post">

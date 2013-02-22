@@ -1,9 +1,14 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.7
+ * @description	Creates links for the user.
+*/
 class AmazonAutoLinks_UserAds_
 {
 	/*
-		Since: v1.0.7
-		Description: Creates links for the user.
 		Used Option Key: amazonautolinks_userads
 	*/
 	
@@ -176,7 +181,7 @@ class AmazonAutoLinks_UserAds_
 		$arrUnitOptions['containerformat']	= '<div style="width:70%;float:right;"><div class="amazon-auto-links-userads" style="float:right;padding:8px 0px 0px 20px; vertical-align:middle">%items%</div></div>';
 		$arrUnitOptions['itemformat'] = '<div valign="middle"><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%img%</a><a href="%link%" title="%title%: %textdescription%" rel="nofollow">%title%</a> %htmldescription%</div>';
 		$arrUnitOptions['imgformat'] = '<img src="%imgurl%" alt="%textdescription%" style="float:left; margin-right:8px;"/>';
-		$oAAL = new AmazonAutoLinks_Core($arrUnitOptions);
+		$oAAL = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oOption );
 		$output = $oAAL->fetch();
 		if (!$output) $this->oOption->oLog->Append('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey] );	
 		echo $output;

@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	Displays form elements.
+*/
 class AmazonAutoLinks_Forms_ {
 
 	/*  
@@ -259,15 +266,14 @@ class AmazonAutoLinks_Forms_ {
 			$this->field_element_disableonhome( $numTabNum, $arrOptionsToDisplay['disableonhome'] ); 
 			$this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); 
 			
-			// for addons since v1.2.2
-			$strAdditionalFormsFields = '';
-			echo apply_filters( 'aalhook_admin_form_addnewunit_fields',  $strAdditionalFormsFields );
+			// for addons since v1.2.2, modified in v1.2.5
+			echo apply_filters( 'aalhook_admin_form_addnewunit_fields', '', array( $this ,$numTabNum, $arrOptionsToDisplay, $arrErrors ) );
 			?>
 			</tbody>
 		</table>
 		<?php
-		// for addons since v1.2.2
-		do_action( 'aalhook_admin_form_addnewunit_table' );
+		// for addons since v1.2.2, modified in v1.2.5
+		do_action( 'aalhook_admin_form_addnewunit_table', array( $this, $numTabNum, $arrOptionsToDisplay, $arrErrors ) );
 		
 		// oUserAd must be instantiated prior to this method call 
 		$this->oUserAd->ShowTextAd(); 
@@ -287,21 +293,20 @@ class AmazonAutoLinks_Forms_ {
 		<table class="form-table" style="clear:left; width:auto;" >	
 			<tbody>
 				<?php 
+					$this->field_element_numberofcolumns( $numTabNum, $arrOptionsToDisplay['numberofcolumns'] );	// not implemented yet
 					$this->field_element_cacheexpiration( $numTabNum, $arrOptionsToDisplay['cacheexpiration'] );
 					$this->field_element_containerformat( $numTabNum, $arrOptionsToDisplay['containerformat'] );
 					$this->field_element_itemformat( $numTabNum, $arrOptionsToDisplay['itemformat'] );	
 					$this->field_element_imgformat( $numTabNum, $arrOptionsToDisplay['imgformat'] );
 					$this->field_element_keeprawtitle( $numTabNum, array( $arrOptionsToDisplay['keeprawtitle'], $arrOptionsToDisplay['titlenumbering'] ) );	// since v1.2.3 and v1.2.4
-					$this->field_element_multicolumn( $numTabNum, $arrOptionsToDisplay['multicolumn'] );	// not implemented yet
 					
 					// for addons since v1.2.2
-					$strAdditionalFormsFields = '';
-					echo apply_filters( 'aalhook_admin_form_acvancedoption_fields',  $strAdditionalFormsFields );
+					echo apply_filters( 'aalhook_admin_form_acvancedoption_fields', '', array( $this, $numTabNum, $arrOptionsToDisplay ) );
 				?>
 			</tbody>
 		</table>						
 		<?php
-		do_action( 'aalhook_admin_form_advancedoption_table' );	// for addons since v1.2.2
+		do_action( 'aalhook_admin_form_advancedoption_table', array( $this, $numTabNum, $arrOptionsToDisplay ) );	// for addons since v1.2.2
 		?>
 		<p class="submit">
 			<?php 
@@ -763,8 +768,19 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 		<?php		
 	}
-	function field_element_multicolumn( $numTabnum, $strValue="" ) {
-		// not implemented yet
+	function field_element_numberofcolumns( $numTabnum, $strValue="" ) {
+
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e( 'Number of Columns', 'amazon-auto-links' ); ?><br />
+			</th>
+			<td>
+				<input type="text" disabled="disabled" size="10" name="" value="" style="background-color: #eee; color: #999;" />
+				&nbsp;<span class="description"><font color="#666">( <?php _e( 'This enables the links to be displayed in multiple columns.', 'amazonautolinks' ); ?> <?php _e( 'Default', 'amazon-auto-links' ); ?> : 1 <?php _e( 'Max', 'amazon-auto-links' ); ?> : 12 )</font></span><br />
+				<img style="clear:both;" src="<?php echo plugins_url('/img/multiple_columns.gif', AMAZONAUTOLINKSPLUGINFILE ); ?>" />
+			</td>
+		</tr>		
+		<?php		
 	}
 	/*------------------------------------ General Settings ----------------------------------------*/
 	function form_generaloptions($numTabNum, $arrOptionsToDisplay="", $arrErrors="") {
@@ -788,24 +804,24 @@ class AmazonAutoLinks_Forms_ {
 				$this->field_element_prefetch( $numTabNum, $arrOptionsToDisplay['prefetch'] );
 				$this->field_element_enbalelog( $numTabNum, $arrOptionsToDisplay['enablelog'] );	// since v1.2.2
 				$this->field_element_capability( $numTabNum, $arrOptionsToDisplay['capability'] );	// since v1.2.4
+				$this->field_element_cleanoptions( $numTabNum, $arrOptionsToDisplay['cleanoptions'] );	// since v1.2.5
 				$this->field_element_license( $numTabNum, $arrOptionsToDisplay['license'] ); // since v1.1.9			
 				
-				// for addons since v1.1.8
-				$strAdditionalFormsFields = '';
-				echo apply_filters( 'aalhook_admin_form_generaloptions_fields',  $strAdditionalFormsFields );
+				// for addons since v1.1.8, modified in v1.2.5
+				echo apply_filters( 'aalhook_admin_form_generaloptions_fields', '', array( $this, $numTabNum, $arrOptionsToDisplay ) );
 				?>
 			</tbody>
 		</table>
 		
 		<?php
-		// for addons since v1.1.8
-		do_action( 'aalhook_admin_form_generaloptions_table' );
+		// for addons since v1.1.8, modified in v1.2.5
+		do_action( 'aalhook_admin_form_generaloptions_table', array( $this, $numTabNum, $arrOptionsToDisplay ) );
 		?>
 		
 		<p class="submit">
 			<?php 
 				$strFieldName = $this->pluginkey . '[tab' . $numTabNum . '][savebutton]';
-				$this->field_submitbutton($strFieldName, __('Save', 'amazon-auto-links')); 
+				$this->field_submitbutton( $strFieldName, __( 'Save', 'amazon-auto-links' ) ); 
 			?>
 		</p>
 		<?php
@@ -978,9 +994,8 @@ class AmazonAutoLinks_Forms_ {
 		if( !current_user_can( 'manage_options' ) ) return;		// only super admin or admin can set this.
 	
 		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][capability]';
-		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['capability'];
-		
-		?>
+		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['capability'];	
+		?>		
 		<tr valign="top">
 			<th scope="row"><?php _e( 'Access Right to Setting Page', 'amazon-auto-links'); ?></th>
 			<td>
@@ -996,7 +1011,24 @@ class AmazonAutoLinks_Forms_ {
 		</tr>
 		<?php
 	}
+	function field_element_cleanoptions( $numTabnum, $numValue="" ) {
 
+		$strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][cleanoptions]';
+		$numValue = $numValue == "" ? $this->oOption->generaldefaultoptions['cleanoptions'] : $numValue;
+		?>
+		<tr valign="top">
+			<th scope="row"><?php _e('Initialize Options upon Plugin Deactivation', 'amazon-auto-links'); ?></th>
+			<td>
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 1 ? 'Checked' : '' ?> value="1"> <?php _e('On' ,'amazon-auto-links'); ?> &nbsp;&nbsp;&nbsp;
+				<input type="radio" name="<?php echo $strFieldName; ?>" <?php echo $numValue == 0 ? 'Checked' : '' ?> value="0"> <?php _e('Off' ,'amazon-auto-links'); ?>&nbsp;&nbsp;
+				<span class="description">
+					(<font color="#666"><?php _e( 'Default: Off.', 'amazon-auto-links' );?>&nbsp;<?php _e( 'Set it on to remove the plugin related options completely when it is deactivated.', 'amazon-auto-links' );?></font> )
+					<br />
+				</span>
+			</td>
+		</tr>	
+		<?php			
+	}	
 	/*
 	 * Manage Units Tab
 	 * */

@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	Renders the administration pages of the plugin.
+*/
 class AmazonAutoLinks_Admin_ {
 		
 	// Properties
@@ -55,7 +62,11 @@ class AmazonAutoLinks_Admin_ {
 		// admin custom CSS
 		add_action( 'admin_head', array( &$this, 'admin_custom_css' ) );
 				
-		// sinve v1.2.1		
+		// admin footer to add plugin version
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->pageslug )
+			add_filter( 'update_footer', array( $this, 'AddPluginVersionInFooter' ), 11 );
+			
+		// since v1.2.1		
 		$this->ExportUnits();	// Export Units	- this must be done before the header is sent since it handles file download.
 	}
 	function localize() {
@@ -87,6 +98,12 @@ class AmazonAutoLinks_Admin_ {
 		}
 		return $arrLinks;
 	}  		
+	function AddPluginVersionInFooter( $strText ) {	
+		// since v1.2.5
+		$strProInfo = isset( $this->oOption->arrPluginDataPro ) ? $this->oOption->arrPluginDataPro['Name'] . ' ' . $this->oOption->arrPluginDataPro['Version'] :'';
+		return $strProInfo . ' ' . $this->oOption->arrPluginData['Name'] 
+			. ' ' . $this->oOption->arrPluginData['Version'] . ' ' . $strText;
+	}			
 
 	/* ------------------------------------------ Admin Menu --------------------------------------------- */
 	function admin_menu() {
@@ -108,26 +125,26 @@ class AmazonAutoLinks_Admin_ {
 		// if the option page of this plugin is loaded
 		if ( IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton'] ) || IsSet( $_POST[AMAZONAUTOLINKSKEY]['tab100']['proceedbutton']) ) {
 
-					$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
-					$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
-					$numIframeWidth =  $numImageSize * 2 + 480;		// $strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]'		
+			$numTab = isset($_POST[AMAZONAUTOLINKSKEY]['tab202']['proceedbutton']) ? 202 : 100;
+			$numImageSize = $_POST[AMAZONAUTOLINKSKEY]['tab' . $numTab]['imagesize'];
+			$numIframeWidth =  $numImageSize * 2 + 480;		// $strFieldName = $this->pluginkey . '[tab' . $numTabnum . '][imagesize]'		
 		
-				if ( version_compare($this->wp_version, '3.1.9', "<" ) )  // if the WordPress version is below 3.2 
-					$strIframeWidth = $numIframeWidth < 1180 ? 'width:100%;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
-				else 				// if the WordPress version is above 3.2
-					$strIframeWidth = $numIframeWidth < 1180 ? 'width:1180px;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+			if ( version_compare($this->wp_version, '3.1.9', "<" ) )  // if the WordPress version is below 3.2 
+				$strIframeWidth = $numIframeWidth < 1180 ? 'width:100%;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
+			else 				// if the WordPress version is above 3.2
+				$strIframeWidth = $numIframeWidth < 1180 ? 'width:1180px;' : 'width:' . $numIframeWidth . 'px;';		// set the minimum width 
 
-				echo '<style type="text/css">
-					#wpcontent {
-						height:100%;
-						' . $strIframeWidth . '
-					}
-					#footer {
-						' . $strIframeWidth . '
-						color: #777;
-						border-color: #DFDFDF;
-					}    					
-					</style>';				
+			echo '<style type="text/css">
+				#wpcontent {
+					height:100%;
+					' . $strIframeWidth . '
+				}
+				#footer {
+					' . $strIframeWidth . '
+					color: #777;
+					border-color: #DFDFDF;
+				}    					
+				</style>';				
 
 		} else if ( isset( $_GET['tab'] ) && $_GET['tab'] == 400 ) 	// for the upgrading to pro tab; the table needs additional styles
 			echo '<link rel="stylesheet" type="text/css" href="' . AMAZONAUTOLINKSPLUGINURL . '/css/amazonautolinks_tab400.css' . '">';
@@ -425,7 +442,7 @@ class AmazonAutoLinks_Admin_ {
 		
 		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when a trailing slash is missing.
 		// e.g. http://www.amazon.ca/Bestsellers-generic/zgbs won't open but http://www.amazon.ca/Bestsellers-generic/zgbs/ does.
-		// Note taht this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
+		// Note that this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
 		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);		// added since v1.0.4
 
 		// create a dom document object			
@@ -564,7 +581,7 @@ class AmazonAutoLinks_Admin_ {
 		<?php
 	}
 	function ImportUnits() {
-		// sinve v1.2.1
+		// since v1.2.1
 		return null;
 		
 		// define messages for the localization.
@@ -581,7 +598,7 @@ class AmazonAutoLinks_Admin_ {
 		
 	}
 	function ExportUnits() {
-		// sinve v1.2.1
+		// since v1.2.1
 	}
 	function admin_tab200_unittable() {
 	
@@ -785,7 +802,7 @@ class AmazonAutoLinks_Admin_ {
 			return;	// do not continue 
 		}	
 		$strUnitLabel = $this->oAALfuncs->urldecrypt($_GET['view']);
-	?>
+		?>
 		<h3><?php echo $this->tabcaptions[2]; ?></h3>
 		<div style="float:right; margin-bottom: 20px;" >
 			<?php $this->oAALforms->form_submitbutton(200, 'preview', __('Go Back', 'amazon-auto-links')); ?>
@@ -794,7 +811,7 @@ class AmazonAutoLinks_Admin_ {
 		<div style="padding: 2em 3em 2em 3em;">
 			<?php		
 			$numMemoryUsageBefore = memory_get_peak_usage();
-			$oAAL = new AmazonAutoLinks_Core($strUnitLabel);
+			$oAAL = new AmazonAutoLinks_Core( $strUnitLabel, $this->oOption );
 			echo $oAAL->fetch();
 			$numMemoryUsageAfter = memory_get_peak_usage();
 			?>
@@ -1066,6 +1083,11 @@ class AmazonAutoLinks_Admin_ {
 						<td align="center"><img title="<?php _e('Unavailable', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Unavailable', 'amazon-auto-links'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
 						<td align="center"><img title="<?php _e('Available', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Available', 'amazon-auto-links'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
 					</tr>					
+					<tr>
+						<td><?php _e( 'Multiple Columns', 'amazon-auto-links' ); ?></td>
+						<td align="center"><img title="<?php _e('Unavailable', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Unavailable', 'amazon-auto-links'); ?>" src="<?php  echo $strDeclineMark; ?>" width="32" height="32"> </td>
+						<td align="center"><img title="<?php _e('Available', 'amazon-auto-links'); ?>" border="0" alt="<?php _e('Available', 'amazon-auto-links'); ?>" src="<?php  echo $strCheckMark; ?>" width="32" height="32"> </td>
+					</tr>						
 				</tbody>
 			</table>
 		</div>
@@ -1121,7 +1143,6 @@ class AmazonAutoLinks_Admin_ {
 
 		if ( isset( $_POST['amazonautolinks']['tab600']['clear_debuglog'] ) )
 			$this->oOption->ClearDebugLog();
-		
 		
 		?>
 		<form method="post" action="">	

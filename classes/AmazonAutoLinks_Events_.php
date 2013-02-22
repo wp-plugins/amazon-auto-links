@@ -1,10 +1,15 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.5
+ * @description	Loads saved events to hook actions with add_action() for WP Cron tasks.
+*/
 class AmazonAutoLinks_Events_ {
 	/*
-		Since: v1.0.5
-		Description: this class loads saved events to hook actions with add_action() for WP Cron tasks.
 		Used hooks: 
-			aal_setuptransients - set ups transients used by the activation hook.
+			aal_setuptransients - setups transients used by the activation hook.
 	*/
 	public $arrFuncRef = array();	// store md5 hash strings associating with the unit label.
 	function __construct( &$oOption ) {		
@@ -54,7 +59,7 @@ class AmazonAutoLinks_Events_ {
 		$this->oOption->oLog->Append( 'An unset method name is called: ' . $strMethodName . ', which reads to: ' . $strUnitLabel );
 		
 		// renew the cache
-		$oAAL = new AmazonAutoLinks_Core( $strUnitLabel );	// now the class accepts a unit label to be passed in the parameter
+		$oAAL = new AmazonAutoLinks_Core( $strUnitLabel, $this->oOption );	// now the class accepts a unit label to be passed in the parameter
 		$oAAL->cache_rebuild();
 		
 		$oAAL->GetBlackASINs( false );	// false to not to use the transients, which renews the cache

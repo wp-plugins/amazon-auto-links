@@ -1,7 +1,12 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+*/
 // make sure that SimplePie has been already loaded
-if (defined('ABSPATH') && defined('WPINC')) {
-	require_once (ABSPATH . WPINC . '/class-simplepie.php');
+if ( defined( 'ABSPATH' ) && defined( 'WPINC' ) ) {
+	require_once ( ABSPATH . WPINC . '/class-simplepie.php' );
 }
 
 class AmazonAutoLinks_Core_ {
@@ -20,10 +25,10 @@ class AmazonAutoLinks_Core_ {
 	protected $oOption = array();
 	protected $arrUnitOptions = array();
 	public $arrASINs = array();	// stores a temporary ASIN data with the key of the product url	// used by Feed API as well so it must be public
-	protected $strCharEncoding = '';	// stores the character encoding that the site uses.
+	public $strCharEncoding = '';	// stores the character encoding that the site uses.
 	
 	
-	function __construct( &$arrUnitOptionsOrstrUnitLabel, &$arrGeneralOptions='') {
+	function __construct( &$arrUnitOptionsOrstrUnitLabel, &$oOption ) {
 	
 		// check the parameter
 		if (empty($arrUnitOptionsOrstrUnitLabel)) {
@@ -45,28 +50,39 @@ class AmazonAutoLinks_Core_ {
 		$this->feed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']
 
 		// options
-		$this->oOption = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );		
-		if (is_array($arrUnitOptionsOrstrUnitLabel)) 	// unit option is directly passed
-			$this->arrUnitOptions = $arrUnitOptionsOrstrUnitLabel;
-		else {	// a unit label is passed, so retrieve the unit ID and store the unit options of the ID
-			$strUnitLabel = $arrUnitOptionsOrstrUnitLabel;
-			// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
-			if ( isset( $this->oOption->arrOptions['units'][$strUnitLabel] ) && is_array( $this->oOption->arrOptions['units'][$strUnitLabel] ) )	{	
-				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitLabel];
-			} else {
-				$strUnitID = $this->oOption->get_unitid_from_unitlabel($strUnitLabel);
-				if (empty($strUnitID)) {
-					echo $this->pluginname . ": " . __METHOD__ . ": " . __('failed to retrieve the unit ID in the class constructor.' . ': ' . $strUnitLabel . '<br />', 'amazon-auto-links');
-					return;								
-				}
-				$this->arrUnitOptions = $this->oOption->arrOptions['units'][$strUnitID];
-			}
-		}
+		$this->oOption = $oOption; //new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );	
+		$this->arrUnitOptions = $this->SetupUnitOption( $arrUnitOptionsOrstrUnitLabel ); 
+		if ( empty( $this->arrUnitOptions ) ) return;
+		
 		$this->arrUnitOptions = $this->arrUnitOptions + $this->oOption->GetDefaultUnitOptionKeys();	// this prevents undefined index warnings.
 		
-		$this->arrGeneralOptions = $arrGeneralOptions ? $arrGeneralOptions : $this->oOption->arrOptions['general'];
+		$this->arrGeneralOptions = $this->oOption->arrOptions['general'];
 		
 	}
+	function SetupUnitOption( $arrUnitOptionsOrstrUnitLabel ) {
+	
+		// moved from the constructor
+		
+		// unit option is directly passed
+		if ( is_array( $arrUnitOptionsOrstrUnitLabel ) ) return $arrUnitOptionsOrstrUnitLabel;
+
+		// a unit label is passed, so retrieve the unit ID and store the unit options of the ID
+		$strUnitLabel = $arrUnitOptionsOrstrUnitLabel;
+		
+		// for backward compatibility for the versions which used a unit label for the option key, v1.0.6 or ealier
+		if ( isset( $this->oOption->arrOptions['units'][$strUnitLabel] ) && is_array( $this->oOption->arrOptions['units'][$strUnitLabel] ) ) 
+			return $this->oOption->arrOptions['units'][$strUnitLabel];
+		
+		// get the ID from the unit label
+		$strUnitID = $this->oOption->get_unitid_from_unitlabel( $strUnitLabel );
+		if ( empty( $strUnitID ) ) {
+			echo $this->pluginname . ": " . __METHOD__ . ": " . __( ' failed to retrieve the unit ID' . ': ' . $strUnitLabel . '<br />', 'amazon-auto-links' );
+			$this->oOption->oLog->Append( 'Failed to retrieve the unit ID: ' . $strUnitLabel , __METHOD__);
+			return;								
+		}			
+		return $this->oOption->arrOptions['units'][$strUnitID];
+	}
+		
 	function get_unitid_from_unitlabel($strUnitLabel) {
 		
 		// since v1.0.7, retrieves the unit option id from the given unit label.
@@ -132,7 +148,6 @@ class AmazonAutoLinks_Core_ {
 		if ( $this->IsInDisabledPage() ) return;
 		
 		// first retrieve ASINs of blasklist categories.
-		// $arrBlackASINs = isset( $this->arrUnitOptions['blacklist_categories'] ) ? $this->GetBlackASINs( $this->arrUnitOptions['blacklist_categories'] ) : array();
 		$arrBlackASINs = $this->GetBlackASINs();
 		
 		try {
@@ -261,7 +276,7 @@ class AmazonAutoLinks_Core_ {
 		$this->oOption->oLog->Append( 'The black category\'s ASINs are saved in the transient: ' . 'aal_black_' . md5( $strFeedURL ) . ' ' . $strFeedURL, __METHOD__ );
 		return $arrASINs;
 	}
-	function GetBlackASINs( $bUseTransients=True ) {
+	public function GetBlackASINs( $bUseTransients=True ) {		// must be public as the Feed API uses it
 
 		// since v1.2.2 
 		// returns an array of ASINs to skip. - plural

@@ -1,8 +1,10 @@
 <?php
-/*
-	this is the initial load script called from the main plugin file
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @description	Initial loader called from the main plugin file.
 */
-	
 add_action( 'plugins_loaded', 'AmazonAutoLinks_LoadPlugin' );		
 function AmazonAutoLinks_LoadPlugin() {
 
@@ -13,26 +15,28 @@ function AmazonAutoLinks_LoadPlugin() {
 	// in other words, there is no need to instantiate the option class in each class.
 	$oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 
-	// Admin Pages
-	// this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
+	// Admin Pages - this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
 	new AmazonAutoLinks_Admin( $oAALOptions );
 
-	// Contents Hooks
-	// this registers the method, RegisterHooks, of the AmazonAutoLinks_Contents class
+	// Contents Hooks - this registers the method, RegisterHooks, of the AmazonAutoLinks_Contents class
 	new AmazonAutoLinks_Contents( AMAZONAUTOLINKSKEY, $oAALOptions );
 
 	// URL redirects for URL cloaking
 	new AmazonAutoLinks_Redirects( $oAALOptions );
 
 	// Load actions to hook events for WordPress cron jobs
-	add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );	// 'AmazonAutoLinks_Events');
+	add_action( 'init', array( new AmazonAutoLinks_Events( $oAALOptions ), "LoadEvents" ) );
 
 	// Widgets
 	add_action( 'widgets_init', 'AmazonAutoLinks_Widget::RegisterWidget' );
 
 	// Plugin Requirements
 	// do not use register_activation_hook(); deactivate_plugins() will fail for some reasons.
-	new AmazonAutoLinks_Requirements( '5.1.2', '3.0', array( 'mb_language' ) );
+	new AmazonAutoLinks_Requirements( 
+		'5.1.2', 		// PHP version
+		'3.0', 			// WordPress version
+		array( 'mb_language' ) 	// function names
+	);
 		
 }
 
@@ -44,13 +48,18 @@ register_deactivation_hook( AMAZONAUTOLINKSPLUGINFILE, 'AmazonAutoLinks_CleanTra
 
 function AmazonAutoLinks_CleanTransients() {
 	
-	// delete transients
+	// Delete transients
 	global $wpdb, $table_prefix;
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient%_feed_%' )" );
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient%_aal_%' )" );
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ( '_transient_timeout%_aal_%' )" );
 	
+	// Clean sheduled tasks
 	AmazonAutoLinks_WPUnscheduleEventsByRegex( '/aal_feed_.+/' );
+	
+	$arrOptions = (array) get_option( AMAZONAUTOLINKSKEY );
+	if ( isset( $arrOptions['general']['cleanoptions'] ) && !empty( $arrOptions['general']['cleanoptions'] ) )
+		AmazonAutoLinks_CleanOptions();
 }
 		
 	
@@ -72,14 +81,15 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
 	delete_option('amazonautolinks_catcache_events');	// used for category cache events
 	delete_option('amazonautolinks_userads');			// used for the user ads
+	delete_option('amazonautolinks_logs');				// used for debug log
 	
 	// initialize it
-	$arr = array();
-	if ($key != '') {
-		$arr = get_option( AMAZONAUTOLINKSKEY );
-		$arr[$key] = array();
-	}
-	update_option(AMAZONAUTOLINKSKEY, $arr);
+	// $arr = array();
+	// if ($key != '') {
+		// $arr = get_option( AMAZONAUTOLINKSKEY );
+		// $arr[$key] = array();
+	// }
+	// update_option( AMAZONAUTOLINKSKEY, $arr );
 
 	// delete transients
 	global $wpdb, $table_prefix;
@@ -89,15 +99,15 @@ function AmazonAutoLinks_CleanOptions($key='') {
 	// $wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_feed_%')" );	// this is for feed cache 
 }
 
-function AmazonAutoLinks($strUnitLabel) {
+function AmazonAutoLinks( $strUnitLabel ) {
 	
 	// This function is used to embed the Amazon products unit in a theme
 	$options = get_option( AMAZONAUTOLINKSKEY );
 	
 	// as of v1.0.7, the option key is the ID of the unit so parse them to match the 'unitlabel' element to the passed unit label
-	foreach($options['units'] as $strUnitID => $arrUnitOption) {
-		if ($arrUnitOption['unitlabel'] == $strUnitLabel) {
-			$oAAL = new AmazonAutoLinks_Core($options['units'][$strUnitID]);
+	foreach( $options['units'] as $strUnitID => $arrUnitOption ) {
+		if ( $arrUnitOption['unitlabel'] == $strUnitLabel ) {
+			$oAAL = new AmazonAutoLinks_Core( $options['units'][$strUnitID], $options );
 			echo $oAAL->fetch();		
 			return;
 		}
@@ -111,7 +121,7 @@ function AmazonAutoLinks($strUnitLabel) {
 function AmazonAutoLinks_RegisterClasses() {
 		
 	/*  
-		Called from the plugins_loaded hook and the plugin activation hook.
+		Called from the plugins_loaded hook or the plugin activation hook.
 		This function reads class files in wp-include/plugins/[this-plugin-path]/classes 
 		and registers them to be auto-loaded so that require() or include() in each class file is no longer necessary.
 		After that, it defines new clesses based on the regstered class names. 

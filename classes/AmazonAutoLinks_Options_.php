@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.0.0
+ * @description	Handles plugin options. The other classes should access option values through this class.
+*/
 class AmazonAutoLinks_Options_ {
 
 	/*
@@ -47,11 +54,10 @@ class AmazonAutoLinks_Options_ {
 		'credit'			=> True,
 		'urlcloak'			=> False,	// since v1.0.9
 		'disableonhome'		=> False,	// since v1.2.0 - True/False. determines whether product links should appear on the home page.
-		// 'disableonfront'	=> False,	// since v1.2.1 - True/False. determines whether product links should appear on the front page.
 		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
 		'categories'		=> array(),
 		'blacklist_categories' => array(),	// since v1.2.2
-		'multicolumn'		=> False,	// since v1.2.2 but not implemented yet
+		'numberofcolumns'	=> 1,	// since v1.2.2 but not implemented yet
 		'keeprawtitle'		=> False,	// since v1.2.3 - for Pro
 		'titlenumbering'	=> False,	// since v1.2.4 - for Pro
 	);	
@@ -65,7 +71,9 @@ class AmazonAutoLinks_Options_ {
 		'prefetch'			=> 0,
 		'enablelog'			=> 0,	// since v1.2.2
 		'license'			=> '', // for Pro
-		'capability'		=> 'manage_options',	// since v1.2.3 - for Pro
+		'license_feedapi'	=> '', // for Feed API, since v1.2.5
+		'capability'		=> 'manage_options',	// since v1.2.4 
+		'cleanoptions'		=> 0,	// since v1.2.5
 	);		
 	public $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
@@ -104,6 +112,8 @@ class AmazonAutoLinks_Options_ {
 		'US' => '[fRmuq3rruO3Tw8y29lU1m6mxwAZ1XxxyDOD1L2UvIU4=]'
 	);
 	
+	// public $bIsMultiColumnStyleAdded = false;	// since v1.2.5
+	
 	// since v1.2.2 
 	// if the "enable log" option is set to On, plugin activity logs will be stored in this array 
 	// and it will be stored in the database with the shutdown hook.
@@ -118,6 +128,12 @@ class AmazonAutoLinks_Options_ {
 		// set up properties
 		$this->pluginkey = $pluginkey;
 		$this->pageslug = $pluginkey;	
+		
+		// store plugin data
+		if ( !function_exists( 'get_plugin_data' )  ) require_once( ABSPATH . 'wp-admin/includes/plugin.php' );	
+		$this->arrPluginData = get_plugin_data( AMAZONAUTOLINKSPLUGINFILE, false );
+		if ( defined( 'AMAZONAUTOLINKSPROFILE' ) ) 
+			$this->arrPluginDataPro = get_plugin_data( AMAZONAUTOLINKSPROFILE, false );
 		
 		$this->load_settings();
 		

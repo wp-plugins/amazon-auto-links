@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.2.0
+ * @description	Checks the specified requirements and if it fails, it deactivate the plugin.
+*/
 class AmazonAutoLinks_Requirements_ {
-	
-	/*
-	 * Checks the specified requirements and if it fails, it deactivate the plugin.
-	 * Since 1.2.0
-	 * */
-	 
+
 	// Properties
 	protected $strPHPver = '';
 	protected $strWPver = '';

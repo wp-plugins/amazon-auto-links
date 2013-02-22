@@ -3,7 +3,7 @@
 	Plugin Name: Amazon Auto Links
 	Plugin URI: http://en.michaeluno.jp/amazon-auto-links
 	Description: Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
-	Version: 1.2.4
+	Version: 1.2.5
 	Author: Michael Uno (miunosoft)
 	Author URI: http://michaeluno.jp
 	Text Domain: amazon-auto-links
@@ -28,3 +28,9 @@ include AMAZONAUTOLINKSPLUGINDIR . '/inc/amazonautolinks_initial_load.php';
 
 // uncomment the following function to clear all options and initialize to the default.
 // AmazonAutoLinks_CleanOptions();
+
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+*/

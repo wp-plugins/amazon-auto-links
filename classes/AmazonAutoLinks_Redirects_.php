@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package     Amazon Auto Links
+ * @copyright   Copyright (c) 2013, Michael Uno
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since		1.1.3
+ * @description	Redirects the user to the Amazon store, mainly used for the url cloak feature.
+*/
 class AmazonAutoLinks_Redirects_ {
 	
-	/*
-	 * since v1.1.3
-	 * This class is for redirecting urls, mainly used for the url cloak feature.
-	 * */
-	 
 	function __construct( &$oOption ) {
 		
 		// the option array
