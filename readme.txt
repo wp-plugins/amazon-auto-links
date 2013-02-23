@@ -73,6 +73,9 @@ Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)
 
 == Changelog ==
 
+= 1.2.5.1 - 02/23/2013 =
+* Fixed: the warning, Undefined variable: oAAL.
+
 = 1.2.5 - 02/23/2013 =
 * Added: the version number to appear in the footer of the plugin setting pages.
 * Added: the ability to remove all used option values of the plugin upon plugin deactivation, which can be set in General Settings.

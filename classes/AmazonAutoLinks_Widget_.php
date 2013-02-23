@@ -50,7 +50,7 @@ class AmazonAutoLinks_Widget_ extends WP_Widget {
 			$oAAL = new AmazonAutoLinks_Core( $oAALOptions->arrOptions['units'][$strUnitID], $oAALOptions ); // the constructor accepts a unit option in the first parameter
 		}
 		
-		if ($oAAL) echo $oAAL->fetch();
+		if ( isset( $oAAL ) && is_object( $oAAL ) ) echo $oAAL->fetch();
 		
 		/* END of WIDGET CODE */
 		echo $after_widget;
