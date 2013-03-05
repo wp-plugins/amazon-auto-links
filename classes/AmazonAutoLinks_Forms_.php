@@ -997,7 +997,7 @@ class AmazonAutoLinks_Forms_ {
 		$strValue = $strValue ? $strValue : $this->oOption->generaldefaultoptions['capability'];	
 		?>		
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Access Right to Setting Page', 'amazon-auto-links'); ?></th>
+			<th scope="row"><?php _e( 'Access Rights to Setting Page', 'amazon-auto-links'); ?></th>
 			<td>
 				<select name="<?php echo $strFieldName; ?>">
 				<option value="manage_options" <?php echo $strValue == 'manage_options' ? 'Selected' : ''; ?>><?php _e( 'Administrator', 'amazon-auto-links' ); ?></option>
