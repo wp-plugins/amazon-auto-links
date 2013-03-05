@@ -5,6 +5,9 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * @description	Renders the administration pages of the plugin.
+ * @filters		
+ * 		aalhook_admin_operation_edit_link
+ * 		aalhook_admin_operation_rss_link
 */
 class AmazonAutoLinks_Admin_ {
 		
@@ -223,7 +226,7 @@ class AmazonAutoLinks_Admin_ {
 						</td>
 						<td valign="top" style="border: 0px;">
 						<?php
-							$this->oUserAd->InitializeBannerFeed( 'http://feeds.feedburner.com/GANLinkBanner160x600Random40' );
+							$this->oUserAd->InitializeBannerFeed( '' );
 							$this->oUserAd->ShowBannerAds( !isset( $_GET['tab'] ) || in_array( $_GET['tab'], array( 100, 400, '' ) ) ? 3 : 2 );				
 							flush();
 						?>
@@ -231,9 +234,7 @@ class AmazonAutoLinks_Admin_ {
 					</tr>
 				</tbody>
 			</table>
-			
-				
-			
+			<?php $this->oUserAd->ShowTextAd(); ?>
 		</div> <!-- end the admin page wrapper -->
 		<?php 	
 	} 	// admin_page() end
@@ -440,7 +441,7 @@ class AmazonAutoLinks_Admin_ {
 		// first check the $_GET array	
 		$strURL = isset($_GET['href']) ? $this->oAALfuncs->urldecrypt($_GET['href']) : $this->oOption->arrOptions[$mode]['countryurl'];				
 		
-		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when a trailing slash is missing.
+		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when the trailing slash is missing.
 		// e.g. http://www.amazon.ca/Bestsellers-generic/zgbs won't open but http://www.amazon.ca/Bestsellers-generic/zgbs/ does.
 		// Note that this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
 		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);		// added since v1.0.4
@@ -452,8 +453,8 @@ class AmazonAutoLinks_Admin_ {
 		// adds a query in the link urls like, ?href=[encrypted_url], so that in a next page load, $_GET['href'] tells where to look up
 		$arrGETQuery = array(
 			'mode' => $mode,			// newunit or editunit
-		  'page' => $_GET['page'],	// &page=amazonautolinks
-		  'tab' => $numTab,			// 101 or 203
+			'page' => $_GET['page'],	// &page=amazonautolinks
+			'tab' => $numTab,			// 101 or 203
 		);
 		
 		if ( ! $bModifiedHref = $this->oAALforms_selectcategories->modify_href( $doc, $arrGETQuery ) ) {
@@ -692,15 +693,15 @@ class AmazonAutoLinks_Admin_ {
 						else if ($i==11) {
 							$strUnitLabel = $unit['unitlabel'];
 							$strCryptedUnitLabel = $this->oAALfuncs->urlencrypt( $strUnitLabel );
-							$strOperationLinks =  $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/edit16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('Edit', 'amazon-auto-links') . '" alt="' . __('Edit', 'amazon-auto-links') . '" style="" />'
+							$strOperationLinks =  $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/edit16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'Edit', 'amazon-auto-links') . '" alt="' . __( 'Edit', 'amazon-auto-links' ) . '" style="" />'
 													, 202
 													, array( 'edit' => $strCryptedUnitLabel ) )
-												. $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/view16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('View', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __('View', 'amazon-auto-links') . '" style="" />' 
+												. $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/view16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'View', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __( 'View', 'amazon-auto-links' ) . '" style="" />' 
 													, 201
 													, array( 'view' => $strCryptedUnitLabel ) );
-							$strRSSLink = '<img class="icon" src="' . plugins_url( 'img/rss_inactive16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __('Get the Feed API extension!', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __('Feed', 'amazon-auto-links') . '" />';
+							$strRSSLink = '<img class="icon" src="' . plugins_url( 'img/rss_inactive16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'Get the Feed API extension!', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __( 'Feed', 'amazon-auto-links' ) . '" />';
 							echo '<td>'
-								. $strOperationLinks
+								. apply_filters( 'aalhook_admin_operation_edit_link',  $strOperationLinks, $strUnitLabel, $this )
 								. '<a href="http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-feed-api/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">'
 								. apply_filters( 'aalhook_admin_operation_rss_link',  $strRSSLink, $strUnitLabel )		// since v1.1.8
 								. '</a>'
@@ -772,18 +773,18 @@ class AmazonAutoLinks_Admin_ {
 				break;								
 		}	
 	}
-	function custom_a_tag($strText, $numTab, $arrQueries="", $strStyle="") {
+	function custom_a_tag( $strText, $numTab, $arrQueries="", $strStyle="" ) {
 	
 		// creates a custom <a> tag with a modified href attribute. 
 		// the href link url is converted to the self url with specified queries 
 		$strQueries = '';
-		if (Is_Array($arrQueries)) {
-			foreach($arrQueries as $key => $value) {
-				if (!empty($value))
+		if ( Is_Array( $arrQueries ) ) {
+			foreach( $arrQueries as $key => $value ) {
+				if ( !empty( $value ) )
 					$strQueries .= '&' . $key . '=' . $value;
 			}
 		}
-		return '<a href="' . $this->change_tabnum_in_url($numTab) . $strQueries . '" style="' . $strStyle . '">' . $strText . '</a>' ;
+		return '<a href="' . $this->change_tabnum_in_url( $numTab ) . $strQueries . '" style="' . $strStyle . '">' . $strText . '</a>' ;
 	}
 	function change_tabnum_in_url($changeto) {
 	
@@ -1226,7 +1227,7 @@ class AmazonAutoLinks_Admin_ {
 
 		// user ad
 		echo '<div>';	// style fixer for v3.5 or above
-		$this->oUserAd->InitializeTopBannerFeed( 'http://feeds.feedburner.com/GANBanner60x468' );
+		$this->oUserAd->InitializeTopBannerFeed( '' );
 		$this->oUserAd->ShowTopBannerAds();
 		echo '</div>'; // style fixer for v3.5 or above
 		flush();
@@ -1239,7 +1240,7 @@ class AmazonAutoLinks_Admin_ {
 		$this->tab_menu( $numCurrentTab = $this->GetTabNumber() );	
 		
 		// text
-		$this->oUserAd->InitializeTextFeed( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
+		$this->oUserAd->InitializeTextFeed( '' );
 		$this->oUserAd->ShowTextAd();
 		flush();
 		
