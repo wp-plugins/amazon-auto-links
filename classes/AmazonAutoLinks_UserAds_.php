@@ -13,9 +13,12 @@ class AmazonAutoLinks_UserAds_
 	*/
 	
 	// properties
-	private $oTextFeed;
-	private $oBannerFeed;
-	private $oTopBannerFeed;
+	protected $oTextFeed;
+	protected $oBannerFeed;
+	protected $oTopBannerFeed;
+	public $strURLFeed160x600 = 'http://feeds.feedburner.com/GANLinkBanner160x600Random40';
+	public $strURLFeedText = 'http://feeds.feedburner.com/GANLinkTextRandom40';
+	public $strURLFeed60x468 = 'http://feeds.feedburner.com/GANBanner60x468';
 	
 	function __construct( $pluginkey, &$oOption ) {
 		$this->pluginkey = $pluginkey;
@@ -186,112 +189,87 @@ class AmazonAutoLinks_UserAds_
 		if (!$output) $this->oOption->oLog->Append('no result: ad-type: ' . strRandKey_FeedTypes . ' feed-url: ' . $arrUnitOptions['feedurls'][$strRandKey] );	
 		echo $output;
 	}	
-	function InitializeTextFeed( $arrUrls ) {
-		
-		$this->oTextFeed = new AmazonAutoLinks_SimplePie();
-		
-		// Setup Caches
-		$this->oTextFeed->enable_cache( true );
-		$this->oTextFeed->set_cache_class( 'WP_Feed_Cache' );
-		$this->oTextFeed->set_file_class( 'WP_SimplePie_File' );
-		$this->oTextFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
-
-		// Set Sort Order
-		$this->oTextFeed->set_sortorder( 'random' );
-
-		// Set urls
-		$this->oTextFeed->set_feed_url( $arrUrls );
-		$this->oTextFeed->set_item_limit(1);
-
-		// this should be set after defineing $urls
-		$this->oTextFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
-		$this->oTextFeed->set_stupidly_fast( true );
-		$this->oTextFeed->init();		
-		
-	}
 	function ShowTextAd($bPrint=True) {
 	
 		// fetch
 		$strOut = '';
-		foreach ( $this->oTextFeed->get_items(0, 1) as $item ) $strOut .= $item->get_description();
+		foreach ( $this->oTextFeed->get_items( 0, 1 ) as $item ) $strOut .= $item->get_content();
+		$strOut = '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>"; 
 		if ( $bPrint )
-			echo '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
+			echo $strOut;
 		else	
-			return '<div align="left" style="padding: 10px 0 0 0;">' . $strOut . "</div>";
-	}
-	function InitializeTopBannerFeed($arrUrls) {
-		
-		$this->oTopBannerFeed = new AmazonAutoLinks_SimplePie();
-		
-		// Setup Caches
-		$this->oTopBannerFeed->enable_cache( true );
-		$this->oTopBannerFeed->set_cache_class( 'WP_Feed_Cache' );
-		$this->oTopBannerFeed->set_file_class( 'WP_SimplePie_File' );
-		$this->oTopBannerFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
-
-		// Set Sort Order
-		$this->oTopBannerFeed->set_sortorder( 'random' );
-
-		// Set urls
-		$this->oTopBannerFeed->set_feed_url( $arrUrls );
-		$this->oTopBannerFeed->set_item_limit( 1 );
-
-		// this should be set after defineing $urls
-		$this->oTopBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
-		$this->oTopBannerFeed->set_stupidly_fast( true );
-		$this->oTopBannerFeed->init();		
+			return $strOut;
 	}		
 	function ShowTopBannerAds($numItems=1, $bPrint=True) {
 
 		// fetch
 		$strOut = '';
 		foreach ( $this->oTopBannerFeed->get_items(0, $numItems) as $item ) 
-			$strOut .= '<div style="clear:right; margin:0; padding:0;">' . $item->get_description() . '</div>';
+			$strOut .= '<div style="clear:right; margin:0; padding:0;">' . $item->get_content() . '</div>';
 		if ( $bPrint )
 			echo '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
 		else 
 			return '<div style="float:right; margin:0; padding:0;">' . $strOut . "</div>";
-	}		
-	function InitializeBannerFeed( $arrUrls ) {
-		
-		$this->oBannerFeed = new AmazonAutoLinks_SimplePie();
-		
-		// Setup Caches
-		$this->oBannerFeed->enable_cache( true );
-		$this->oBannerFeed->set_cache_class( 'WP_Feed_Cache' );
-		$this->oBannerFeed->set_file_class( 'WP_SimplePie_File' );
-		$this->oBannerFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
-
-		// Set Sort Order
-		$this->oBannerFeed->set_sortorder( 'random' );
-
-		// Set urls
-		$this->oBannerFeed->set_feed_url( $arrUrls );
-		$this->oBannerFeed->set_item_limit( 1 );
-
-		// this should be set after defineing $urls
-		$this->oBannerFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 3600, $arrUrls ) );	
-		$this->oBannerFeed->set_stupidly_fast( true );
-		$this->oBannerFeed->init();		
-		
 	}	
 	function ShowBannerAds($numItems=2, $bPrint=True) {
 
 		// fetch
 		$strOut = '';
 		foreach ( $this->oBannerFeed->get_items(0, $numItems) as $item ) 
-			$strOut .= '<div style="clear:right;">' . $item->get_description() . '</div>';
+			$strOut .= '<div style="clear:right;">' . $item->get_content() . '</div>';
 		if ( $bPrint )
 			echo '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 		else 
 			return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 	}	
+	function InitializeTextFeed( $arrUrls='' ) {
 	
+		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeedText : $arrUrls;
+		$this->oTextFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+		
+	}	
+	function InitializeTopBannerFeed( $arrUrls='' ) {
+
+		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed60x468 : $arrUrls;
+		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+
+	}	
+	function InitializeBannerFeed( $arrUrls='' ) {
+		
+		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed160x600 : $arrUrls;
+		$this->oBannerFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+		
+	}		
+	function GetFeedObj( $arrUrls, $bEnableCache=True, $numCacheDuration=3600 ) {
+		
+		$oFeed = new ResponsiveColumnWidgets_SimplePie();
+		
+		// Setup Caches
+		$oFeed->enable_cache( $bEnableCache );
+		$oFeed->set_cache_class( 'WP_Feed_Cache' );
+		$oFeed->set_file_class( 'WP_SimplePie_File' );
+		$oFeed->enable_order_by_date( true );			// Making sure that it works with the defult setting. This does not affect the sortorder set by the option, $option['sortorder']		
+
+		// Set Sort Order
+		$oFeed->set_sortorder( 'random' );
+
+		// Set urls
+		$oFeed->set_feed_url( $arrUrls );	
+		$oFeed->set_item_limit( 1 );
+		
+		// this should be set after defineing $urls
+		$oFeed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', $numCacheDuration, $arrUrls ) );	
+		$oFeed->set_stupidly_fast( true );
+		$oFeed->init();			
+		return $oFeed;
+		
+	}	
 	function SetupTransients() {
 	
-		// called from RegisterActivationHook and creates user ad transients so that the user don't feel a delay when first accesses the setting page
-		$this->InitializeBannerFeed( 'http://feeds.feedburner.com/GANLinkBanner160x600Random40' );
-		$this->InitializeTextFeed( 'http://feeds.feedburner.com/GANLinkTextRandom40' );
-		$this->InitializeTopBannerFeed( 'http://feeds.feedburner.com/GANBanner60x468' );
-	}
+		$this->InitializeTopBannerFeed();
+		$this->InitializeBannerFeed();
+		$this->InitializeTextFeed();
+		
+	}	
+	
 }
