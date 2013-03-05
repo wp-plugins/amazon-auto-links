@@ -7,12 +7,13 @@
 */
 add_action( 'plugins_loaded', 'AmazonAutoLinks_LoadPlugin' );		
 function AmazonAutoLinks_LoadPlugin() {
-
+	
 	// Register Classes - this must be be done before using classes defined in this plugin
 	AmazonAutoLinks_RegisterClasses();
 
 	// instantiate the option class first so that the option object can be shared with other classes, which presumably consumes less memory.
 	// in other words, there is no need to instantiate the option class in each class.
+	global $oAALOptions;
 	$oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 
 	// Admin Pages - this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
