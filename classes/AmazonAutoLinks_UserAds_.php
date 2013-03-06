@@ -242,7 +242,7 @@ class AmazonAutoLinks_UserAds_
 	}		
 	function GetFeedObj( $arrUrls, $bEnableCache=True, $numCacheDuration=3600 ) {
 		
-		$oFeed = new ResponsiveColumnWidgets_SimplePie();
+		$oFeed = new AmazonAutoLinks_Simplepie();
 		
 		// Setup Caches
 		$oFeed->enable_cache( $bEnableCache );
