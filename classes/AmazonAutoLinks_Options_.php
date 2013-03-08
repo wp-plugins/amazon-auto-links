@@ -28,25 +28,29 @@ class AmazonAutoLinks_Options_ {
 		'imgformat'			=> '<img src="%imgurl%" alt="%textdescription%" />',
 		'imagesize' 		=> 160,  // up to 500. 0 means no image.
 		'sortorder' 		=> 'random',	// random / title / date
-		'feedtypes' 		=> array(	'bestsellers' => True, 
-										'hotnewreleases' => False,
-										'moverandshakers' => False,
-										'toprated' => False,
-										'mostwishedfor' => False,
-										'giftideas' => False),
+		'feedtypes' 		=> array(	
+			'bestsellers' => True, 
+			'hotnewreleases' => False,
+			'moverandshakers' => False,
+			'toprated' => False,
+			'mostwishedfor' => False,
+			'giftideas' => False
+		),
 		'cacheexpiration'	=> 43200,
 		'numitems' 			=> 10,
 		'nosim'				=> false,
 		'mblang'			=> 'uni',
 		'countryurl'		=> 'http://www.amazon.com/gp/bestsellers/',
-		'insert'			=> array(	'postabove' 		=> False,
-										'postbelow'			=> False,
-										'excerptabove'		=> False,
-										'excerptbelow'		=> False,
-										'feedabove'			=> False,
-										'feedbelow'			=> False,
-										'feedexcerptabove'	=> False,
-										'feedexcerptbelow'	=> False	),
+		'insert'			=> array(	
+			'postabove' 		=> False,
+			'postbelow'			=> False,
+			'excerptabove'		=> False,
+			'excerptbelow'		=> False,
+			'feedabove'			=> False,
+			'feedbelow'			=> False,
+			'feedexcerptabove'	=> False,
+			'feedexcerptbelow'	=> False	
+		),
 		'modifieddate'		=> '',	// used in AmazonAutoLinks_UserAds to store the creation/modified date of the unit
 		'feedurls'			=> '',	// used in AmazonAutoLinks_UserAds to store temporary feed urls 
 		'titlelength'		=> -1,
@@ -57,9 +61,14 @@ class AmazonAutoLinks_Options_ {
 		'poststobedisabled' => '',	// since v1.2.0 - stores post numbers separated by commas
 		'categories'		=> array(),
 		'blacklist_categories' => array(),	// since v1.2.2
-		'numberofcolumns'	=> 1,	// since v1.2.2 but not implemented yet
+		'numberofcolumns'	=> 1,		// since v1.2.2 - for Pro
 		'keeprawtitle'		=> False,	// since v1.2.3 - for Pro
 		'titlenumbering'	=> False,	// since v1.2.4 - for Pro
+		'keep_raw_title'	=> array(	// since v1.2.5.2 - for Amazon Auto Links Units By Tag extension 
+			'keeprawtitle'		=> False,	
+			'titlenumbering'	=> False,	
+		),
+		'tag'				=> '',		// since v1.2.5.2 - for Amazon Auto Links Units By Tag extension 
 	);	
 	public $generaldefaultoptions = array(
 		'supportrate'		=> 10,

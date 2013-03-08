@@ -5,6 +5,33 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * @description	Displays form elements.
+ * @filters and the parameters
+ * 	aal_action_admin_form_addnewunit_fields
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
+ * 	 4. the error array
+ * 	aal_action_admin_form_addnewunit_table
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
+ * 	 4. the error array
+ * 	aal_action_admin_form_advancedoption_table
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
+ * 	aal_action_admin_form_acvancedoption_fields
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
+ * 	aal_action_admin_form_generaloptions_fields
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
+ * 	aal_action_admin_form_generaloptions_table
+ * 	 1. the AmazonAutoLinks_Forms object
+ * 	 2. the tab number
+ * 	 3. the displaying value array
 */
 class AmazonAutoLinks_Forms_ {
 
@@ -167,24 +194,31 @@ class AmazonAutoLinks_Forms_ {
 		// this fiexes sent form data for creating/modifing the unit information
 		
 		// just fix it to the default value	
-		$arrUnitOptions['imagesize'] = $this->oAALfuncs->fixnum(	$arrUnitOptions['imagesize']	// subject
-																,	$this->oOption->unitdefaultoptions['imagesize']	// default value
-																,	0		// minimum: 0
-																,	500);	// max: 500
+		$arrUnitOptions['imagesize'] = $this->oAALfuncs->fixnum(	
+			$arrUnitOptions['imagesize'],	// subject
+			$this->oOption->unitdefaultoptions['imagesize'],	// default value
+			0,		// minimum: 0
+			500		// max: 500
+		);	
+		
 		// max number of ites to show		
-		$arrUnitOptions['numitems'] = $this->oAALfuncs->fixnum(		$arrUnitOptions['numitems']
-																,	$this->oOption->unitdefaultoptions['imagesize']
-																,	1
-																,	10);
+		$arrUnitOptions['numitems'] = $this->oAALfuncs->fixnum(		
+			$arrUnitOptions['numitems'],
+			$this->oOption->unitdefaultoptions['imagesize'],
+			1,
+			10
+		);
 		
 		// Clean the text input. 
 		$arrUnitOptions['unitlabel'] = trim($arrUnitOptions['unitlabel']);
 		$arrUnitOptions['associateid'] = trim($arrUnitOptions['associateid']);	
 		
 		// set the minimum value for cache expiration seconds 
-		$arrUnitOptions['cacheexpiration'] = $this->oAALfuncs->fixnum(	$arrUnitOptions['cacheexpiration']			// subject
-																,	$this->oOption->unitdefaultoptions['cacheexpiration']	// default value
-																,	60);	// minimum 60, maximum no limit
+		$arrUnitOptions['cacheexpiration'] = $this->oAALfuncs->fixnum(
+			$arrUnitOptions['cacheexpiration'],			// subject
+			$this->oOption->unitdefaultoptions['cacheexpiration'],	// default value
+			60	// minimum 60, maximum no limit
+		);	
 																
 		// *warning: never save option values containing html code without fltering correctly; otherwise, WordPress automatically escapes characters and the code gets messed.
 		$arrUnitOptions['containerformat'] = stripslashes(wp_filter_post_kses(addslashes($arrUnitOptions['containerformat'])));
@@ -267,13 +301,13 @@ class AmazonAutoLinks_Forms_ {
 			$this->field_element_poststobedisabled( $numTabNum, $arrOptionsToDisplay['poststobedisabled'] ); 
 			
 			// for addons since v1.2.2, modified in v1.2.5
-			echo apply_filters( 'aalhook_admin_form_addnewunit_fields', '', array( $this ,$numTabNum, $arrOptionsToDisplay, $arrErrors ) );
+			do_action( 'aal_action_admin_form_addnewunit_fields', $this, $numTabNum, $arrOptionsToDisplay, $arrErrors );
 			?>
 			</tbody>
 		</table>
 		<?php
 		// for addons since v1.2.2, modified in v1.2.5
-		do_action( 'aalhook_admin_form_addnewunit_table', array( $this, $numTabNum, $arrOptionsToDisplay, $arrErrors ) );
+		do_action( 'aal_action_admin_form_addnewunit_table', $this, $numTabNum, $arrOptionsToDisplay, $arrErrors );
 		
 		// oUserAd must be instantiated prior to this method call 
 		$this->oUserAd->ShowTextAd(); 
@@ -301,12 +335,12 @@ class AmazonAutoLinks_Forms_ {
 					$this->field_element_keeprawtitle( $numTabNum, array( $arrOptionsToDisplay['keeprawtitle'], $arrOptionsToDisplay['titlenumbering'] ) );	// since v1.2.3 and v1.2.4
 					
 					// for addons since v1.2.2
-					echo apply_filters( 'aalhook_admin_form_acvancedoption_fields', '', array( $this, $numTabNum, $arrOptionsToDisplay ) );
+					do_action( 'aal_action_admin_form_acvancedoption_fields', $this, $numTabNum, $arrOptionsToDisplay );
 				?>
 			</tbody>
 		</table>						
 		<?php
-		do_action( 'aalhook_admin_form_advancedoption_table', array( $this, $numTabNum, $arrOptionsToDisplay ) );	// for addons since v1.2.2
+		do_action( 'aal_action_admin_form_advancedoption_table', $this, $numTabNum, $arrOptionsToDisplay );	// for addons since v1.2.2
 		?>
 		<p class="submit">
 			<?php 
@@ -808,14 +842,14 @@ class AmazonAutoLinks_Forms_ {
 				$this->field_element_license( $numTabNum, $arrOptionsToDisplay['license'] ); // since v1.1.9			
 				
 				// for addons since v1.1.8, modified in v1.2.5
-				echo apply_filters( 'aalhook_admin_form_generaloptions_fields', '', array( $this, $numTabNum, $arrOptionsToDisplay ) );
+				do_action( 'aal_action_admin_form_generaloptions_fields', $this, $numTabNum, $arrOptionsToDisplay );
 				?>
 			</tbody>
 		</table>
 		
 		<?php
 		// for addons since v1.1.8, modified in v1.2.5
-		do_action( 'aalhook_admin_form_generaloptions_table', array( $this, $numTabNum, $arrOptionsToDisplay ) );
+		do_action( 'aal_action_admin_form_generaloptions_table', $this, $numTabNum, $arrOptionsToDisplay );
 		?>
 		
 		<p class="submit">
@@ -1056,4 +1090,3 @@ class AmazonAutoLinks_Forms_ {
 		<?php
 	}	
 }
-?>

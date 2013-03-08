@@ -222,22 +222,22 @@ class AmazonAutoLinks_UserAds_
 		else 
 			return '<div style="float:right; padding: 0px 0 0 20px;">' . $strOut . "</div>";
 	}	
-	function InitializeTextFeed( $arrUrls='' ) {
+	function InitializeTextFeed( $arrUrls='', $numCacheInterval=3600 ) {
 	
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeedText : $arrUrls;
-		$this->oTextFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+		$this->oTextFeed = $this->GetFeedObj( $arrUrls, True, $numCacheInterval );
 		
 	}	
-	function InitializeTopBannerFeed( $arrUrls='' ) {
+	function InitializeTopBannerFeed( $arrUrls='', $numCacheInterval=3600 ) {
 
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed60x468 : $arrUrls;
-		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+		$this->oTopBannerFeed = $this->GetFeedObj( $arrUrls, True, $numCacheInterval );
 
 	}	
-	function InitializeBannerFeed( $arrUrls='' ) {
+	function InitializeBannerFeed( $arrUrls='', $numCacheInterval=3600 ) {
 		
 		$arrUrls = ( empty( $arrUrls ) ) ? $this->strURLFeed160x600 : $arrUrls;
-		$this->oBannerFeed = $this->GetFeedObj( $arrUrls, True, 0 );
+		$this->oBannerFeed = $this->GetFeedObj( $arrUrls, True, $numCacheInterval );
 		
 	}		
 	function GetFeedObj( $arrUrls, $bEnableCache=True, $numCacheDuration=3600 ) {
@@ -266,9 +266,9 @@ class AmazonAutoLinks_UserAds_
 	}	
 	function SetupTransients() {
 	
-		$this->InitializeTopBannerFeed();
-		$this->InitializeBannerFeed();
-		$this->InitializeTextFeed();
+		$this->InitializeTopBannerFeed( '', 0 );
+		$this->InitializeBannerFeed( '', 0 );
+		$this->InitializeTextFeed( '', 0 );
 		
 	}	
 	

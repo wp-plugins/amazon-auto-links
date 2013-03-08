@@ -3,7 +3,17 @@
  * @package     Amazon Auto Links
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
-*/
+ * @hooks	
+ *  aal_filter_set_url
+ * 		first parameter:	feed url
+ * 		second parameter:	ad type slug
+ *  aal_filter_description_node
+ * 		first parameter:	the description node
+ * 		second parameter:	the AmazonAutoLinks_Core object
+ *  aal_action_output_rss
+ * 		first parameter: 	the AmazonAutoLinks_Core object
+* 		second paramter:	the unit option array 
+ */
 // make sure that SimplePie has been already loaded
 if ( defined( 'ABSPATH' ) && defined( 'WPINC' ) ) {
 	require_once ( ABSPATH . WPINC . '/class-simplepie.php' );
@@ -137,16 +147,13 @@ class AmazonAutoLinks_Core_ {
 			$this->arrUnitOptions['poststobedisabled']	// since v1.2.0 disable option
 			$this->arrUnitOptions['blacklist_categories']	// since v1.2.2 blacklist categories
 		*/
-	
-// echo '<pre>Unit Label: ' . print_r( $this->arrUnitOptions['unitlabel'], true ) . '</pre>';		
-// echo '<pre>' . print_r( $this->arrUnitOptions['disableonhome'], true ) . '</pre>';		
-// echo '<pre>is_home: ' . print_r( is_home(), true ) . '</pre>';		
-// echo '<pre>' . print_r( $this->arrUnitOptions['disableonfront'], true ) . '</pre>';		
-// echo '<pre>is_front_page: ' . print_r( is_front_page(), true ) . '</pre>';			
-	
+		
 		// Do not continue if the disable option for pages is set.
 		if ( $this->IsInDisabledPage() ) return;
-		
+	
+		// Disable DOM related errors to be displayed.
+		$bUseDOMInternalErrors = libxml_use_internal_errors( true );
+	
 		// first retrieve ASINs of blasklist categories.
 		$arrBlackASINs = $this->GetBlackASINs();
 		
@@ -175,13 +182,13 @@ class AmazonAutoLinks_Core_ {
 
 				/* Div Node */
 				$nodeDiv = $dom->getElementsByTagName('div')->item(0);		// the first depth div tag. If SimplePie is used outside of WordPress it should be the second depth which contains the description including images
-				if (!$nodeDiv) continue;		// sometimes this happens when unavailable feed is passed, such as Top Rated, which is not supported in some countries.
+				if ( !$nodeDiv ) continue;		// sometimes this happens when unavailable feed is passed, such as Top Rated, which is not supported in some countries.
 	
 				/* Image */
-				$strImgURL = $this->get_image($dom, $this->arrUnitOptions['imagesize']);
+				$strImgURL = $this->get_image( $dom, $this->arrUnitOptions['imagesize'] );
 	
 				/* Link (hyperlinked url) */  // + ref=nosim
-				$strPermalink = $this->modify_url($item->get_permalink());
+				$strPermalink = $this->modify_url( $item->get_permalink() );
 
 				/* ASIN - required for detecting duplicate items and for ref=nosim */
 				$strASIN = $this->arrASINs[$strPermalink];		// $strASIN = $this->get_ASIN($strPermalink);
@@ -204,30 +211,33 @@ class AmazonAutoLinks_Core_ {
 				// $textdescription -- although $htmldescription has the same routine, the following <a> tag modification needs text description for the title attribute
 				$textdescription = $this->get_textdescription( $nodeDiv );		// needs to be done before modifying links
 				if ( $this->stripos_array( $textdescription, $arrBlackDescriptionStrings ) ) continue; // if a black word is contained, skip.
-				
+
 				// Modify links in descriptions -- sets attributes and inserts ref=nosim if the option is set
-				$this->modify_links($nodeDiv, $strTitle . ': ' . $textdescription);
+				$this->modify_links( $nodeDiv, $strTitle . ': ' . $textdescription );
 
 				// $htmldescription  - this needs to be done again since it's modified
-				$htmldescription = $this->get_htmldescription($nodeDiv);
+				$htmldescription = $this->get_htmldescription( $nodeDiv );
 							
-				// format image -- if the image size is set to 0, $strImgURL is empty.
-				$strImgTag = $strImgURL ? $this->format_image(array($strPermalink, $strImgURL, $strTitle, $textdescription)) : "";
-
-				// item format
-				$output .= $this->format_item(array($strPermalink, $strTitle, $htmldescription, $textdescription, $strImgTag));
+				// Format image -- if the image size is set to 0, $strImgURL is empty.
+				$strImgTag = $strImgURL ? $this->format_image( array( $strPermalink, $strImgURL, $strTitle, $textdescription ) ) : "";
+				
+				// Item format
+				$output .= $this->format_item( array( $strPermalink, $strTitle, $htmldescription, $textdescription, $strImgTag ) );
 						
 				// Max Number of Items 
-				if (++$this->i >= $this->arrUnitOptions['numitems']) break;
+				if ( ++$this->i >= $this->arrUnitOptions['numitems'] ) break;
 						
 			} 	
-		} catch (Exception $e) { $this->i = 0; }
+		} catch ( Exception $e ) { $this->i = 0; }
 		
 		// schedule a background cache renewal event
 		if ( empty( $this->arrUnitOptions['IsPreview'] ) ) $this->schedule_cache_rebuild();
 		
-		// end the function by returning the result
-		return $this->format_output($output);
+		// Revert the error message setting for DOM
+		libxml_use_internal_errors( $bUseDOMInternalErrors );
+		
+		// End the function by returning the result
+		return $this->format_output( $output );
     }
 	function SetupFeedObjectForBlacklist( $vURLs, $bUseCache=True ) {
 		
@@ -364,18 +374,22 @@ class AmazonAutoLinks_Core_ {
 	function set_urls( $arrRssUrls ) {
 		$arrURLs = array();
 		foreach ( ( array ) $arrRssUrls as $i => $strRssUrl ) {	
-			foreach ($this->arrUnitOptions['adtypes'] as $adtype) {		// it is assumed that this class is instanciated per a unit
-				if ($adtype['check']) {
+			foreach ( $this->arrUnitOptions['adtypes'] as $adtype ) {		// it is assumed that this class is instanciated per a unit
+				if ( $adtype['check'] ) {
 					// http://www.amazon.co.jp/gp/rss/bestsellers/sports/ -> http://www.amazon.co.jp/gp/rss/bestsellers/sports/?tag=michaeluno-22
-					array_push($arrURLs, str_replace("/gp/rss/bestsellers/", "/gp/rss/" . $adtype['slug'] . "/", $strRssUrl . '?tag=' . $this->arrUnitOptions['associateid'] ));
+					$arrURLs[] = apply_filters( 
+						'aal_filter_set_url', 
+						str_replace( "/gp/rss/bestsellers/", "/gp/rss/" . $adtype['slug'] . "/", $strRssUrl ), 
+						$adtype['slug'] 
+					) . '?tag=' . $this->arrUnitOptions['associateid'];
 				}
 			}	
 		}
-		$numRssUrls = count($arrRssUrls);
-		if ($numRssUrls == 0) throw new Exception("");	// get out of there
+		$numRssUrls = count( $arrRssUrls );
+		if ( $numRssUrls == 0 ) throw new Exception( "" );	// get out of there
 						
 		// set the `itemlimit` option
-		$this->arrUnitOptions['itemlimit'] = ceil($this->arrUnitOptions['numitems'] / $numRssUrls);
+		$this->arrUnitOptions['itemlimit'] = ceil( $this->arrUnitOptions['numitems'] / $numRssUrls );
 		return $arrURLs;
 	}	
 	function blacklist( $strOptionFieldName='blacklist' ) {
@@ -383,7 +397,6 @@ class AmazonAutoLinks_Core_ {
 	}
 	function stripos_array( $haystack, $arrNeedles=array(), $offset=0 ) {
 		// since v1.1.6
-// print '<pre>' . print_r($arrNeedles, true) . '</pre>';
         foreach( $arrNeedles as $needle ) if ( stripos( $haystack, trim( $needle ), $offset ) !== false ) return true;
 		return false;        
 	}
@@ -399,7 +412,7 @@ class AmazonAutoLinks_Core_ {
 		$oFeed->set_keeprawtitle( $this->arrUnitOptions['keeprawtitle'] );
 		
 		// Set urls
-		$oFeed->set_feed_url($urls);
+		$oFeed->set_feed_url( $urls );
 		
 		// Set the number of items to display per feed
 		if ( isset( $this->arrUnitOptions['itemlimit'] ) ) 
@@ -416,6 +429,7 @@ class AmazonAutoLinks_Core_ {
 	}	
 	function load_dom_from_htmltext( $rawdescription, $lang='' ) {
 		// $dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
+		
 		$dom = new DOMDocument( '1.0', $this->strCharEncoding );
 // echo 'test: ' . $this->strCharEncoding . '<br />';		
 		$dom->preserveWhiteSpace = false;
@@ -431,19 +445,20 @@ class AmazonAutoLinks_Core_ {
 		@$dom->loadhtml( $description );
 		return $dom;
 	}	
-	function get_image($dom, $numImageSize) {
+	function get_image( $dom, $numImageSize ) {
 		$strImgURL =""; // this line is necessary since some item don't have images so the domnode cannot be retrieved.	
-		if ($numImageSize > 0) {			
-			$nodeImg = $dom->getElementsByTagName('img')->item(0);
-			if ($nodeImg) {
-				$strImgURL = $nodeImg->attributes->getNamedItem("src")->value;
-				$strImgURL = preg_replace('/_SL(\d+){3}_/i', '_SL'. $numImageSize . '_', $strImgURL);  // adjust the image size. _SL160_
+		if ( $numImageSize > 0 ) {			
+			$nodeImg = $dom->getElementsByTagName( 'img' )->item( 0 );
+			if ( $nodeImg ) {
+				$strImgURL = $nodeImg->attributes->getNamedItem( "src" )->value;
+				// $strImgURL = preg_replace( '/_S([LS])(\d+){3}_/i', '_S${1}'. $numImageSize . '_', $strImgURL );  // adjust the image size. _SL160_
+				$strImgURL = preg_replace( '/(?<=_S)([LS])(\d+){3}(?=_)/i', 'S${2}'. $numImageSize . '', $strImgURL );  // adjust the image size. _SL160_ or _SS160_
 			} 
 		}
 		// removes the div tag containing the image
 		foreach ( $dom->getElementsByTagName( 'div' ) as $nodeDivFloat ) {
-			if (stripos($nodeDivFloat->getAttribute('style'), 'float') !== false) {		// if the string 'float' is found 
-				$nodeDivFloat->parentNode->removeChild($nodeDivFloat);
+			if ( stripos( $nodeDivFloat->getAttribute( 'style' ), 'float' ) !== false ) {		// if the string 'float' is found 
+				$nodeDivFloat->parentNode->removeChild( $nodeDivFloat );
 				break;
 			}
 		}
@@ -618,35 +633,39 @@ class AmazonAutoLinks_Core_ {
 		if (mt_rand(1, 100) <= $numPercentage) return true;			
 		return false;
 	}		
-	function get_htmldescription($node) {
-	
-		// Add markings to text node which later convert to a whitespace because by itself elements don't have white spaces between each other.
+	function get_htmldescription( $node ) {
+		
+		// Apply filter - since v1.2.5.2
+		$node = apply_filters( 'aal_filter_description_node', $node, $this );
+		
+		// Add markings to the text node which later gets converted to a whitespace because by itself elements don't have white spaces between each other.
 		foreach( $node->childNodes as $_node ) {
-			if ($_node->nodeType == 3) {		// nodeType:3 TEXT_NODE
+			if ( $_node->nodeType == 3 ) {		// nodeType:3 TEXT_NODE
 				$_node->nodeValue = '[identical_replacement_string]' . $_node->nodeValue . '[identical_replacement_string]';
 			}
 		}
 		
 		// AAL_DOMInnerHTML extracts intter html code, meaning the outer div tag won't be with it
-		$strDescription = $this->DOMInnerHTML($node);
-		$strDescription = str_replace('[identical_replacement_string]', '<br>', $strDescription);
+		$strDescription = $this->DOMInnerHTML( $node );
+		$strDescription = str_replace( '[identical_replacement_string]', '<br>', $strDescription );
 		
 		// omit the text 'visit blah blah blah for more information'
-		if (preg_match('/<span.+class=["\']price["\'].+span>/i', $strDescription)) {
+		if ( preg_match( '/<span.+class=["\']price["\'].+span>/i', $strDescription ) ) {
 		
 			// $arrDescription = preg_split('/<span.+class=["\']price["\'].+span>\K/i', $strDescription);  // this works above PHP v5.2.4
-			$arrDescription = preg_split('/(<span.+class=["\']price["\'].+span>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);
+			$arrDescription = preg_split( '/(<span.+class=["\']price["\'].+span>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE );
 			
 		} else {
 		
 			// $arrDescription = preg_split('/<font.+color=["\']#990000["\'].+font>\K/i', $strDescription);	 // this works above PHP v5.2.4
-			$arrDescription = preg_split('/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE);	// " (syntax fixer )
+			$arrDescription = preg_split( '/(<font.+color=["\']#990000["\'].+font>)\${0}/i', $strDescription, null, PREG_SPLIT_DELIM_CAPTURE );	// " (syntax fixer )
 		}	
 		$strDescription1 = isset( $arrDescription[0] ) ? $arrDescription[0] : '';
 		$strDescription2 = isset( $arrDescription[1] ) ? $arrDescription[1] : '';
 		$strDescription = $strDescription1 . $strDescription2;
 		$arrDescription = preg_split('/<br.*?\/?>/i', $strDescription);		// devide the string into arrays by <br> or <br />	
-		return trim(implode(" ", $arrDescription));	// return them back to html text
+		return trim( implode( " ", $arrDescription ) );	// return them back to html text
+		
 	} 
 	
 	function format_image($arrReplacementsForImg) {
@@ -690,7 +709,7 @@ class AmazonAutoLinks_Core_ {
 	// since v1.1.8
 	function output_rss() {
 
-		do_action( 'aalhook_output_rss', $this, $this->arrUnitOptions );
+		do_action( 'aal_action_output_rss', $this, $this->arrUnitOptions );
 
 	}
 	function pick_category_link() {

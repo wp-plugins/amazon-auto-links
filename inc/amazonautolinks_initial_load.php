@@ -11,9 +11,9 @@ function AmazonAutoLinks_LoadPlugin() {
 	// Register Classes - this must be be done before using classes defined in this plugin
 	AmazonAutoLinks_RegisterClasses();
 
-	// instantiate the option class first so that the option object can be shared with other classes, which presumably consumes less memory.
+	// Instantiate the option class first so that the option object can be shared with other classes, which presumably consumes less memory.
 	// in other words, there is no need to instantiate the option class in each class.
-	global $oAALOptions;
+	global $oAALOptions;	// make it global to let other plugin access this object.
 	$oAALOptions = new AmazonAutoLinks_Options( AMAZONAUTOLINKSKEY );
 
 	// Admin Pages - this registers the method, RegisterHooks, of the AmazonAutoLinks_Admin class
@@ -36,7 +36,8 @@ function AmazonAutoLinks_LoadPlugin() {
 	new AmazonAutoLinks_Requirements( 
 		'5.1.2', 		// PHP version
 		'3.0', 			// WordPress version
-		array( 'mb_language' ) 	// function names
+		array( 'mb_language' ), // function names
+		array( 'DomDocument' )	// class names - Cent OS does not install DOM by default unlike other OSes.
 	);
 		
 }
@@ -79,19 +80,11 @@ function AmazonAutoLinks_WPUnscheduleEventsByRegex( $strEventNameNeedle ) {
 function AmazonAutoLinks_CleanOptions($key='') {
 	
 	// delete options
-	delete_option( AMAZONAUTOLINKSKEY );				// used for the main option data
-	delete_option('amazonautolinks_catcache_events');	// used for category cache events
-	delete_option('amazonautolinks_userads');			// used for the user ads
-	delete_option('amazonautolinks_logs');				// used for debug log
+	delete_option( AMAZONAUTOLINKSKEY );					// used for the main option data
+	delete_option( 'amazonautolinks_catcache_events' );		// used for category cache events
+	delete_option( 'amazonautolinks_userads' );				// used for the user ads
+	delete_option( 'amazonautolinks_logs' );				// used for debug log
 	
-	// initialize it
-	// $arr = array();
-	// if ($key != '') {
-		// $arr = get_option( AMAZONAUTOLINKSKEY );
-		// $arr[$key] = array();
-	// }
-	// update_option( AMAZONAUTOLINKSKEY, $arr );
-
 	// delete transients
 	global $wpdb, $table_prefix;
 	$wpdb->query( "DELETE FROM `" . $table_prefix . "options` WHERE `option_name` LIKE ('_transient%_aal_%')" );
@@ -134,8 +127,7 @@ function AmazonAutoLinks_RegisterClasses() {
 	// if it is called from the plugin activation hook, $arrAALDirPaths may not have been created.
 	if ( !is_array( $arrAALDirPaths ) || count( $arrAALDirPaths ) == 0 ) $arrAALDirPaths = array( AMAZONAUTOLINKSPLUGINDIR . '/classes/' );
 
-
-	$arrAALPHPfiles = array();	// holds all including class names
+	$arrAALPHPfiles = array();	// holds all the including class names.
 	foreach ( $arrAALDirPaths as $strAALDirPath ) {
 		foreach ( array_map( create_function( '$a', 'return basename( $a, ".php" );' ), glob( $strAALDirPath . '*.php' ) ) as $strFileName )
 			array_push( $arrAALPHPfiles, $strFileName );
@@ -147,8 +139,6 @@ function AmazonAutoLinks_RegisterClasses() {
 		);
 	}
 
-// echo '<pre>' . print_r( $arrAALPHPfiles, true ) . '</pre>';	
-	
 	// Define classes 
 	$strClassNamePrefix = 'AmazonAutoLinks_';	// define a prefix of file name to avoid executing harmful code in file names.
 	foreach ( $arrAALPHPfiles as $strFileName ) {

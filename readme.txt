@@ -73,6 +73,13 @@ Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)
 
 == Changelog ==
 
+= 1.2.5.2 - 03/08/2013 =
+* Added: a error message for servers without the DOMDocument extension which appears upon plugin activation.
+* Disabled: completely DOM related errors.
+* Tweaked: some code for faster loading in the admin settings pages.
+* Changed: the option object to be global for plugin extensions.
+* Added: filters for plugin extensions.
+
 = 1.2.5.1 - 02/23/2013 =
 * Fixed: the warning, Undefined variable: oAAL.
 

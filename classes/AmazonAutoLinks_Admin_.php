@@ -6,8 +6,13 @@
  * @since		1.0.0
  * @description	Renders the administration pages of the plugin.
  * @filters		
- * 		aalhook_admin_operation_edit_link
- * 		aalhook_admin_operation_rss_link
+ * 	aal_filter_admin_operation_edit_link
+ * 		first parameter:	the link url
+ * 		second parameter:	the unit option array
+ * 		third parameter: 	the AmazonAutoLinks_Admin object
+ * 	aal_filter_admin_operation_rss_link
+ * 		first parameter:    the url
+ * 		second parameter:   the unit label
 */
 class AmazonAutoLinks_Admin_ {
 		
@@ -226,7 +231,7 @@ class AmazonAutoLinks_Admin_ {
 						</td>
 						<td valign="top" style="border: 0px;">
 						<?php
-							$this->oUserAd->InitializeBannerFeed( '' );
+							$this->oUserAd->InitializeBannerFeed();
 							$this->oUserAd->ShowBannerAds( !isset( $_GET['tab'] ) || in_array( $_GET['tab'], array( 100, 400, '' ) ) ? 3 : 2 );				
 							flush();
 						?>
@@ -345,8 +350,15 @@ class AmazonAutoLinks_Admin_ {
 	}
 	/* ------------------------------------------ Tab 101 : Create Unit 2 --------------------------------------------- */
 	function admin_tab101() {
-		// $this->oAALforms_selectcategories->form_selectcategories_iframe(101, $this->oOption->arrOptions['newunit']);
+		
+		// Disable DOM related errors to be displayed.
+		$bUseDOMInternalErrors = libxml_use_internal_errors( true );
+		
+		// Render the page contents
 		$this->admin_tab_selectcategories( 101 );
+		
+		// Revert the DOM related error setting.
+		libxml_use_internal_errors( $bUseDOMInternalErrors );
 	}
 	function admin_tab_selectcategories( $numTab ) {
 
@@ -645,9 +657,9 @@ class AmazonAutoLinks_Admin_ {
 							echo '<td>';	
 							if (is_array($unit['feedtypes'])) {
 								echo '<ul>';
-								ForEach($unit['feedtypes'] as $type => $check) {
-									if ($check) 
-										echo '<li>' . $this->readable_feedtypes($type) . '</li>';
+								ForEach( $unit['feedtypes'] as $type => $check ) {
+									if ( $check ) 
+										echo '<li>' . $this->MakeReadableFeedTypes( $type ) . '</li>';
 								}
 								echo '</ul>';
 							}
@@ -693,17 +705,23 @@ class AmazonAutoLinks_Admin_ {
 						else if ($i==11) {
 							$strUnitLabel = $unit['unitlabel'];
 							$strCryptedUnitLabel = $this->oAALfuncs->urlencrypt( $strUnitLabel );
-							$strOperationLinks =  $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/edit16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'Edit', 'amazon-auto-links') . '" alt="' . __( 'Edit', 'amazon-auto-links' ) . '" style="" />'
-													, 202
-													, array( 'edit' => $strCryptedUnitLabel ) )
-												. $this->custom_a_tag( '<img class="icon" src="' . plugins_url( 'img/view16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'View', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __( 'View', 'amazon-auto-links' ) . '" style="" />' 
-													, 201
-													, array( 'view' => $strCryptedUnitLabel ) );
+							$strEditLink =  $this->custom_a_tag( 
+								'<img class="icon" src="' . plugins_url( 'img/edit16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'Edit', 'amazon-auto-links') . '" alt="' . __( 'Edit', 'amazon-auto-links' ) . '" style="" />'
+								, 202
+								, array( 'edit' => $strCryptedUnitLabel ) 
+							);
+							$strEditLink = apply_filters( 'aal_filter_admin_operation_edit_link',  $strEditLink, $unit, $this );
+							$strViewLink = $this->custom_a_tag(
+								'<img class="icon" src="' . plugins_url( 'img/view16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'View', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __( 'View', 'amazon-auto-links' ) . '" style="" />' 
+								, 201
+								, array( 'view' => $strCryptedUnitLabel ) 
+							);
 							$strRSSLink = '<img class="icon" src="' . plugins_url( 'img/rss_inactive16x16.gif' , AMAZONAUTOLINKSPLUGINFILE ) . '" title="' . __( 'Get the Feed API extension!', 'amazon-auto-links') . '" alt="&nbsp;|&nbsp;' . __( 'Feed', 'amazon-auto-links' ) . '" />';
 							echo '<td>'
-								. apply_filters( 'aalhook_admin_operation_edit_link',  $strOperationLinks, $strUnitLabel, $this )
+								. $strEditLink
+								. $strViewLink
 								. '<a href="http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-feed-api/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">'
-								. apply_filters( 'aalhook_admin_operation_rss_link',  $strRSSLink, $strUnitLabel )		// since v1.1.8
+								. apply_filters( 'aal_filter_admin_operation_rss_link', $strRSSLink, $strUnitLabel )		// since v1.1.8
 								. '</a>'
 								. '</td>';
 						}
@@ -714,29 +732,31 @@ class AmazonAutoLinks_Admin_ {
 		</table>
 		<?php
 	}
-	function readable_feedtypes($strFeedType) {
+	function MakeReadableFeedTypes($strFeedType) {
 
 		// converts an option element of feedtype to a readable string
 		// e.g. bestsellers -> Best Sellers
 		switch ($strFeedType) {
 			case "bestsellers":
-				return ucwords(__("Best Sellers", 'amazon-auto-links'));
-				break;
+				return ucwords( __( "Best Sellers", 'amazon-auto-links' ) );
 			case "hotnewreleases":
-				return ucwords(__("Hot New Releases", 'amazon-auto-links'));
-				break;
+				return ucwords( __( "Hot New Releases", 'amazon-auto-links' ) );
 			case "moverandshakers":
-				return ucwords(__("Mover & Shakers", 'amazon-auto-links'));
-				break;
+				return ucwords( __( "Mover & Shakers", 'amazon-auto-links' ) );
 			case "toprated":
-				return ucwords(__("Top Rated", 'amazon-auto-links'));
-				break;
+				return ucwords( __( "Top Rated", 'amazon-auto-links' ) );
 			case "mostwishedfor":
-				return ucwords(__("Most Wished For", 'amazon-auto-links'));
-				break;
+				return ucwords( __( "Most Wished For", 'amazon-auto-links' ) );
 			case "giftideas":
-				return ucwords(__("Gift Ideas", 'amazon-auto-links'));
-				break;				
+				return ucwords( __( "Gift Ideas", 'amazon-auto-links' ) );
+			// The followings are for the Units by Tag extension
+			case "new":
+				return ucwords( __( "New", 'amazon-auto-links' ) );
+			case "popular":
+				return ucwords( __( "Popular", 'amazon-auto-links' ) );
+			case "recent":
+				return ucwords( __( "Recent", 'amazon-auto-links' ) );
+					
 		}
 	}	
 	function readable_insertplace($key) {
@@ -1227,7 +1247,7 @@ class AmazonAutoLinks_Admin_ {
 
 		// user ad
 		echo '<div>';	// style fixer for v3.5 or above
-		$this->oUserAd->InitializeTopBannerFeed( '' );
+		$this->oUserAd->InitializeTopBannerFeed();
 		$this->oUserAd->ShowTopBannerAds();
 		echo '</div>'; // style fixer for v3.5 or above
 		flush();
@@ -1240,7 +1260,7 @@ class AmazonAutoLinks_Admin_ {
 		$this->tab_menu( $numCurrentTab = $this->GetTabNumber() );	
 		
 		// text
-		$this->oUserAd->InitializeTextFeed( '' );
+		$this->oUserAd->InitializeTextFeed();
 		$this->oUserAd->ShowTextAd();
 		flush();
 		
