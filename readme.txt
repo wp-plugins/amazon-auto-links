@@ -17,14 +17,14 @@ Still manually searching products and pasting affiliate links? What happens if t
 The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazon locales and works even on JavaScript disabled browsers. Insert the ads as widget or place generated shortcode or PHP code where the links should appear.
 
 = Features =
-* Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, and China.
+* Supports all Amazon locales including Germany, Japan, Italy, Spain, UK, US, Canada, France, Austria, India, and China.
 * Automatic insertion in posts and feeds. You just check the checkboxes where you want the product links to appear.
 * Widget. Just put it in the sidebar and select the unit you created. The product links will appear in where you wanted.
 * Image Size. The size of thumbnails can be specified. It supports up to 500 pixel large with a clean resolution.
 * Works without JavaScript. Some visitors turn off JavaScript for security and most ads including Google Adsense will not show up to them. But this one works.
 * Random/Title/Date sort order. It's totally possible to show links in random order. 
 * Shortcode to embed the ads into posts and pages. 
-* PHP function to insert in the theme.
+* PHP function to insert in the theme template.
 * Blacklist. If you want certain products not to be shown, the black list can be set by ASIN, substring of title and description.
 * URL cloaking. You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons.
 * Disable on certain pages. You can disable product links on the pages you do not want to by specifying the post IDs or if it is the front page, just check the checkbox.
@@ -34,7 +34,7 @@ The links are tagged with your Amazon Associate ID. The plugin supports 10 Amazo
 
 == Installation ==
 
-1. Upload **`amazonautolinks.php`** and other files compressed in the zip folder to the **`/wp-content/plugins/`** directory.
+1. Upload **`amazon-auto-links.php`** and other files compressed in the zip folder to the **`/wp-content/plugins/`** directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Go to **Settings** -> **Amazon Auto Links** -> **New Unit**.
 1. Configure the options and select categories.
@@ -56,13 +56,16 @@ Please try setting the **Prefetch Link Categgories** option to **Off**.
 
 = I get a blank white page after adding a unit to the theme. What is it? What should I do? =
 
-It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to embed the following code in your wp-config.php or functions.php
+It could be the allocated memory capacity for PHP reached the limit. One way to increase it is to add the following code in your wp-config.php or functions.php
 `define( 'WP_MEMORY_LIMIT', '128M' );`
 The part, 128M, should be changed accordingly.
 
 = I want to display product links horizontally in multiple columns. Is it possible? = 
 
 Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)! 
+
+= I have a feature request. Would you implement that? = 
+Post it in the [support section](http://wordpress.org/support/plugin/amazon-auto-links). If it is feasible, it will be included in the to-do list in the Other Notes section.
 
 == Screenshots ==
 
@@ -71,7 +74,20 @@ Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)
 3. **Embedding Links below Post**
 4. **Widget Sample**
 
+== To-do List ==
+* Use Admin Page Framework for the admin pages.
+* Add the ability to auto-insert in the comment area.
+* Add the ability to create units by tag.
+* Add the ability to create units by customer ID.
+* Add the ability to create units by search key word.
+* Add the ability to create units by ASIN.
+* Add the ability to create black units, whose products will be the global blacklist items.
+
 == Changelog ==
+
+= 1.2.6 - 03/23/2013 =
+* Added: the ability to use SSL images if the site runs on SSL.
+* Added: the Indian locale.
 
 = 1.2.5.2 - 03/08/2013 =
 * Added: an error message for servers which does not have the DOM XML extension which appears upon plugin activation.
@@ -86,7 +102,7 @@ Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)
 = 1.2.5 - 02/23/2013 =
 * Added: the version number to appear in the footer of the plugin setting pages.
 * Added: the ability to remove all used option values of the plugin upon plugin deactivation, which can be set in General Settings.
-* Fixed: the warning message, undefined index, save, which occurrd in the debug mode when posting a new post.
+* Fixed: the warning message, undefined index, save, which occurred in the debug mode when posting a new post.
 
 = 1.2.4 - 02/22/2013 =
 * Added: the "Access Right to Setting Page" option in the General Settings page that sets the access level for the admin page of the plugin.

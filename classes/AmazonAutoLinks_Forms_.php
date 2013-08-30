@@ -392,6 +392,7 @@ class AmazonAutoLinks_Forms_ {
 				<option value="UK" <?php echo $strValue == 'UK' ? 'Selected' : ''; ?>>UK - <?php _e('United Kingdom', 'amazon-auto-links'); ?></option>
 				<option value="ES" <?php echo $strValue == 'ES' ? 'Selected' : ''; ?>>ES - <?php _e('Spain', 'amazon-auto-links'); ?></option>
 				<option value="US" <?php echo $strValue == 'US' ? 'Selected' : ''; ?>>US - <?php _e('United States', 'amazon-auto-links'); ?></option>
+				<option value="IN" <?php echo $strValue == 'IN' ? 'Selected' : ''; ?>>IN - <?php _e('India', 'amazon-auto-links'); ?></option>
 				</select>		
 				&nbsp;<span class="description"><font color="#666">( <?php _e('Select the country for the associate ID.', 'amazon-auto-links'); ?> )</font></span>
 			</td>

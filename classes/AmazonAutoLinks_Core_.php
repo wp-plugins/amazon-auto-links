@@ -163,10 +163,10 @@ class AmazonAutoLinks_Core_ {
 			$urls = $this->set_urls( $arrRssUrls );
 			
 			/* Setup the SimplePie instance */
-			// set the life time longer bacause the background-cache-renew-crawling-functionality has been implemented as of v1.0.5.
-			$this->set_feed($urls, 999999999);	// set -1 for the expiration time for no expireation
+			// set the life time longer because the background-cache-renew-crawling-functionality has been implemented as of v1.0.5.
+			$this->set_feed($urls, 999999999);	// set -1 for the expiration time for no expiration
 
-			/* Prepare blacklis */
+			/* Prepare blacklist */
 			$arrBlackASINs = array_merge( $arrBlackASINs, $this->blacklist('blacklist') );	// for checking duplicated items
 			$arrBlackTitleStrings = $this->blacklist('blacklist_title');	// for checking duplicated items
 			$arrBlackDescriptionStrings = $this->blacklist('blacklist_description');	// for checking duplicated items
@@ -175,7 +175,7 @@ class AmazonAutoLinks_Core_ {
 			$output = '';
 			$this->i = 0;
 
-			foreach ($this->feed->get_items(0, 0) as $item) {
+			foreach ( $this->feed->get_items( 0, 0 ) as $item ) {
 	
 				/* DOM Object for description */
 				$dom = $this->load_dom_from_htmltext( $item->get_description() );
@@ -241,7 +241,7 @@ class AmazonAutoLinks_Core_ {
     }
 	function SetupFeedObjectForBlacklist( $vURLs, $bUseCache=True ) {
 		
-		// %vURLs can be numerical index array or a single url
+		// $vURLs can be numerical index array or a single url
 		$oFeed = new AmazonAutoLinks_SimplePie();		// this means class-simplepie.php must be included prior to instantiating this class
 		$oFeed->enable_cache( true );
 		$oFeed->set_cache_class( 'WP_Feed_Cache' );
@@ -283,7 +283,7 @@ class AmazonAutoLinks_Core_ {
 				
 		}
 		set_transient( 'aal_black_' . md5( $strFeedURL ), $arrASINs, 999999999 );
-		$this->oOption->oLog->Append( 'The black category\'s ASINs are saved in the transient: ' . 'aal_black_' . md5( $strFeedURL ) . ' ' . $strFeedURL, __METHOD__ );
+		$this->oOption->oLog->Append( 'The black category\'s ASINs are saved in the transient: ' . 'aal_black_' . md5( $strFeedURL ) . ' ' . $strFeedURL, __METHOD__ );	//'
 		return $arrASINs;
 	}
 	public function GetBlackASINs( $bUseTransients=True ) {		// must be public as the Feed API uses it
@@ -430,8 +430,7 @@ class AmazonAutoLinks_Core_ {
 	function load_dom_from_htmltext( $rawdescription, $lang='' ) {
 		// $dom = new DOMDocument();		// $dom = new DOMDocument('1.0', 'utf-8');
 		
-		$dom = new DOMDocument( '1.0', $this->strCharEncoding );
-// echo 'test: ' . $this->strCharEncoding . '<br />';		
+		$dom = new DOMDocument( '1.0', $this->strCharEncoding );	
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput = true;
 			// mb_language( $lang ); // <-- without this, the characters get broken
@@ -446,6 +445,21 @@ class AmazonAutoLinks_Core_ {
 		return $dom;
 	}	
 	function get_image( $dom, $numImageSize ) {
+
+		// If SSL is enabled,
+		if ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 ) {
+
+			// Converts the url scheme to https:// from http:// and uses the amazon's secure image server.
+			foreach ( $dom->getElementsByTagName( 'img' ) as $nodeImg ) {	
+
+				$nodeImg->attributes->getNamedItem( "src" )->value = preg_replace(
+					"/^http:\/\/.+?\//", 
+					"https://images-na.ssl-images-amazon.com/", 
+					$nodeImg->attributes->getNamedItem( "src" )->value
+				);
+			}
+		}	
+		
 		$strImgURL =""; // this line is necessary since some item don't have images so the domnode cannot be retrieved.	
 		if ( $numImageSize > 0 ) {			
 			$nodeImg = $dom->getElementsByTagName( 'img' )->item( 0 );
@@ -463,7 +477,9 @@ class AmazonAutoLinks_Core_ {
 			}
 		}
 		return $strImgURL;
-	}	
+		
+	}		
+	
 	function get_ASIN( $strURL )	{
 		
 		// retrieves and returns the ASIN, 10 characters which represents the product, from the given url/string
@@ -617,10 +633,14 @@ class AmazonAutoLinks_Core_ {
 	function insert_ref_nosim($strURL)  {
 		return preg_replace('/ref\=(.+?)(\?|$)/i', 'ref=nosim$2', $strURL);
 	}
-	function alter_tag_in_url_query($strURL) {
+	function alter_tag_in_url_query( $strURL ) {
+		
 		if (isset($this->arrGeneralOptions['supportrate']) && $this->does_occur_in($this->arrGeneralOptions['supportrate'])) {
-			$strToken = $this->oOption->get_token($this->arrUnitOptions['country']);
-			$strURL = preg_replace('/(?<=tag=)(.+?-\d{2,})?/i', $strToken, $strURL);	// the pattern is replaced from '/tag\=\K(.+?-\d{2,})?/i' since \K is avaiable above PHP 5.2.4
+						
+			$strToken = $this->oOption->get_token( $this->arrUnitOptions['country'] );
+			if ( ! empty( $strToken ) )  
+				$strURL = preg_replace('/(?<=tag=)(.+?-\d{2,})?/i', $strToken, $strURL);	// the pattern is replaced from '/tag\=\K(.+?-\d{2,})?/i' since \K is avaiable above PHP 5.2.4
+			
 		}
 		return $strURL;
 	}
@@ -668,9 +688,9 @@ class AmazonAutoLinks_Core_ {
 		
 	} 
 	
-	function format_image($arrReplacementsForImg) {
-		$arrRefVarsForImg = array("%link%", "%imgurl%", "%title%", "%textdescription%");
-		return str_replace($arrRefVarsForImg, $arrReplacementsForImg, $this->arrUnitOptions['imgformat']);
+	function format_image( $arrReplacementsForImg ) {
+		$arrRefVarsForImg = array( "%link%", "%imgurl%", "%title%", "%textdescription%" );
+		return str_replace( $arrRefVarsForImg, $arrReplacementsForImg, $this->arrUnitOptions['imgformat'] );
 	}	
 	function format_item($arrReplacements)	{
 		if (count(array("%link%", "%imgurl%", "%title%", "%url%", "%title%", "%htmldescription%", "%textdescription%", "%img%", "%items%")) < $this->i ) throw new Exception("");
@@ -678,7 +698,7 @@ class AmazonAutoLinks_Core_ {
 		return str_replace($arrRefVars, $arrReplacements, $this->arrUnitOptions['itemformat']);
 	}				
 	function format_output($output) {
-		$strCredit = empty($this->arrUnitOptions['credit']) ? '' : '<span> by <a href="http://en.michaeluno.jp/amazon-auto-links">Amazon Auto Links</a></span>';
+		$strCredit = empty($this->arrUnitOptions['credit']) ? '' : '<span> by <a href="http://en.michaeluno.jp/amazon-auto-links" rel="help">Amazon Auto Links</a></span>';
 		$strOut = str_replace("%items%", $output, $this->arrUnitOptions['containerformat'])
 			. $strCredit
 			. '<!-- generated by Amazon Auto Links powered by miunosoft. http://michaeluno.jp -->';
@@ -706,7 +726,7 @@ class AmazonAutoLinks_Core_ {
 	}		
 	
 	// for the Amazon Auto Links Feed API extention
-	// since v1.1.8
+	// since 1.1.8
 	function output_rss() {
 
 		do_action( 'aal_action_output_rss', $this, $this->arrUnitOptions );

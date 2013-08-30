@@ -1,10 +1,12 @@
 <?php
 /**
+ * Displays form elements for the category selection page.
+ * 
  * @package     Amazon Auto Links
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
- * @description	Displays form elements for the category selection page.
+ * 
 */
 class AmazonAutoLinks_Forms_SelectCategories_ {
 
@@ -25,6 +27,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		'UK'	=> 'en',
 		'ES'	=> 'uni',
 		'US'	=> 'en',	
+		'IN'	=> 'in',	
 	);		
 	protected $arrCountryURLs = array(
 		'AT'	=> 'http://www.amazon.de/gp/bestsellers/',
@@ -37,6 +40,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 		'UK'	=> 'http://www.amazon.co.uk/gp/bestsellers/',
 		'ES'	=> 'http://www.amazon.es/gp/bestsellers/',
 		'US'	=> 'http://www.amazon.com/gp/bestsellers/',
+		'IN'	=> 'http://www.amazon.in/gp/bestsellers/',
 	);	
 	function __construct($pluginkey, &$oOption) {
 	
@@ -327,7 +331,7 @@ class AmazonAutoLinks_Forms_SelectCategories_ {
 	function load_dom_from_url( $strURL ) {
 	
 		// create a dom document object
-		mb_language( $this->detect_lang($strURL) ); // <-- without this, the characters get broken	
+		@mb_language( $this->detect_lang( $strURL ) ); // <-- without this, the characters get broken	
 		
 		$strHTML = $this->oAALCatCache->get_html( $strURL );
 		// $html = @mb_convert_encoding($html, 'HTML-ENTITIES', 'AUTO');		

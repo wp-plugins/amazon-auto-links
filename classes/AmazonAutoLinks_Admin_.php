@@ -455,7 +455,7 @@ class AmazonAutoLinks_Admin_ {
 		
 		// adds trailing slash; this is tricky, the uk and ca sites have an issue that they display a not-found page when the trailing slash is missing.
 		// e.g. http://www.amazon.ca/Bestsellers-generic/zgbs won't open but http://www.amazon.ca/Bestsellers-generic/zgbs/ does.
-		// Note that this problem has started occuring after using wp_remote_get(). So it has something to do with the function. 
+		// Note that this problem has started occurring after using wp_remote_get(). So it has something to do with the function. 
 		$strURL = preg_replace("/[^\/]$/i", "$0/", $strURL);		// added since v1.0.4
 
 		// create a dom document object			
@@ -1134,32 +1134,30 @@ class AmazonAutoLinks_Admin_ {
 	}
 	function admin_tab500($numTab=500) {
 	?>
-		<h3><?php _e('Translators' , 'amazon-auto-links'); ?></h3>
-		<p><?php _e('Bilinguals or anyone fluent in a different language can submit a translation file and the pro version will be rewarded if the language file has not been translated.' , 'amazon-auto-links'); ?></p>
-		<p><?php _e('To create a language file, with a plugin called, <a href="http://wordpress.org/extend/plugins/codestyling-localization/">Codestyling Localization</a>, no programming skill is required. You just edit the messages it displays. Then send the .mo file to <a href="mailto:miunosoft@michaeluno.jp">miunosoft@michaeluno.jp</a> via E-mail.' , 'amazon-auto-links'); ?></p>
-		<h3><?php _e('Web Masters and Bloggers' , 'amazon-auto-links'); ?></h3>
-		
-		<p><?php _e('A web site owner with <a href="http://en.wikipedia.org/wiki/PageRank">Google PageRank</a> 3 or higher can recieve the pro version by writing an article about this plugin. It should have a link to the <a href="http://michaeluno.jp/en/amazon-auto-links/">product page</a> and some opinion or information about the plugin. It should be constructive. It could be about how to use it or how useful it is or how it could be improved or anything helpful to people and the developer. If the article is published, send the notification with the page url to <a href="mailto:miunosoft@michaeluno.jp">miunosoft@michaeluno.jp</a>.' , 'amazon-auto-links'); ?></p>
+		<h3><?php _e( 'Exchange' , 'amazon-auto-links' ); ?></h3>
+		<p><?php _e( 'You can receive a discount or a copy of the Pro version of the plugin by contributing one of the followings. A contribution does not have to be for this plugin. It can be for any product of miunosoft. Please just ask.', 'amazon-auto-links'); ?></p>
+		<li><strong><?php _e( 'Translations', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'submit a localization file for an untranslated language. With a plugin called <a href="%1$s">Codestyling Localization</a> no programming skill is required to create a language file.', 'amazon-auto-links' ), 'http://wordpress.org/extend/plugins/codestyling-localization/stats/' ); ?></li>
+		<li><strong><?php _e( 'Review Articles', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'publish an article about the product. It is required that the site has Google Page Rank 3 or higher and the link to the product page.', 'amazon-auto-links' ), '' ); ?></li>
+		<li><strong><?php _e( 'Testimonials', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'write a testimonial for the product. Your photo or link to your SNS page will be asked.', 'amazon-auto-links' ), '' ); ?></li>
+		<li><strong><?php _e( 'Graphic Design', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'create logos, icons, or banners for the product.', 'amazon-auto-links' ), '' ); ?></li>
+		<li><strong><?php _e( 'Video Tutorials', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'create a brief instruction video tutorial with your narration.', 'amazon-auto-links' ), '' ); ?></li>
+		<li><strong><?php _e( 'Something else', 'amazon-auto-links' ); ?></strong> - <?php echo sprintf( __( 'please ask for other possibilities for the exchange.', 'amazon-auto-links' ), '' ); ?></li>
 
-		<h3><?php _e('Bug Report' , 'amazon-auto-links'); ?></h3>
-		<p><?php _e('If you find the plugin not working or having issues, please report it via the <a href="http://michaeluno.jp/en/bug-report">bug report form</a>.' , 'amazon-auto-links'); ?></p>
+		<h3><?php _e( 'Bug Report' , 'amazon-auto-links' ); ?></h3>
+		<p><?php echo sprintf( __( 'If you find the plugin not working or having issues, please report it via the <a href="%1$s">bug report form</a>.' , 'amazon-auto-links' ), 'http://michaeluno.jp/en/bug-report' ); ?></p>
 		
 		<?php $this->donation_info(); ?>
 		
-		<h3><?php _e('Order a custom plugin or theme' , 'amazon-auto-links'); ?></h3>
-		<p><?php _e('The developer of this plugin, Michael Uno, may be available to write a custom plugin for you. Please ask! <a href="mailto:michaeluno@michaeluno.jp">michaeluno@michaeluno.jp</a>.' , 'amazon-auto-links'); ?></p>
+		<h3><?php _e( 'Order a custom plugin or theme' , 'amazon-auto-links' ); ?></h3>
+		<p><?php echo sprintf( __( 'If you need a custom plugin, please ask for a quote <a href="%1$s">here</a>. We maybe able to create one for you!', 'amazon-auto-links' ), 'http://en.michaeluno.jp/contact/custom-order/' ); ?></p>
+		
+		<h3><?php _e( 'Contact' , 'amazon-auto-links' ); ?></h3>
+		<p>wpplugins@michaeluno.jp</p>
 
 	<?php
 	}
 	function admin_tab600( $numTab=600 ) {
-		// for Log page.
-		// since v1.2.2
-// not finished yet
-// $this->oOption->oLog->Append( 'this is a test!' );
-// $arrOldLogs = ( array ) get_option( 'amazonautolinks_logs' );
-// echo 'Direct Access To the Option DB: <pre>' . print_r( $arrOldLogs, true ) . '</pre>';
-// echo 'oLog: <pre>' . print_r( $this->oOption->oLog->arrLogs, true ) . '</pre>';
-// echo '<pre>' . print_r( $_POST, true ) . '</pre>';
+
 		if ( !$this->oAALforms->verifynonce_in_tab( $numTab ) ) return;
 
 		if ( isset( $_POST['amazonautolinks']['tab600']['clear_debuglog'] ) )

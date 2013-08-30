@@ -13,7 +13,7 @@ class AmazonAutoLinks_Contents_ {
 		$this->pluginkey = $strPluginkey;
 		$this->pluginname = 'Amazon Auto Links';
 		
-		// the option array
+		// the option object
 		$this->oOption = $oOption; 
 			
 		// register hooks
@@ -30,6 +30,10 @@ class AmazonAutoLinks_Contents_ {
 		add_filter( 'the_content_feed', array( $this, 'insertincontentfeed' ) );
 		add_filter( 'the_excerpt_rss', array( $this, 'insertinexcerptrss' ) );				
 		add_filter( 'wp_insert_post_data' , array( $this, 'InsertInPostOnPublish' ) , '99', 2 );
+	
+		// Apply shortcodes in the feed descriptions and the contents.
+		add_filter( 'the_content_feed', 'do_shortcode', 11 );
+		add_filter( 'the_excerpt_rss', 'do_shortcode', 11 );	
 	}
 	
 	function shortcode($atts) {

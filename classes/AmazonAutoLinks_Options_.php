@@ -94,7 +94,8 @@ class AmazonAutoLinks_Options_ {
 		'JP'	=> 'http://www.amazon.co.jp/gp/bestsellers/',
 		'UK'	=> 'http://www.amazon.co.uk/gp/bestsellers/',
 		'ES'	=> 'http://www.amazon.es/gp/bestsellers/',
-		'US'	=> 'http://www.amazon.com/gp/bestsellers/',
+		'US'	=> 'http://www.amazon.com/gp/bestsellers/',	
+		'IN'	=> 'http://www.amazon.in/gp/bestsellers/',	
 	);
 	public $arrCountryLang = array(
 		'AT'	=> 'uni',
@@ -107,6 +108,7 @@ class AmazonAutoLinks_Options_ {
 		'UK'	=> 'en',
 		'ES'	=> 'uni',
 		'US'	=> 'en',	
+		'IN'	=> 'en',	
 	);	
 	protected $arrTokens = array(
 		'AT' => '[+GV7Kld1CT12Pkq5SCF+EjKpxRM499p5hmcN3URWLPM=]',
@@ -118,7 +120,8 @@ class AmazonAutoLinks_Options_ {
 		'JP' => '[sQfjvJ1G66k0xnlG8frmcTnkgIEBzL3sjWbiRQ6QPAw=]',
 		'UK' => '[zcnWGGKqeX71eM74JBAyyo+z0QtaKFhuFGit5Kt9bqA=]',
 		'ES' => '[NiN6GUQ/AvRkTbtgl4zD6FiSNRpeygeJHgRpJPIBiGo=]',
-		'US' => '[fRmuq3rruO3Tw8y29lU1m6mxwAZ1XxxyDOD1L2UvIU4=]'
+		'US' => '[fRmuq3rruO3Tw8y29lU1m6mxwAZ1XxxyDOD1L2UvIU4=]',
+		'IN' => ''	// only Indian residents can obtain associate ID.
 	);
 	
 	// public $bIsMultiColumnStyleAdded = false;	// since v1.2.5
@@ -146,7 +149,7 @@ class AmazonAutoLinks_Options_ {
 		
 		$this->load_settings();
 		
-		// Log class - the log class is instanciated only by the option class. The other classes should use the methods through the option object.
+		// Log class - the log class is instantiated only by the option class. The other classes should use the methods through the option object.
 		// this is because this option class is the only one that talks to all the classes.
 		$this->oLog = new AmazonAutoLinks_DebugLog( $this->arrLogs, $this->arrOptions['general']['enablelog'] );	// since v1.2.2
 		add_action( 'shutdown', array( $this, 'UpdateLog' ) );
@@ -172,9 +175,9 @@ class AmazonAutoLinks_Options_ {
 	function GetDebugLogs() {	// since v1.2.2
 		return ( array ) get_option( $this->strLogOptionKey );
 	}
-	function get_token($country) {
-		if (isset($this->arrTokens[$country]))
-			return $this->oAALfuncs->decrypt($this->arrTokens[$country]);
+	function get_token( $strCountry ) {
+		if ( isset( $this->arrTokens[ $strCountry ] ) && ! empty( $this->arrTokens[ $strCountry ] ) )
+			return $this->oAALfuncs->decrypt( $this->arrTokens[ $strCountry ] );
 	}
 	function load_settings() {
 	
