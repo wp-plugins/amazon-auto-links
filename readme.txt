@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, associate, associates, amazon wordpress plugin, miunosoft, link, links, link cloaking, cloak, cloaking, hyperlink, hyperlinks, ad, ads, advertisement, product, products, widget, sidebar, admin, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, money, monetization, earn money, page, plugin, post, posts, feed, feeds, rss, revenue, shortcode, image, images, thumbnail, thumbnails
 Requires at least: 3.0
-Tested up to: 3.5
+Tested up to: 3.6
 Stable tag: 1.2.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -85,7 +85,7 @@ Post it in the [support section](http://wordpress.org/support/plugin/amazon-auto
 
 == Changelog ==
 
-= 1.2.6 - 03/23/2013 =
+= 1.2.6 - 09/01/2013 =
 * Added: the ability to use SSL images if the site runs on SSL.
 * Added: the Indian locale.
 
