@@ -1,0 +1,45 @@
+/*
+Template Name: Search
+Template URI: http://en.michaeluno.jp
+Author: Michael Uno
+Author URI: http://en.michaeluno.jp
+Description: Displays Amazon products for the category unit type.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: default
+Text Domain: amazon-auto-links
+*/
+.amazon-products-container {
+	width: 100%;
+}
+.amazon-products-container a {
+	text-decoration: none;	
+}
+.amazon-product-container {
+	width: 100%;
+	display:table; 
+	clear:both;
+	margin-bottom: 20px;
+}
+.amazon-product-title {
+}
+.amazon-product-thumbnail-container {
+	width: 100%;
+}
+.amazon-product-thumbnail {
+	margin: 20px auto;
+}
+.amazon-product-thumbnail img {
+	max-width: 100%;
+}
+.amazon-auto-links-credit {
+	font-size: smaller;
+}
+.amazon-product-author,
+.amazon-product-price,
+.amazon-product-lowest-new-price,
+.amazon-product-lowest-used-price {
+	font-size: 0.92em;
+	
+}
