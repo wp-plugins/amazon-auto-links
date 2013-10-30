@@ -10,36 +10,35 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: default
 Text Domain: amazon-auto-links
 */
-.amazon-products-container {
+.amazon-products-container-search {
 	width: 100%;
 }
-.amazon-products-container a {
+.amazon-products-container-search a {
 	text-decoration: none;	
 }
-.amazon-product-container {
+.amazon-products-container-search .amazon-product-container {
 	width: 100%;
 	display:table; 
 	clear:both;
 	margin-bottom: 20px;
 }
-.amazon-product-title {
+.amazon-products-container-search .amazon-product-title {
 }
-.amazon-product-thumbnail-container {
+.amazon-products-container-search .amazon-product-thumbnail-container {
 	width: 100%;
 }
-.amazon-product-thumbnail {
+.amazon-products-container-search .amazon-product-thumbnail {
 	margin: 20px auto;
 }
-.amazon-product-thumbnail img {
+.amazon-products-container-search .amazon-product-thumbnail img {
 	max-width: 100%;
 }
-.amazon-auto-links-credit {
+.amazon-products-container-search .amazon-auto-links-credit {
 	font-size: smaller;
 }
-.amazon-product-author,
-.amazon-product-price,
-.amazon-product-lowest-new-price,
-.amazon-product-lowest-used-price {
-	font-size: 0.92em;
-	
+.amazon-products-container-search .amazon-product-author,
+.amazon-products-container-search .amazon-product-price,
+.amazon-products-container-search .amazon-product-lowest-new-price,
+.amazon-products-container-search .amazon-product-lowest-used-price {
+	font-size: 0.92em;	
 }

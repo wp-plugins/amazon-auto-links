@@ -6,6 +6,7 @@
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		2.0.0
+ * @filter		aal_filter_max_column_number
  * 
  */
 abstract class AmazonAutoLinks_Option_ {
@@ -22,7 +23,10 @@ abstract class AmazonAutoLinks_Option_ {
 			'debug' => array(
 				'debug_mode' => 0,
 			),
-			'black_white_list' => array(
+			'form_options' => array(
+				'allowed_html_tags' => 'style, noscript',
+			),
+			'product_filters' => array(
 				'black_list' => array(
 					'asin' => '',
 					'title' => '',
@@ -48,7 +52,7 @@ abstract class AmazonAutoLinks_Option_ {
 			'authentication_keys' => array(
 				'access_key' => '',
 				'access_key_secret' => '',
-			),
+			),			
 			// Hidden options
 			'template' => array(
 				'max_column' => 1,
@@ -83,7 +87,7 @@ abstract class AmazonAutoLinks_Option_ {
 		
 		// Black ASINs 
 		$GLOBALS['arrBlackASINs'] = AmazonAutoLinks_Utilities::convertStringToArray( 
-			$this->arrOptions['aal_settings']['black_white_list']['black_list']['asin'],
+			$this->arrOptions['aal_settings']['product_filters']['black_list']['asin'],
 			',' 
 		);
 		
@@ -242,10 +246,10 @@ abstract class AmazonAutoLinks_Option_ {
 	public function isUnitLimitReached( $intNumberOfUnits=null ) {
 		
 		if ( ! isset( $intNumberOfUnits ) ) {
-			$oNumberOfUnits = wp_count_posts( AmazonAutoLinks_Commons::PostTypeSlug );
+			$oNumberOfUnits = AmazonAutoLinks_WPUtilities::countPosts( AmazonAutoLinks_Commons::PostTypeSlug );
 			$intNumberOfUnits = $oNumberOfUnits->publish + $oNumberOfUnits->private + $oNumberOfUnits->trash;
 		} 
-		return ( $intNumberOfUnits > 3 )	
+		return ( $intNumberOfUnits >= 3 )	
 			? true
 			: false;
 		
@@ -253,7 +257,7 @@ abstract class AmazonAutoLinks_Option_ {
 	public function getRemainedAllowedUnits( $intNumberOfUnits=null ) {
 		
 		if ( ! isset( $intNumberOfUnits ) ) {
-			$oNumberOfUnits = wp_count_posts( AmazonAutoLinks_Commons::PostTypeSlug );
+			$oNumberOfUnits = AmazonAutoLinks_WPUtilities::countPosts( AmazonAutoLinks_Commons::PostTypeSlug );
 			$intNumberOfUnits = $oNumberOfUnits->publish + $oNumberOfUnits->private + $oNumberOfUnits->trash;
 		} 
 		
@@ -278,7 +282,7 @@ abstract class AmazonAutoLinks_Option_ {
 	
 	public function getMaxSupportedColumnNumber() {
 		
-		return $this->arrOptions['aal_settings']['template']['max_column'];
+		return apply_filters( 'aal_filter_max_column_number', $this->arrOptions['aal_settings']['template']['max_column'] );
 			
 	}
 }

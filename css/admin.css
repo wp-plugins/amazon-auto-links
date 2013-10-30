@@ -43,9 +43,16 @@ hr {
 	background: #DDD;
 	width: 96%;
 }
-input.read-only {
+input.read-only, 
+textarea.read-only {
 	background-color: #F6F6F6;
 }	
+
+.get-now {
+	margin-bottom: 10px;
+}
+
+/* Extension Listing Table */
 .amazon_auto_links_extension_container{
 	padding-right: 30px;
 	padding-left: 10px;
@@ -54,9 +61,6 @@ input.read-only {
 }
 .amazon_auto_links_extension { 
 	
-}
-.get-now {
-	margin-bottom: 10px;
 }
 .amazon_auto_links_extension_item {
 	margin-right: 10px;

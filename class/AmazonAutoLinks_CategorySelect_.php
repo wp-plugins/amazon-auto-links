@@ -271,7 +271,7 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 		// $oAALUnitPreview = new AmazonAutoLinks_Core( $this->arrOptions, $this->arrGeneralOptions );	
 	
 // $arrComponents['strRSSURL'] = 'http://www.amazon.com/gp/rss/bestsellers/arts-crafts/ref=zg_bs_arts-crafts_rsslink';
-AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
+// AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 		
 		?>
 		<form action="" method="post">		
@@ -446,7 +446,7 @@ AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 		// This has a caching functionality.
 		$strHTML = $this->oDOM->getHTML( $strPageURL );
 		if ( ! $strHTML ) {
-			AmazonAutoLinks_Debug::logArray( $strHTML );
+			// AmazonAutoLinks_Debug::logArray( $strHTML );
 			return array( 'error' => __( "Could not load the page: {$strPageURL}. Please consult the plugin developer.", 'amazon-auto-links' ) ) + self::$arrStructure_Sidebar;
 		}
 		$strHTML = $this->convertCharacters( $strHTML, $this->getMBLanguage( $strLocale ) );
@@ -464,7 +464,7 @@ AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 				$strRedirectURL = AmazonAutoLinks_Properties::$arrCategoryBlackCurtainURLs[ $strLocale ] . '?redirect=true&redirectUrl=' . urlencode( $strPageURL );
 				$strHTML = $this->oDOM->getHTML( $strRedirectURL, true );	// the second parameter force it to use file_get_contents().
 				if ( ! $strHTML ) {
-					AmazonAutoLinks_Debug::logArray( $strHTML );
+					// AmazonAutoLinks_Debug::logArray( $strHTML );
 					return array( 'error' => __( "Could not load the page: {$strRedirectURL}. Please consult the plugin developer.", 'amazon-auto-links' ) ) + self::$arrStructure_Sidebar;
 				}
 				$strHTML = $this->convertCharacters( $strHTML, $this->getMBLanguage( $strLocale ) );
@@ -473,7 +473,7 @@ AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 				if ( ! $oSimpleDOM->getElementById( 'zg_browseRoot' ) ) {
 					$strHTML = $oSimpleDOM->outertext;
 					// $strEncoded = htmlspecialchars( $strHTML, ENT_COMPAT, get_bloginfo( 'charset' ) );
-					AmazonAutoLinks_Debug::logArray( $strHTML, dirname( __FILE__ ) . '/unable_to_fetch_category_' . md5( $strPageURL ) . '.txt' );
+					// AmazonAutoLinks_Debug::logArray( $strHTML, dirname( __FILE__ ) . '/unable_to_fetch_category_' . md5( $strPageURL ) . '.txt' );
 					$this->oDOM->deleteCache( $strRedirectURL );
 					return array( 
 						'error' => sprintf( 
@@ -510,7 +510,7 @@ AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 		if ( ! $oDOM ) {
 			$strHTML = $oDOM->saveXML( $oDOM->getElementsByTagName('body')->item(0) );
 			// $strEncoded = htmlspecialchars( $strHTML, ENT_COMPAT, get_bloginfo( 'charset' ) );
-			AmazonAutoLinks_Debug::logArray( $strHTML );
+			// AmazonAutoLinks_Debug::logArray( $strHTML );
 			return array( 'error' => __( 'Could not load categories. Please consult the plugin developer.', 'amazon-auto-links' ) ) + $arrStructure_Sidebar;
 		}
 			
@@ -558,7 +558,7 @@ AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
 				if ( ! $nodeBrowseRoot->length ) {
 					$strHTML = $oDOM->saveXML( $oDOM->getElementsByTagName('body')->item(0) );
 					// $strEncoded = htmlspecialchars( $strHTML, ENT_COMPAT, get_bloginfo( 'charset' ) );
-					AmazonAutoLinks_Debug::logArray( $strHTML );
+					// AmazonAutoLinks_Debug::logArray( $strHTML );
 					return array( 
 						'error' => sprintf( 
 							__( 'Could not load the page: %1$s Please consult the plugin developer.', 'amazon-auto-links' ),

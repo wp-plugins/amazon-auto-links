@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, sidebar, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.0
-Tested up to: 3.6.1
+Tested up to: 3.7
 Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -32,6 +32,9 @@ If you are good at HTML and CSS coding and know a little about PHP, you can crea
 * **Blacklist and Whitelist** - If you want certain products not to be shown, the black list and white list can be set by ASIN, substring of title and description.
 * **URL cloaking** - You can obfuscate the link urls so it helps to prevent being blocked by browser Ad-bloking add-ons. 
 * **Detailed Visibility Criteria** - You can enable/disable product links on the pages you want or do not want by post ID, taxonomy, page type, and post type. 
+  
+= Supported Language =
+* Japanese  
   
 == Installation ==
 
@@ -71,6 +74,57 @@ Yes, with [Pro](http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro)
 
 = I have a feature request. Would you implement that? = 
 Post it in the [support section](http://wordpress.org/support/plugin/amazon-auto-links). If it is feasible, it will be included in the to-do list in the Other Notes section.
+
+== Other Notes ==
+
+= Shortcode and Function Parameters =
+The following parameters can be used for the shortcode, `[amazon_auto_links]` or the PHP function of the plugin, `AmazonAutoLinks()`
+
+* **id** - the unit ID.
+
+`[amazon_auto_links id="123"]`
+
+`<?php AmazonAutoLinks( array( 'id' => 123 ) ); ?>`
+
+* **label** - the label associated with the units.
+
+`[amazon_auto_links label="WordPress"]`
+
+`<?php AmazonAutoLinks( array( 'label' => 'WordPress' ) ); ?>`
+
+= How to Create Own Template =
+
+***Step 1***
+
+Copy an existing template that is located in `...wp-content/plugins/amazon-auto-links/template` and rename the copied folder.
+
+***Step 2***
+
+Remove the files besides `style.css` and `template.php` as other files are optional.
+
+***Step 3***
+ 
+Edit `style.css` and `template.php` to customize the layout.
+
+***Step 4***
+
+Create a folder named `amazon-auto-links` in your theme's folder. If you are using Twenty Thirteen, the location would be `...wp-content\themes\twentythirteen\amazon-auto-links`.
+
+***Step 5***
+
+Move the working folder(the copied one) to it (the `amazon-auto-links` folder you just created).
+
+***Step 6***
+
+The plugin will automatically detect your template and add it in the template listing table. So activate it.
+
+= Upgrading V1 to V2 = 
+When upgrading v1 to v2, a few options will be lost. That includes:
+
+- Sidebar widget 
+- The positions of the inserting area
+
+These options need to be reconfigured.
 
 == Screenshots ==
 

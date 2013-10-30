@@ -39,6 +39,10 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		'template_path' => '',	// the template can be specified by the template path. If this is set, the 'template' key won't take effect.
 		'cache_duration' => '',
 		
+		'image_format' => '',
+		'title_format' => '',
+		'item_format' => '',
+		
 		/* used outside the class */
 		'is_preview' => false,	// for the search unit, true won't be used but just for the code consistency. 
 		'operator' => 'AND', // this is for fetching by label. AND, IN, NOT IN can be used
@@ -54,7 +58,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 	
 	public function setArguments( $arrArgs ) {
 		
-		$this->arrArgs = $arrArgs + self::$arrStructure_Args;
+		$this->arrArgs = $arrArgs + self::$arrStructure_Args + self::getItemFormatArray();
 		
 	}
 	
@@ -145,6 +149,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				'title' => $strTitle,
 				'text_description' => $this->sanitizeDescription( $strContent, 250 ),
 				'description' => $strDescription,
+				'meta' => '',
 				'content'  => $strContent,
 				'image_size' => $this->arrArgs['image_size'],
 				'thumbnail_url' => $this->formatImage( $arrItem['MediumImage']['URL'], $this->arrArgs['image_size'] ),	
@@ -157,6 +162,35 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				'lowest_new_price' => isset( $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] ) ? $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] : '',
 				'lowest_used_price' => isset( $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] ) ? $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] : '',
 			) + $arrItem;
+			
+			// Add meta data to the description
+			$arrProduct['meta'] .= $arrProduct['author'] ? "<span class='amazon-product-author'>" . sprintf( __( 'by %1$s', 'amazon-auto-links' ) . "</span>", $arrProduct['author'] ) . ' ' : '';
+			$arrProduct['meta'] .= $arrProduct['price'] ? "<span class='amazon-product-price'>" . sprintf( __( 'at %1$s', 'amazon-auto-links' ), $arrProduct['price'] ) . "</span> " : '';
+			$arrProduct['meta'] .= $arrProduct['lowest_new_price'] ? "<span class='amazon-product-lowest-new-price'>" . sprintf( __( 'New from %1$s', 'amazon-auto-links' ) . "</span> ", $arrProduct['lowest_new_price'] ) . ' ' : '';
+			$arrProduct['meta'] .= $arrProduct['lowest_used_price'] ? "<span class='amazon-product-lowest-used-price'>" . sprintf( __( 'Used from %1$s', 'amazon-auto-links' ) . "</span> ", $arrProduct['lowest_used_price'] ) . ' ' : '';
+			$arrProduct['meta'] = empty( $arrProduct['meta'] ) ? '' : "<div class='amazon-product-meta'>{$arrProduct['meta']}</div>";
+			$arrProduct['description'] = $arrProduct['meta'] . $arrProduct['description'];
+						
+			// Format the item
+			// Thumbnail
+			$arrProduct['formed_thumbnail'] = str_replace( 
+				array( "%href%", "%title_text%", "%src%", "%max_width%", "%description_text%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['thumbnail_url'], $this->arrArgs['image_size'], $arrProduct['text_description'] ),
+				$this->arrArgs['image_format'] 
+			);
+			// Title
+			$arrProduct['formed_title'] = str_replace( 
+				array( "%href%", "%title_text%", "%description_text%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['text_description'] ),
+				$this->arrArgs['title_format'] 
+			);
+			// Item		
+			$arrProduct['formed_item'] = str_replace( 
+				array( "%href%", "%title_text%", "%description_text%", "%title%", "%image%", "%description%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['text_description'], $arrProduct['formed_title'], $arrProduct['formed_thumbnail'], $arrProduct['description'] ),
+				$this->arrArgs['item_format'] 
+			);
+			
 			$arrProducts[] = $arrProduct;		
 			
 			

@@ -39,45 +39,11 @@ $arrStructure_Product = array(
 <?php return; ?>
 <?php endif; ?>
 
-<div class="amazon-products-container">
+<div class="amazon-products-container-search">
 <?php foreach( $arrProducts as $arrProduct ) : ?>
 	<?php $arrProduct = $arrProduct + $arrStructure_Product; ?>
 	<div class="amazon-product-container">
-		<h4 class="amazon-product-title">
-			<a href="<?php echo $arrProduct['product_url']; ?>" title="<?php echo $arrProduct['text_description']; ?>" target="_blank" rel="nofollow">
-				<?php echo $arrProduct['title']; ?>
-			</a>
-		</h4>
-		<div class="amazon-product-thumbnail-container">
-			<div class="amazon-product-thumbnail" style="max-width:<?php echo $arrArgs['image_size']; ?>px;">
-				<a href="<?php echo $arrProduct['product_url']; ?>" title="<?php echo $arrProduct['text_description']; ?>" target="_blank" rel="nofollow">
-					<img src="<?php echo $arrProduct['thumbnail_url']; ?>" alt="<?php echo $arrProduct['text_description']; ?>" />
-				</a>
-			</div>
-		</div>
-		<?php if ( $arrProduct['author'] ) : ?>
-		<span class="amazon-product-author">
-			<?php echo sprintf( __( 'by %1$s', 'amazon-auto-links' ), $arrProduct['author'] ); ?>
-		</span>
-		<?php endif; ?>
-		<?php if ( $arrProduct['price'] ) : ?>
-		<span class="amazon-product-price">
-			<?php echo sprintf( __( 'at %1$s', 'amazon-auto-links' ), $arrProduct['price'] ); ?> 
-		</span>
-		<?php endif; ?>		
-		<?php if ( $arrProduct['lowest_new_price'] ) : ?>
-		<span class="amazon-product-lowest-new-price">
-			<?php echo sprintf( __( 'New from %1$s', 'amazon-auto-links' ), $arrProduct['lowest_new_price'] ); ?> 
-		</span>
-		<?php endif; ?>			
-		<?php if ( $arrProduct['lowest_used_price'] ) : ?>
-		<span class="amazon-product-lowest-used-price">
-			<?php echo sprintf( __( 'Used from %1$s', 'amazon-auto-links' ), $arrProduct['lowest_used_price'] ); ?> 
-		</span>
-		<?php endif; ?>					
-		<div class="amazon-product-description">
-			<?php echo $arrProduct['description']; ?>
-		</div>
+		<?php echo $arrProduct['formed_item']; ?>
 	</div>
 <?php endforeach; ?>	
 </div>

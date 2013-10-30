@@ -382,7 +382,8 @@ class AmazonAutoLinks_SimplePie_File extends WP_SimplePie_File {
 				$arrArgs['user-agent'] = $this->useragent;
 			
 			// Request
-			$res = wp_safe_remote_request( $strURL, $arrArgs );
+			$res = wp_remote_get( $strURL, $arrArgs );
+			// $res = wp_safe_remote_request( $strURL, $arrArgs ); // not compatible with WordPress 3.5.x or below
 
 			if ( is_wp_error( $res ) ) {
 				

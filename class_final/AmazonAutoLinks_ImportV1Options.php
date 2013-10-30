@@ -39,7 +39,7 @@ final class AmazonAutoLinks_ImportV1Options {
 			'capabilities' => array(
 				'setting_page_capability' => 'manage_options',
 			),		
-			'black_white_list' => array(
+			'product_filters' => array(
 				'black_list' => array(
 					'asin' => '',
 					'title' => '',
@@ -60,9 +60,9 @@ final class AmazonAutoLinks_ImportV1Options {
 	public function importGeneralSettings( $arrGeneral ) {
 		
 		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['support']['rate'] = $arrGeneral['supportrate'];
-		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['black_white_list']['black_list']['asin'] = $arrGeneral['blacklist'];
-		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['black_white_list']['black_list']['title'] = $arrGeneral['blacklist_title'];
-		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['black_white_list']['black_list']['description'] = $arrGeneral['blacklist_description'];
+		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['product_filters']['black_list']['asin'] = $arrGeneral['blacklist'];
+		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['product_filters']['black_list']['title'] = $arrGeneral['blacklist_title'];
+		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['product_filters']['black_list']['description'] = $arrGeneral['blacklist_description'];
 		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['query']['cloak'] = $arrGeneral['cloakquery'];
 		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ]['capabilities']['setting_page_capability'] = $arrGeneral['capability'];		
 		$this->oOption->arrOptions[ AmazonAutoLinks_Commons::PageSettingsSlug ][ AmazonAutoLinks_Commons::SectionID_License ][ AmazonAutoLinks_Commons::FieldID_LicenseKey ] = isset( $arrGeneral['license'] ) ? $arrGeneral['license'] : '';
@@ -269,10 +269,14 @@ final class AmazonAutoLinks_ImportV1Options {
 				AmazonAutoLinks_Commons::TagSlug 	// taxonomy slug, ( not id )
 			);	
 		
-		// Add an auto-insert definition ( custom post )
 // AmazonAutoLinks_Debug::logArray( $arrV1Unit['insert'] );					
+
+		// Add an auto-insert definition ( custom post type)
 		if ( array_filter( $arrV1Unit['insert'] ) ) // if at least one item is checked,
-			AmazonAutoLinks_Option::insertPost( $this->composeAutoInsertOptions( $intPostID, $arrV1Unit['insert'] ), AmazonAutoLinks_Commons::PostTypeSlugAutoInsert );
+			AmazonAutoLinks_Option::insertPost( 
+				$this->composeAutoInsertOptions( $intPostID, $arrV1Unit['insert'], $arrV1Unit['disableonhome'], trim( $arrV1Unit['poststobedisabled'] ) ), 
+				AmazonAutoLinks_Commons::PostTypeSlugAutoInsert 
+			);
 			
 		return true;
 		
@@ -283,7 +287,7 @@ final class AmazonAutoLinks_ImportV1Options {
 	 * 
 	 * @remark			The position option for non static hooks will be lost and be converted to 'below'.
 	 */
-	protected function composeAutoInsertOptions( $intPostID, $arrInsert ) {
+	protected function composeAutoInsertOptions( $intPostID, $arrInsert, $fDisableOnHome, $strDisablingPostIDs ) {
 		
 		/* 
 		 * v1
@@ -318,9 +322,9 @@ final class AmazonAutoLinks_ImportV1Options {
 			'enable_taxonomy' => true,
 			'enable_denied_area' => 0,
 			'diable_post_ids' => null,
-			'disable_page_types' => false,
-			'disable_post_types' => false,
-			'disable_taxonomy' => false,	
+			'disable_page_types' => array( 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),
+			'disable_post_types' => array(),
+			'disable_taxonomy' => array(),	
 		);		 
 	
 		- v2 the 'built_in_areas' array
@@ -361,13 +365,18 @@ final class AmazonAutoLinks_ImportV1Options {
 		if ( $arrInsert['feedexcerptbelow'] )
 			$arrStaticAreas['the_excerpt_rss'] = true;
 				
+		// Deny options
+		$fIsDenyOptionEnabled = ( $fDisableOnHome || $strDisablingPostIDs );
+				
 		$arrAutoInsertOptions = array( 
 			'unit_ids' => array( $intPostID ),
 			'built_in_areas' => $arrBiltInAreas,
 			'position' => 'below',
 			'static_areas' => $arrStaticAreas,
 			'static_position' => 'below',
-			
+			'enable_denied_area' => $fIsDenyOptionEnabled,
+			'diable_post_ids' => $strDisablingPostIDs,
+			'disable_page_types' => $fDisableOnHome ? array( 'is_home' => true ) : null,
 		) + AmazonAutoLinks_Form_AutoInsert::$arrStructure_AutoInsertOptions;
 		
 		return $arrAutoInsertOptions;

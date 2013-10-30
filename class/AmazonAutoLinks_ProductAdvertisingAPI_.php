@@ -148,7 +148,8 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		);
 		$arrHTTPArgs = array_filter( $arrHTTPArgs );	// drop non value elements.		
 		
-		$vResponse = wp_safe_remote_request( $strRequestURI, $arrHTTPArgs );
+		$vResponse = wp_remote_get( $strRequestURI, $arrHTTPArgs );
+		// $vResponse = wp_safe_remote_request( $strRequestURI, $arrHTTPArgs );	// not supported in WP version 3.5.x or below.
 
 		if ( is_wp_error( $vResponse ) ) 
 			return array( 'Error' => array(

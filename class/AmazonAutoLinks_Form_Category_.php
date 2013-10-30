@@ -104,21 +104,21 @@ abstract class AmazonAutoLinks_Form_Category_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The number of product links to display.', 'amazon-auto-links' ),
 				'vDefault' => 10,
 			),
-			array(
-				'strFieldID' => $strPrefix . 'column',
-				'strSectionID' => $strSectionID ? $strSectionID : null,
-				'strTitle' => __( 'Number of Columns', 'amazon-auto-links' ),
-				'strType' => 'number',
-				'vClassAttribute' => ( $intMaxCol = $GLOBALS['oAmazonAutoLinks_Option']->getMaxSupportedColumnNumber() ) > 1 ? '' : 'disabled',
-				'vDisable' => $intMaxCol > 1 ? false : true,
-				'vMax' => $intMaxCol,
-				// 'vMin' => 1, // <-- not sure this horizontally diminishes the input element
-				'vAfterInputTag' => "<div style='margin:auto; width:100%; clear: both;'><img src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/columns.gif' ) . "' title='" . __( 'The number of columns', 'amazon-auto-links' ) . "' style='width:220px; margin-top: 8px;' /></div>",
-				'strDescription' => __( 'This option requires a column supported template to be activated.' ) 
-					. ( $intMaxCol > 1 ? '' : ' ' . sprintf( __( 'Get one <a href="%1$s" target="_blank">here</a>!' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) ),
-				'vDefault' => 4,
-				'vDelimiter' => '',
-			),			
+			// array(
+				// 'strFieldID' => $strPrefix . 'column',
+				// 'strSectionID' => $strSectionID ? $strSectionID : null,
+				// 'strTitle' => __( 'Number of Columns', 'amazon-auto-links' ),
+				// 'strType' => 'number',
+				// 'vClassAttribute' => ( $intMaxCol = $GLOBALS['oAmazonAutoLinks_Option']->getMaxSupportedColumnNumber() ) > 1 ? '' : 'disabled',
+				// 'vDisable' => $intMaxCol > 1 ? false : true,
+				// 'vMax' => $intMaxCol,
+				// // 'vMin' => 1, // <-- not sure this horizontally diminishes the input element
+				// 'vAfterInputTag' => "<div style='margin:auto; width:100%; clear: both;'><img src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/columns.gif' ) . "' title='" . __( 'The number of columns', 'amazon-auto-links' ) . "' style='width:220px; margin-top: 8px;' /></div>",
+				// 'strDescription' => __( 'This option requires a column supported template to be activated.' ) 
+					// . ( $intMaxCol > 1 ? '' : ' ' . sprintf( __( 'Get one <a href="%1$s" target="_blank">here</a>!' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) ),
+				// 'vDefault' => 4,
+				// 'vDelimiter' => '',
+			// ),			
 			array(
 				'strFieldID' => $strPrefix . 'image_size',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
@@ -247,35 +247,57 @@ abstract class AmazonAutoLinks_Form_Category_ extends AmazonAutoLinks_Form {
 	
 	protected function getTemplateFields( $strSectionID, $strPrefix ) {
 		
-		return array(
-			array(
-				'strFieldID' => $strPrefix . 'template_id',
-				'strSectionID' => $strSectionID,
-				'strType' => 'select',			
-				'strDescription'	=> __( 'Sets a default template for this unit.', 'amazon-auto-links' ),
-				'vLabel'			=> $GLOBALS['oAmazonAutoLinks_Templates']->getTemplateArrayForSelectLabel(),
-				'strType'			=> 'select',
-				'vDefault'			=> $GLOBALS['oAmazonAutoLinks_Templates']->getPluginDefaultTemplateID( 'category' ),	// // defined in the 'unit_type' field
-			),				
-			array(  // single button
-				'strFieldID' => $strPrefix . 'submit_initial_options',
-				'strSectionID' => $strSectionID,
-				'strType' => 'submit',
-				'strBeforeField' => "<div style='display: inline-block;'>" . $this->oUserAds->getTextAd() . "</div>"
-					. "<div class='right-button'>",
-				'strAfterField' => "</div>",
-				'vLabelMinWidth' => 0,
-				'vLabel' => __( 'Proceed', 'amazon-auto-links' ),
-				'vClassAttribute' => 'button button-primary',
-				'strAfterField' => ''
-					. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_unit_type]" value="category">'
-					. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_transient_id]" value="' . ( $strTransientID = isset( $_GET['transient_id'] ) ? $_GET['transient_id'] : uniqid() ) . '">'
-					. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_mode]" value="1">'
-					. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_bounce_url]" value="' . add_query_arg( array( 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ) . '">',
-				'vRedirect'	=> add_query_arg( array( 'tab' => 'select_categories', 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ),
-			)			
-		
+		$oForm_Template = new AmazonAutoLinks_Form_Template( $this->strPageSlug );
+		$arrFields =  $oForm_Template->getTemplateFields( $strSectionID, $strPrefix, false, 'category' );
+		$arrFields[] = 	array(  // single button
+			'strFieldID' => $strPrefix . 'submit_initial_options',
+			'strSectionID' => $strSectionID,
+			'strType' => 'submit',
+			'strBeforeField' => "<div style='display: inline-block;'>" . $this->oUserAds->getTextAd() . "</div>"
+				. "<div class='right-button'>",
+			'strAfterField' => "</div>",
+			'vLabelMinWidth' => 0,
+			'vLabel' => __( 'Proceed', 'amazon-auto-links' ),
+			'vClassAttribute' => 'button button-primary',
+			'strAfterField' => ''
+				. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_unit_type]" value="category">'
+				. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_transient_id]" value="' . ( $strTransientID = isset( $_GET['transient_id'] ) ? $_GET['transient_id'] : uniqid() ) . '">'
+				. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_mode]" value="1">'
+				. '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_bounce_url]" value="' . add_query_arg( array( 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ) . '">',
+			'vRedirect'	=> add_query_arg( array( 'tab' => 'select_categories', 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ),
 		);
+		
+		return $arrFields;
+		
+		// return array(
+			// array(
+				// 'strFieldID' => $strPrefix . 'template_id',
+				// 'strSectionID' => $strSectionID,
+				// 'strType' => 'select',			
+				// 'strDescription'	=> __( 'Sets a default template for this unit.', 'amazon-auto-links' ),
+				// 'vLabel'			=> $GLOBALS['oAmazonAutoLinks_Templates']->getTemplateArrayForSelectLabel(),
+				// 'strType'			=> 'select',
+				// 'vDefault'			=> $GLOBALS['oAmazonAutoLinks_Templates']->getPluginDefaultTemplateID( 'category' ),	// // defined in the 'unit_type' field
+			// ),				
+			// array(  // single button
+				// 'strFieldID' => $strPrefix . 'submit_initial_options',
+				// 'strSectionID' => $strSectionID,
+				// 'strType' => 'submit',
+				// 'strBeforeField' => "<div style='display: inline-block;'>" . $this->oUserAds->getTextAd() . "</div>"
+					// . "<div class='right-button'>",
+				// 'strAfterField' => "</div>",
+				// 'vLabelMinWidth' => 0,
+				// 'vLabel' => __( 'Proceed', 'amazon-auto-links' ),
+				// 'vClassAttribute' => 'button button-primary',
+				// 'strAfterField' => ''
+					// . '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_unit_type]" value="category">'
+					// . '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_transient_id]" value="' . ( $strTransientID = isset( $_GET['transient_id'] ) ? $_GET['transient_id'] : uniqid() ) . '">'
+					// . '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_mode]" value="1">'
+					// . '<input type="hidden" name="amazon_auto_links_admin[aal_add_category_unit][category][category_bounce_url]" value="' . add_query_arg( array( 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ) . '">',
+				// 'vRedirect'	=> add_query_arg( array( 'tab' => 'select_categories', 'transient_id' => $strTransientID ) + $_GET, admin_url( $GLOBALS['pagenow'] ) ),
+			// )			
+		
+		// );
 		
 	}
 }

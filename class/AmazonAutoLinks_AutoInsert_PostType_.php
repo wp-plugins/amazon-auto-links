@@ -17,7 +17,7 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 				'labels' => array(
 					'name' => __( 'Auto Insert', 'amazon-auto-links' ),
 					'singular_name' => __( 'Auto Insert', 'amazon-auto-links' ),
-					'menu_name' => __( 'Auto Insert', 'amazon-auto-links' ),	// this changes the root menu name 
+					'menu_name' => __( 'Manage Auto Insert', 'amazon-auto-links' ),	// this changes the root menu name 
 					'add_new' => __( 'Add New Auto Insert', 'amazon-auto-links' ),
 					'add_new_item' => __( 'Add New Auto Insert', 'amazon-auto-links' ),
 					'edit' => __( 'Edit', 'amazon-auto-links' ),
@@ -163,7 +163,10 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 			
 			if ( empty( $intUnitID ) ) continue;		// casted array with an empty value causes an index key of zero.
 			
-			$arrTitles[] = get_the_title( $intUnitID );
+			$strTitle = get_the_title( $intUnitID );
+			if ( empty( $strTitle ) ) continue;
+			
+			$arrTitles[] = "<strong>" . $strTitle . "</strong>";
 			if ( count( $arrTitles ) >= 3 ) {
 				$arrTitles[] = __( 'etc.', 'amazon-auto-links' );
 				break;
@@ -171,6 +174,8 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 			
 		}
 		$arrTitles = array_filter( $arrTitles );	// drop empty values.
+		if ( empty( $arrTitles ) )
+			$arrTitles[] = __( '(No unit is selected)', 'amazon-auto-links' );	// this happens if an associated unit is deleted.		
 
 		$strSettingPageURL = add_query_arg( 
 			array( 
@@ -186,7 +191,7 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 					. "<a href='{$strSettingPageURL}' title='" . __( 'Edit this item', 'amazon-auto-links' ) . "'>" . __( 'Edit', 'amazon-auto-links' ) . "</a>"
 				. "</span>"
 			. "</div>";
-		return "<strong>" . implode( ', ', $arrTitles ) . "</strong>"
+		return implode( ', ', $arrTitles ) 
 			. $strActions;
 		
 	}
@@ -219,15 +224,16 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 		$arrSelectedAreas = ( ( array ) get_post_meta( $intPostID, 'built_in_areas', true ) )
 			+ ( ( array ) get_post_meta( $intPostID, 'static_areas', true ) );
 		$arrSelectedAreas = array_filter( $arrSelectedAreas );
-		
+
 		$arrAreasLabel = AmazonAutoLinks_Form_AutoInsert::getPredefinedFilters() + AmazonAutoLinks_Form_AutoInsert::getPredefinedFiltersForStatic( false );
 		foreach( $arrSelectedAreas as $strArea => $fEnable )
 			if ( isset( $arrAreasLabel[ $strArea ] ) )
 				$arrList[] = $arrAreasLabel[ $strArea ];
-			
+		
 		$arrFilters = AmazonAutoLinks_Utilities::convertStringToArray( get_post_meta( $intPostID, 'filter_hooks', true ), ',' );
 		$arrActions = AmazonAutoLinks_Utilities::convertStringToArray( get_post_meta( $intPostID, 'action_hooks', true ), ',' );
 		$arrList = array_merge( $arrFilters, $arrActions, $arrList );
+		
 		return '<p>' . implode( ', ', $arrList ) . '</p>';
 		
 	}

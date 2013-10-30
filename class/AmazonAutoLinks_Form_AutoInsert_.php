@@ -66,14 +66,14 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 		'action_hooks' => null,
 		'enable_allowed_area' => 0,
 		'enable_post_ids' => null,
-		'enable_page_types' => true,
+		'enable_page_types' => array( 'is_single' => true, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),
 		'enable_post_types' => true,
 		'enable_taxonomy' => true,
 		'enable_denied_area' => 0,
 		'diable_post_ids' => null,
-		'disable_page_types' => false,
-		'disable_post_types' => false,
-		'disable_taxonomy' => false,	
+		'disable_page_types' => array( 'is_single' => false, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),
+		'disable_post_types' => array(),
+		'disable_taxonomy' => array(),	
 	);
 	
 	/**
@@ -305,7 +305,8 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Post IDs', 'amazon-auto-links' ),
 				'strType' => 'text',
 				'vSize' => 80,
-				'strDescription' => __( 'Enter post IDs separated by commas.', 'amazon-auto-links' ),
+				'strDescription' => __( 'Enter post IDs separated by commas.', 'amazon-auto-links' ) 
+					. ' ' . __( 'Leave this empty to disable this option.', 'amazon-auto-links' ),
 				'vValue' => $this->arrAutoInsertOptions['enable_post_ids'],
 			),			
 			array(
@@ -314,12 +315,14 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Page Types', 'amazon-auto-links' ),
 				'strType' => 'checkbox',
 				'vLabel' => array(
+					'is_single'		=> __( 'Single Post', 'amazon-auto-links' ),
 					'is_home'		=> __( 'Home / Front', 'amazon-auto-links' ),
 					'is_archive'	=> __( 'Archive', 'amazon-auto-links' ),
 					'is_404'		=> __( '404', 'amazon-auto-links' ),
 					'is_search'		=> __( 'Search', 'amazon-auto-links' ),
 				),
-				'strDescription' => __( 'This option does not take effect for static insertion.', 'amazon-auto-links' ),
+				'strDescription' => __( 'This option does not take effect for static insertion.', 'amazon-auto-links' )
+					. ' ' .  __( 'If no item is checked, this option will not take effect.', 'amazon-auto-links' ), 
 				'vValue' => $this->arrAutoInsertOptions['enable_page_types'],
 			),		
 			array(
@@ -329,6 +332,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strType' => 'posttype',
 				'vDefault' => true,
 				'arrRemove' => array( 'revision', 'attachment', 'nav_menu_item', 'amazon_auto_links', 'aal_auto_insert' ),
+				'strDescription' => __( 'If no item is checked, this option will not take effect.', 'amazon-auto-links' ),
 				'vValue' => $this->arrAutoInsertOptions['enable_post_types'],
 			),
 			array(
@@ -337,7 +341,9 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Taxonomies', 'amazon-auto-links' ),
 				'strType' => 'taxonomy',
 				'vTaxonomySlug' => $this->getSiteTaxonomies(),
-				'strDescription' => __( 'For static insertion, only Category for the default Post post type can take effect.', 'amazon-auto-links' ),
+				'strDescription' => __( 'For static insertion, only Category for the default Post post type can take effect.', 'amazon-auto-links' )
+					. ' ' . __( 'The checked terms which do not belong to the post type of the currently loading page will not take effect.', 'amazon-auto-links' )
+					. ' ' . __( 'Leave all unchecked not to enable this option.', 'amazon-auto-links' ),
 				'vValue' => $this->arrAutoInsertOptions['enable_taxonomy'],
 			),
 		);
@@ -381,6 +387,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Page Types', 'amazon-auto-links' ),
 				'strType' => 'checkbox',
 				'vLabel' => array(
+					'is_single'		=> __( 'Single Post', 'amazon-auto-links' ),
 					'is_home'		=> __( 'Home / Front', 'amazon-auto-links' ),
 					'is_archive'	=> __( 'Archive', 'amazon-auto-links' ),
 					'is_404'		=> __( '404', 'amazon-auto-links' ),

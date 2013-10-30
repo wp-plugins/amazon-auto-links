@@ -18,7 +18,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 				'labels' => array(
 					'name' => AmazonAutoLinks_Commons::$strPluginName,
 					'singular_name' => __( 'Amazon Auto Links Unit', 'amazon-auto-links' ),
-					'menu_name' => AmazonAutoLinks_Commons::$strPluginName,	// this changes the root menu name 
+					'menu_name' => AmazonAutoLinks_Commons::$strPluginName,	// this changes the root menu name so cannot simply put Manage Unit here
 					'add_new' => __( 'Add New Unit by Category', 'amazon-auto-links' ),
 					'add_new_item' => __( 'Add New Unit', 'amazon-auto-links' ),
 					'edit' => __( 'Edit', 'amazon-auto-links' ),
@@ -68,17 +68,31 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 			: isset( $_GET['post_type'] ) ? $_GET['post_type'] : '';
 		
 		// For admin
-		if ( $strCurrentPostTypeInAdmin == $this->oProps->strPostType && is_admin() ) {
+		if ( 
+			is_admin() 
+			&& (
+				( $strCurrentPostTypeInAdmin == $this->oProps->strPostType  )
+				|| ( $GLOBALS['pagenow'] == 'post.php' && isset( $_GET['post'], $_GET['action'] ) && $_GET['action'] == 'edit' && get_post_type( $_GET['post'] ) == $this->oProps->strPostType )
+			)
+		) {
 			
 			add_filter( 'enter_title_here', array( $this, 'changeTitleMetaBoxFieldLabel' ) );	// add_filter( 'gettext', array( $this, 'changeTitleMetaBoxFieldLabel' ) );
 			add_action( 'edit_form_after_title', array( $this, 'addTextAfterTitle' ) );	
 				
+			// style	
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueueCustomStyle' ) );
 		}
+		
 		
 		add_filter( 'the_content', array( $this, 'previewProductLinks' ) );	
 
 		$this->oLink->strSettingPageLinkTitle = __( 'Units', 'amazon-auto-links' );
 	}
+	
+	public function enqueueCustomStyle() {
+		wp_enqueue_style( 'amazon-auto-links-post-type-admin-style', AmazonAutoLinks_Commons::getPluginURL( 'css/admin.css' ) );
+	}
+	
 	
 	public function changeTitleMetaBoxFieldLabel( $strText ) {
 		return __( 'Set the unit name here.', 'amazon-auto-links' );		

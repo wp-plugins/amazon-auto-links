@@ -252,4 +252,6 @@ final class AmazonAutoLinks_Utilities {
 		}
 		return implode('/', $relPath);
 	}	
+		
+	
 }

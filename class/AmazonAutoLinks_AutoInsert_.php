@@ -17,6 +17,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	protected $arrFilterHooks = array();	// stores all the filter hooks.
 	
 	protected $arrDisplayedPageTypes = array(		// stores the current page type information.
+		'is_single' => null,
 		'is_home' => null,
 		'is_archive' => null,
 		'is_404' => null,
@@ -35,6 +36,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	protected static $arrStructure_SubjectPageInfo = array(
 		'post_id' => null,
 		'post_type' => null, 
+		'is_single' => null,
 		'is_home' => null,
 		'is_archive' => null,
 		'is_404' => null,
@@ -218,33 +220,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		return $arrPostContent;
 		
 	}
-	
-	function InsertInPostOnPublish( $arrPostContent, $arrPostMeta='' ) {
-		
-		// since v1.1.9
-		
-		// apply only for posts and pages
-		if ( $arrPostMeta['post_type'] != 'post' && $arrPostMeta['post_type'] != 'page' ) return $arrPostContent;
-				
-		// if the publish key exists, it means it is an update
-		if ( isset( $arrPostMeta['save'] ) && $arrPostMeta['save'] == 'Update' ) return $arrPostContent;
-	
-		static $oAALs = array();
-		foreach( $this->oOption->arrOptions['units'] as $strUnitID => $arrUnitOptions ) {
-			if ( $arrUnitOptions['insert']['postabove_static'] ) {	
-				if ( !array_key_exists( $strUnitID, $oAALs ) ) $oAALs[$strUnitID] = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oOption );
-				$arrPostContent['post_content'] = $oAALs[$strUnitID]->fetch() . $arrPostContent['post_content'];
-			}
-			if ( $arrUnitOptions['insert']['postbelow_static'] ) {
-				if ( !array_key_exists( $strUnitID, $oAALs ) ) $oAALs[$strUnitID] = new AmazonAutoLinks_Core( $arrUnitOptions, $this->oOption );
-				$arrPostContent['post_content'] .= $oAALs[$strUnitID]->fetch();			
-			}
-		}
-		unset($oAALs);
-		return $arrPostContent;
-		
-	}	
-				
+					
 	protected function isAutoInsertEnabledPage( $intAutoInsertID, $arrSubjectPostInfo ) {
 		
 		$arrSubjectPostInfo = $arrSubjectPostInfo + self::$arrStructure_SubjectPageInfo;
@@ -258,7 +234,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		// Check the Disable (Deny) criteria.
 		if ( $arrAutoInsertOptions['enable_denied_area'] && $this->isDenied( $arrAutoInsertOptions, $arrSubjectPostInfo ) )
 			return false;
-			
+	
 		// Check if the Enable (Allow) criteria.
 		if ( $arrAutoInsertOptions['enable_allowed_area'] && ! $this->isAllowed( $arrAutoInsertOptions, $arrSubjectPostInfo ) )
 			return false;
@@ -275,6 +251,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		/* 
 		 * Page Types - structure example
 			[disable_page_types] => Array (
+				[is_single] => 0
 				[is_home] => 1
 				[is_archive] => 0
 				[is_404] => 1
@@ -339,28 +316,36 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	}
 	
 	protected function isAllowed( $arrAutoInsertOptions, $arrSubjectPostInfo ) {
-
+		
 		/* Post IDs - the option field is converted to array at earlier point in this class */
-		if ( in_array( $arrSubjectPostInfo['post_id'], $arrAutoInsertOptions['enable_post_ids'] ) )
-			return true;
-
+		$arrAutoInsertOptions['enable_post_ids'] = array_filter( $arrAutoInsertOptions['enable_post_ids'] );
+		if ( ! empty( $arrAutoInsertOptions['enable_post_ids'] ) ) {	// at least on id is set
+			if ( ! in_array( $arrSubjectPostInfo['post_id'], $arrAutoInsertOptions['enable_post_ids'] ) )
+				return false;			
+		}
+		
 		/* 
 		 * Page Types - structure example
 		 *     [enable_page_types] => Array (
+					[is_single] => 1
 					[is_home] => 1
 					[is_archive] => 0
 					[is_404] => 1
 					[is_search] => 0
 				)
 		 */
-		foreach( $arrAutoInsertOptions['enable_page_types'] as $strKey => $fEnable ) {
-			
-			if ( ! $fEnable ) continue;
-			
-			if (  $arrSubjectPostInfo[ $strKey ] )	// if the current page type is checked,
-				return true;	// it means it is denied.
-			
-		}		
+		$arrAutoInsertOptions['enable_page_types'] = array_filter( $arrAutoInsertOptions['enable_page_types'] );
+		if ( ! empty( $arrAutoInsertOptions['enable_page_types'] ) ) {			// means at least one item is selected	
+			$fIsEnabled = false;
+			foreach( $arrAutoInsertOptions['enable_page_types'] as $strKey => $fEnable ) {
+				
+				if ( $fEnable )	// if the current page type is checked,
+					$fIsEnabled = true;	// it means it is denied.
+				
+			}	
+			if ( ! $fIsEnabled )
+				return false;
+		}
 
 		/*	
 		 * 	Post Types	- this should be performed after evaluation the taxonomies.
@@ -371,11 +356,16 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 				[apf_posts] => 0
 			)
 		 */		
-		if ( 
-			isset( $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] ) 
-			&& $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] 
-		)
-			return true;
+		$arrAutoInsertOptions['enable_post_types'] = array_filter( $arrAutoInsertOptions['enable_post_types'] );	// drop unchedked items
+		if ( ! empty( $arrAutoInsertOptions['enable_post_types'] ) ) {
+			if ( 
+				! ( 
+					isset( $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] ) 
+					&& $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] 
+				)
+			)
+				return false;
+		}
 			
 		/* 
 		 * Taxonomies - structure example
@@ -394,20 +384,35 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 				)
 			)
 		*/
-		// Since each term id is unique throughout the WordPress site settings, drop the taxonomy slugs.
+		// Retrieve the taxonomy names associated with the current page's post type
 		$arrTerms = array();
-		foreach( $arrAutoInsertOptions['enable_taxonomy'] as $strTaxonomySlug => $arrTheseTerms ) 
-			$arrTerms = $arrTerms + $arrTheseTerms;
+		foreach( ( array ) get_object_taxonomies( $arrSubjectPostInfo['post_type'], 'names' ) as $strTaxonomySlug  ) 
+			$arrTerms = isset( $arrAutoInsertOptions['enable_taxonomy'][ $strTaxonomySlug ] )
+				? $arrTerms + $arrAutoInsertOptions['enable_taxonomy'][ $strTaxonomySlug ]
+				: $arrTerms;
+
+		// Since each term id is unique throughout the WordPress site settings, drop the taxonomy slugs.
+		// $arrTerms = array();
+		// foreach( $arrAutoInsertOptions['enable_taxonomy'] as $strTaxonomySlug => $arrTheseTerms ) 
+			// $arrTerms = $arrTerms + $arrTheseTerms;
 			
 		// Drop unchecked items
 		$arrTerms = array_filter( $arrTerms );
-		$arrTermIDs = array_keys( $arrTerms ); // get the keys as the values.
-		foreach( $arrTermIDs as $intAllowedTermID ) 
-			if ( in_array( $intAllowedTermID, $arrSubjectPostInfo['term_ids'] ) )
-				return true;		
+		if ( ! empty( $arrTerms ) ) {		// at least one item is cheched for the taxonomies of the current post
+		
+			$arrTermIDs = array_keys( $arrTerms ); // get the keys as the values.
+			$fIsEnabled = false;
+			foreach( $arrTermIDs as $intAllowedTermID ) 
+				if ( in_array( $intAllowedTermID, $arrSubjectPostInfo['term_ids'] ) )
+					$fIsEnabled = true;
+					
+			if ( ! $fIsEnabled )
+				return false;
+				
+		}
 	
-		// Otherwise, it's nor allowed.
-		return false;
+		// Otherwise, it's enabled
+		return true;
 		
 	}
 	
@@ -462,6 +467,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		$this->intPostID = $this->getPostID();
 		
 		$this->arrDisplayedPageTypes = array(
+			'is_single' => is_single(),
 			'is_home' => ( is_home() || is_front_page() ),
 			'is_archive' => is_archive(),
 			'is_404' => is_404(),

@@ -92,7 +92,9 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Access Key ID', 'amazon-auto-links' ),
 				'strDescription' => __( 'The public key consisting of 20 alphabetic characters.', 'amazon-auto-links' )
-					. ' e.g.<code>022QF06E7MXBSH9DHM02</code>',
+					. ' e.g.<code>022QF06E7MXBSH9DHM02</code><br />'
+					. sprintf( __( 'The keys can be obtained by logging in to the <a href="%1$s" target="_blank">Amazon Web Services web site</a>.', 'amazon-auto-links' ), 'http://aws.amazon.com/' )
+					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), 'http://docs.aws.amazon.com/fws/1.1/GettingStartedGuide/index.html?AWSCredentials.html' ),
 				'strType' => 'text',
 				'vSize' => 40,
 				'fIf' => empty( $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key'] ),
@@ -281,21 +283,21 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The number of product links to display.' ),
 				'vDefault' => 10,
 			),
-			array(
-				'strFieldID' => $strPrefix . 'column',
-				'strSectionID' => $strSectionID ? $strSectionID : null,
-				'strTitle' => __( 'Number of Columns', 'amazon-auto-links' ),
-				'strType' => 'number',
-				'vClassAttribute' => ( $intMaxCol = $GLOBALS['oAmazonAutoLinks_Option']->getMaxSupportedColumnNumber() ) > 1 ? '' : 'disabled',
-				'vDisable' => $intMaxCol > 1 ? false : true,
-				'vMax' => $intMaxCol,
-				// 'vMin' => 1, // <-- not sure this horizontally diminishes the input element
-				'vAfterInputTag' => "<div style='margin:auto; width:100%; clear: both;'><img src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/columns.gif' ) . "' title='" . __( 'The number of columns', 'amazon-auto-links' ) . "' style='width:220px; margin-top: 8px;' /></div>",
-				'strDescription' => __( 'This option requires a column supported template to be activated.' ) 
-					. ( $intMaxCol > 1 ? '' : ' ' . sprintf( __( 'Get one <a href="%1$s" target="_blank">here</a>!' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) ),
-				'vDefault' => 4,
-				'vDelimiter' => '',
-			),				
+			// array(
+				// 'strFieldID' => $strPrefix . 'column',
+				// 'strSectionID' => $strSectionID ? $strSectionID : null,
+				// 'strTitle' => __( 'Number of Columns', 'amazon-auto-links' ),
+				// 'strType' => 'number',
+				// 'vClassAttribute' => ( $intMaxCol = $GLOBALS['oAmazonAutoLinks_Option']->getMaxSupportedColumnNumber() ) > 1 ? '' : 'disabled',
+				// 'vDisable' => $intMaxCol > 1 ? false : true,
+				// 'vMax' => $intMaxCol,
+				// // 'vMin' => 1, // <-- not sure this horizontally diminishes the input element
+				// 'vAfterInputTag' => "<div style='margin:auto; width:100%; clear: both;'><img src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/columns.gif' ) . "' title='" . __( 'The number of columns', 'amazon-auto-links' ) . "' style='width:220px; margin-top: 8px;' /></div>",
+				// 'strDescription' => __( 'This option requires a column supported template to be activated.' ) 
+					// . ( $intMaxCol > 1 ? '' : ' ' . sprintf( __( 'Get one <a href="%1$s" target="_blank">here</a>!' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) ),
+				// 'vDefault' => 4,
+				// 'vDelimiter' => '',
+			// ),				
 			array(
 				'strFieldID' => $strPrefix . 'image_size',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
@@ -614,6 +616,9 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 	}
 	
 	protected function getFieldsOfTemplate( $strSectionID, $strPrefix ) {
+		
+		$oForm_Template = new AmazonAutoLinks_Form_Template( $this->strPageSlug );
+		return $oForm_Template->getTemplateFields( $strSectionID, $strPrefix, true, 'search' );		
 		
 		return array(
 			array(

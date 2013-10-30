@@ -25,19 +25,19 @@ final class AmazonAutoLinks_Commons {
 	const FieldID_LicenseKey = 'pro_license_key';
 	
 	// These properties will be defined when performing setUpStaticProperties() method.
-	static public $strPluginFilePath;
-	static public $strPluginDirPath;
-	static public $strPluginName;
-	static public $strPluginURI;
-	static public $strPluginDescription;
-	static public $strPluginAuthor;
-	static public $strPluginAuthorURI;
-	static public $strPluginVersion;
-	static public $strPluginTextDomain;
-	static public $strPluginDomainPath;
-	static public $strPluginNetwork;
-	static public $strPluginSiteWide;
-	static public $strPluginStoreURI;
+	static public $strPluginFilePath ='';	// must set a value as it will be cheched in setUpStaticProperties()
+	static public $strPluginDirPath ='';
+	static public $strPluginName ='';
+	static public $strPluginURI ='';
+	static public $strPluginDescription ='';
+	static public $strPluginAuthor ='';
+	static public $strPluginAuthorURI ='';
+	static public $strPluginVersion ='';
+	static public $strPluginTextDomain ='';
+	static public $strPluginDomainPath ='';
+	static public $strPluginNetwork ='';
+	static public $strPluginSiteWide ='';
+	static public $strPluginStoreURI ='';
 
 	static function setUpStaticProperties( $strPluginFilePath=null ) {
 		
@@ -64,7 +64,8 @@ final class AmazonAutoLinks_Commons {
 		);
 		
 		foreach( $arrPluginData as $strKey => $strValue )
-			self::${$strKey} = $strValue;
+			if ( isset( self::${$strKey} ) )	// must be checked as get_file_data() returns a filtered result
+				self::${$strKey} = $strValue;
 	
 	}	
 	

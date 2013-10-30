@@ -12,15 +12,38 @@
 abstract class AmazonAutoLinks_Unit {
 
 	function __construct() {
-		
+			
 		$this->strCharEncoding = $GLOBALS['oAmazonAutoLinks_Option']->strCharEncoding;
 		$this->fIsSSL = is_ssl();		
 		$this->oOption = $GLOBALS['oAmazonAutoLinks_Option'];
 		$this->oDOM = new AmazonAutoLinks_DOM;
 			
 		$this->setBlackWhiteLists();	
+		
+		
 	}
-
+	
+	/**
+	 * The arrays contains the concatenation character(.) so it cannot be done in the declaration.
+	 */
+	static public function getItemFormatArray() {
+		
+		return array(
+			'item_format' => '%image%' . PHP_EOL	// since the 
+				. '%title%' . PHP_EOL
+				. '%description%',
+			'image_format' => '<div class="amazon-product-thumbnail" style="max-width:%max_width%px;">' . PHP_EOL
+				. '    <a href="%href%" title="%title_text%: %description_text%" rel="nofollow" target="_blank">' . PHP_EOL 
+				. '        <img src="%src%" alt="%description_text%" />' . PHP_EOL
+				. '    </a>' . PHP_EOL
+				. '</div>',
+			'title_format' => '<h5 class="amazon-product-title">' . PHP_EOL
+				. '<a href="%href%" title="%title_text%: %description_text%" rel="nofollow" target="_blank">%title_text%</a>' . PHP_EOL 
+				. '</h5>',	
+		);
+		
+	}
+	
 	/**
 	 * Sets up black and white lists property array from the stored option values.
 	 * 
@@ -28,7 +51,7 @@ abstract class AmazonAutoLinks_Unit {
 	protected function setBlackWhiteLists() {
 		
 		$arrBlackWhiteLists = array();
-		foreach( $this->oOption->arrOptions['aal_settings']['black_white_list'] as $strSection => $arrSection ) {
+		foreach( $this->oOption->arrOptions['aal_settings']['product_filters'] as $strSection => $arrSection ) {
 			if ( $strSection == 'case_sensitive' ) {
 				$this->fBWListCaseSensitive = $arrSection;
 				continue;

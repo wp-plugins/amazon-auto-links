@@ -21,14 +21,14 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strPageSlug'		=> $strPageSlug,
 				'strTabSlug'		=> 'authentication',
 				'strTitle'			=> __( 'AWS Access Key Identifiers', 'amazon-auto-links' ),
-				'strDescription'	=> sprintf( __( 'Credentials are required to perform search requests with Amazon <a href="%1$s" target="_blank">Product Advertising API</a>.', 'amazon-auto-links' ), 'https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html' )
+				'strDescription'	=> sprintf( __( 'For the Search Unit type, credentials are required to perform search requests with Amazon <a href="%1$s" target="_blank">Product Advertising API</a>.', 'amazon-auto-links' ), 'https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html' )
 					. ' ' . sprintf( __( 'The keys can be obtained by logging in to the <a href="%1$s" target="_blank">Amazon Web Services web site</a>.', 'amazon-auto-links' ), 'http://aws.amazon.com/' )
 					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), 'http://docs.aws.amazon.com/fws/1.1/GettingStartedGuide/index.html?AWSCredentials.html' ),
 			),
 
 			// general
 			array( 
-				'strSectionID'		=> 'black_white_list',
+				'strSectionID'		=> 'product_filters',
 				'strPageSlug'		=> $strPageSlug,
 				'strTabSlug'		=> 'general',
 				'strTitle'			=> __( 'Filters', 'amazon-auto-links' ),
@@ -64,6 +64,14 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strTitle'			=> __( 'Access Rights', 'amazon-auto-links' ),
 				'strDescription'	=> __( 'Set the access levels to the plugin setting pages.', 'amazon-auto-links' ),
 			),		
+			array(
+				'strSectionID'		=> 'form_options',
+				'strCapability'		=> 'manage_options',
+				'strPageSlug'		=> $strPageSlug,
+				'strTabSlug'		=> 'misc',
+				'strTitle'			=> __( 'Form', 'amazon-auto-links' ),
+				'strDescription'	=> __( 'Set allowed HTML tags etc..', 'amazon-auto-links' ),
+			),					
 			array(
 				'strSectionID'		=> 'debug',
 				'strCapability'		=> 'manage_options',
@@ -109,6 +117,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 			$this->getFieldsOfQuery(),
 			$this->getFieldsOfDebug(),
 			$this->getFieldsOfCapabilities(),
+			$this->getFieldsOfFormOptions(),
 			$this->getFieldsOfResetSettings(),
 			$this->getFieldsOfCaches()		
 		);
@@ -152,7 +161,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 		return array(
 			array(
 				'strFieldID' => 'white_list',
-				'strSectionID' => 'black_white_list',
+				'strSectionID' => 'product_filters',
 				'strTitle' => __( 'White List', 'amazon-auto-links' ),
 				'strDescription' => __( 'Enter characters separated by commas.', 'amazon-auto-links' )
 					. ' ' . __( 'Product links that do not contain the white list items will be omitted.', 'amazon-auto-links' ),
@@ -171,7 +180,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 			),
 			array(
 				'strFieldID' => 'black_list',
-				'strSectionID' => 'black_white_list',
+				'strSectionID' => 'product_filters',
 				'strTitle' => __( 'Black List', 'amazon-auto-links' ),
 				'strDescription' => __( 'Enter characters separated by commas.', 'amazon-auto-links' )
 					. ' ' . __( 'Product links that contain the black list items will be omitted.', 'amazon-auto-links' ),
@@ -190,7 +199,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 			),
 			array(
 				'strFieldID' => 'case_sensitive',
-				'strSectionID' => 'black_white_list',
+				'strSectionID' => 'product_filters',
 				'strTitle' => __( 'Case Sensitive', 'amazon-auto-links' ),
 				'strType' => 'radio',
 				'vLabel' => array(
@@ -199,11 +208,11 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				),
 				'strDescription' => __( 'If this is on, upper cases and lower cases of characters have to match to find the given string.', 'amazon-auto-links' )
 					. ' ' . __( 'Default', 'amazon-auto-links' ) . ': <code>' . __( 'Off', 'amazon-auto-links' ) . '</code>',
-				'vDefault' => AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['black_white_list']['case_sensitive'],				
+				'vDefault' => AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['product_filters']['case_sensitive'],				
 			),
 			array(
 				'strFieldID' => 'no_duplicate',
-				'strSectionID' => 'black_white_list',
+				'strSectionID' => 'product_filters',
 				'strTitle' => __( 'Prevent Duplicates', 'amazon-auto-links' ),
 				'strType' => 'radio',
 				'vLabel' => array(
@@ -212,7 +221,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				),
 				'strDescription' => __( 'If this is on, the same products that are already loaded will not be displayed among different units', 'amazon-auto-links' )
 					. ' ' . __( 'Default', 'amazon-auto-links' ) . ': <code>' . __( 'On', 'amazon-auto-links' ) . '</code>',
-				'vDefault' => AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['black_white_list']['no_duplicate'],				
+				'vDefault' => AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['product_filters']['no_duplicate'],				
 			),			
 		);		
 	}
@@ -336,6 +345,20 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 					'read' => __( 'Subscriber', 'amazon-auto-links' ),
 				),
 				// 'strHelp' => 'This is a test.',
+			)
+		);		
+	}
+	protected function getFieldsOfFormOptions() {
+		return array(
+			array(
+				'strFieldID' => 'allowed_html_tags',
+				'strSectionID' => 'form_options',
+				'strTitle' => __( 'Allowed HTML Tags', 'amazon-auto-links' ),
+				'strDescription' => __( 'Enter the allowed HTML tags for the form input, separated by commas. By default, WordPress applies a filter called KSES that strips out certain tags before the user input is saved in the database for security reasons.', 'amazon-auto-links' ) . '<br />'
+					. ' e.g. <code>noscript, style</code>',
+				'strType' => 'text',
+				'vSize' => 80,
+				'strCapability' => 'manage_options',
 			)
 		);		
 	}

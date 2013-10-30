@@ -210,9 +210,9 @@ abstract class AmazonAutoLinks_Templates_ {
 	 * Generates a template array by the given template directory path.
 	 * 
 	 * @remark			The directory must have necessary template files including style.css and tmplate.php
-	 * 
+	 * @access			public			This is access by the pro classes.
 	 */
-	protected function getTemplateArray( $strDirPath ) {
+	public function getTemplateArray( $strDirPath ) {
 		
 		// Check mandatory files.
 		if ( 

@@ -61,7 +61,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
 			),				
 			array(
-				'strMenuTitle'		=> __( 'Auto Insert', 'amazon-auto-links' ),
+				'strMenuTitle'		=> __( 'Manage Auto Insert', 'amazon-auto-links' ),
 				'strURL'			=> admin_url( 'edit.php?post_type=aal_auto_insert' ),
 			),								
 			array(
@@ -488,7 +488,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 
 		$fVerified = true;
 		$arrErrors = array();
-
+		
 		// Check the limitation.
 		if ( $this->oOption->isUnitLimitReached() ) {
 			
@@ -559,8 +559,25 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		// If nothing is checked for the feed type, enable the bestseller item.
 		if ( ! array_filter( $arrSanitizedFields['feed_type'] ) ) 			
 			$arrSanitizedFields['feed_type']['new'] = true;		
+
+// AmazonAutoLinks_Debug::logArray( '--Before Escaping KSES Filter--' );			
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['item_format'] );
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['title_format'] );
+
+		// Apply allowed HTML tags for the KSES filter.
+		add_filter( 'safe_style_css', array( $this, 'allowInlineStyleMaxWidth' ) );
+		$arrAllowedHTMLTags = AmazonAutoLinks_Utilities::convertStringToArray( $this->oOption->arrOptions['aal_settings']['form_options']['allowed_html_tags'], ',' );
+		$arrSanitizedFields['item_format'] = AmazonAutoLinks_WPUtilities::escapeKSESFilter( $arrSanitizedFields['item_format'], $arrAllowedHTMLTags );
+		$arrSanitizedFields['image_format'] = AmazonAutoLinks_WPUtilities::escapeKSESFilter( $arrSanitizedFields['image_format'], $arrAllowedHTMLTags );
+		$arrSanitizedFields['title_format'] = AmazonAutoLinks_WPUtilities::escapeKSESFilter( $arrSanitizedFields['title_format'], $arrAllowedHTMLTags );
+		remove_filter( 'safe_style_css', array( $this, 'allowInlineStyleMaxWidth' ) );
 		
-// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );
+// AmazonAutoLinks_Debug::logArray( '--After Escaping KSES Filter--' );
+// AmazonAutoLinks_Debug::logArray( $arrAllowedHTMLTags );
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['item_format'] );
+AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['title_format'] );
 
 		// Create a post.			
 		$fDoAutoInsert = $arrSanitizedFields['auto_insert'];
@@ -592,6 +609,10 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		) );		
 		
 	}
+		public function allowInlineStyleMaxWidth( $arrProperties ) {
+			$arrProperties[] = 'max-width';
+			return $arrProperties;
+		}
 		
 	/*
 	 * The Add Unit by Search Page
@@ -728,7 +749,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 
 		$arrSanitizedFields = $this->oOption->sanitizeUnitOpitons( $arrSanitizedFields );
 		
-// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );			
+AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );			
  				
 		// Create a post.			
 		$fDoAutoInsert = $arrSanitizedFields['auto_insert'];
@@ -845,7 +866,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	
 	}
 	
-	public function validation_aal_settings( $arrInput, $arrOriginal ) {	// validation_ + page slug
+	public function validation_aal_settings( $arrInput, $arrOldInput ) {	// validation_ + page slug
 		return $arrInput;	
 	}
 	
@@ -903,7 +924,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		
 	}
 	
-	public function validation_aal_settings_authentication( $arrInput, $arrOriginal ) {	// validation_ + page slug + tab slug
+	public function validation_aal_settings_authentication( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug
 
 		$fVerified = true;
 		$arrErrors = array();
@@ -934,7 +955,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 			// Set the error array for the input fields.
 			$this->setFieldErrors( $arrErrors );
 			$this->setSettingNotice( __( 'There was an error in your input.', 'amazon-auto-links' ) );
-			return $arrOriginal;
+			return $arrOldInput;
 			
 		}			
 	
@@ -946,7 +967,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 			$arrErrors['authentication_keys']['access_key_secret'] = __( 'Sent Value', 'amazon-auto-links' ) . ': ' . $strPrivateKey;			
 			$this->setFieldErrors( $arrErrors );
 			$this->setSettingNotice( __( 'Failed authentication.', 'amazon-auto-links' ) );
-			$arrOriginal;
+			$arrOldInput;
 			
 		}
 // AmazonAutoLinks_Debug::logArray( $arrInput );
@@ -956,14 +977,24 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		
 	}
 	
+	public function validation_aal_settings_misc( $arrInput, $arrOldInput ) {
+		
+// AmazonAutoLinks_Debug::logArray( $arrInput );		
+
+		// Sanitize text inputs
+		// [aal_settings] => Array
+				// [form_options] => Array
+						// [allowed_html_tags] 	
+		$arrInput['aal_settings']['form_options']['allowed_html_tags'] = trim( AmazonAutoLinks_Utilities::trimDelimitedElements( $arrInput['aal_settings']['form_options']['allowed_html_tags'], ',' ) );
+		return $arrInput;
+	}
 	
-	
-	public function validation_aal_settings_general( $arrInput, $arrOriginal ) {
+	public function validation_aal_settings_general( $arrInput, $arrOldInput ) {
 		
 		// Sanitize text inputs
-		foreach( $arrInput['aal_settings']['black_white_list']['black_list'] as &$str1 )
+		foreach( $arrInput['aal_settings']['product_filters']['black_list'] as &$str1 )
 			$str1 = trim( AmazonAutoLinks_Utilities::trimDelimitedElements( $str1, ',' ) ); 
-		foreach( $arrInput['aal_settings']['black_white_list']['white_list'] as &$str2 ) 
+		foreach( $arrInput['aal_settings']['product_filters']['white_list'] as &$str2 ) 
 			$str2 = trim( AmazonAutoLinks_Utilities::trimDelimitedElements( $str2, ',' ) );			
 			
 		// Sanitize the query key.
@@ -972,7 +1003,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		
 /* 	  [aal_settings] => Array
         (
-            [black_white_list] => Array
+            [product_filters] => Array
                 (
                     [white_list] => Array
                         (
@@ -1009,14 +1040,14 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	}
 	
 		
-	public function validation_aal_settings_reset( $arrInput, $arrOriginal ) {
+	public function validation_aal_settings_reset( $arrInput, $arrOldInput ) {
 
 		if ( isset( $arrInput['aal_settings']['caches']['clear_caches'] ) && $arrInput['aal_settings']['caches']['clear_caches'] ) {
 			AmazonAutoLinks_Transients::cleanTransients( 'AAL' );
 			$this->setSettingNotice( __( 'The caches have been cleared.', 'amazon-auto-links' ) );			
 		}
 
-		return $arrOriginal;	// no need to update the options.
+		return $arrOldInput;	// no need to update the options.
 		
 	}
 
@@ -1064,6 +1095,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		}
 	
 		$intRemained = $this->oOption->getRemainedAllowedUnits();			
+// AmazonAutoLinks_Debug::logArray( "remained allowed number of units: " . $intRemained );		
 		if ( $intRemained > 0 ) {
 			
 			// Import units and general options and delete the option from the database
@@ -1167,7 +1199,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	/**
 	 * The global validation task.
 	 */
-	public function validation_AmazonAutoLinks_AdminPage( $arrInput, $arrOriginal ) {
+	public function validation_AmazonAutoLinks_AdminPage( $arrInput, $arrOldInput ) {
 		
 		// Deal with the reset button.
 		// [option key][page slug][section][field]
@@ -1192,20 +1224,6 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		return $arrInput;
 		
 	}
-
-	
-	protected $arrColumnOption = array (
-		'strClassAttr' 				=>	'amazon_auto_links_multiple_columns',
-		'strClassAttrGroup' 		=>	'amazon_auto_links_multiple_columns_box',
-		'strClassAttrRow' 			=>	'amazon_auto_links_multiple_columns_row',
-		'strClassAttrCol' 			=>	'amazon_auto_links_multiple_columns_col',
-		'strClassAttrFirstCol' 		=>	'amazon_auto_links_multiple_columns_first_col',
-	);	
-	protected $arrColumnInfoDefault = array (	// this will be modified as the items get rendered
-		'fIsRowTagClosed'	=>	False,
-		'numCurrRowPos'		=>	0,
-		'numCurrColPos'		=> 	0,
-	);	
 	
 	
 	/*
@@ -1244,70 +1262,14 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	public function do_aal_templates_get() {
 		
 		echo "<p>" . sprintf( __( 'Want your template to be listed here? Send the file to %1$s.', 'amazon-auto-links' ), 'wpplugins@michaeluno.jp' ) . "</p>";
-return;
-		$oExtensionLoader = new AmazonAutoLinks_Extensions();
-		$arrFeedItems = $oExtensionLoader->fetchFeed( 'http://feeds.feedburner.com/MiunosoftAmazonAutoLinksTemplate' );
+		$oExtensionLoader = new AmazonAutoLinks_ListExtensions();
+		$arrFeedItems = $oExtensionLoader->fetchFeed( 'http://feeds.feedburner.com/AmazonAutoLinksTemplates' );
 		if ( empty( $arrFeedItems ) ) {
 			echo "<h3>" . __( 'No extension has been found.', 'amazon-auto-links' ) . "</h3>";
 			return;
 		}
-		
-		$arrOutput = array();
-		$intMaxCols = 4;
-		$this->arrColumnInfo = $this->arrColumnInfoDefault;
-		foreach( $arrFeedItems as $strTitle => $arrItem ) {
-			
-			// Increment the position
-			$this->arrColumnInfo['numCurrColPos']++;
-			
-			// Enclose the item buffer into the item container
-			$strItem = '<div class="' . $this->arrColumnOption['strClassAttrCol'] 
-				. ' amazon_auto_links_col_element_of_' . $intMaxCols . ' '
-				. ' amazon_auto_links_extension '
-				. ( ( $this->arrColumnInfo['numCurrColPos'] == 1 ) ?  $this->arrColumnOption['strClassAttrFirstCol']  : '' )
-				. '"'
-				. '>' 
-				. '<div class="amazon_auto_links_extension_item">' 
-					. "<h4>{$arrItem['strTitle']}</h4>"
-					. $arrItem['strDescription'] 
-					. "<div class='get-now'><a href='{$arrItem['strLink']}' target='_blank' rel='nofollow'>" 
-						. "<input class='button button-secondary' type='submit' value='" . __( 'Get it Now', 'amazon-auto-links' ) . "' />"
-					. "</a></div>"
-				. '</div>'
-				. '</div>';	
-				
-			// If it's the first item in the row, add the class attribute. 
-			// Be aware that at this point, the tag will be unclosed. Therefore, it must be closed somewhere. 
-			if ( $this->arrColumnInfo['numCurrColPos'] == 1 ) 
-				$strItem = '<div class="' . $this->arrColumnOption['strClassAttrRow']  . '">' . $strItem;
-		
-			// If the current column position reached the set max column, increment the current position of row
-			if ( $this->arrColumnInfo['numCurrColPos'] % $intMaxCols == 0 ) {
-				$this->arrColumnInfo['numCurrRowPos']++;		// increment the row number
-				$this->arrColumnInfo['numCurrColPos'] = 0;		// reset the current column position
-				$strItem .= '</div>';  // close the section(row) div tag
-				$this->arrColumnInfo['fIsRowTagClosed'] = 	True;
-			}		
-			
-			$arrOutput[] = $strItem;
-		
-		}
-		
-		// if the section(row) tag is not closed, close it
-		if ( ! $this->arrColumnInfo['fIsRowTagClosed'] ) $arrOutput[] .= '</div>';	
-		$this->arrColumnInfo['fIsRowTagClosed'] = true;
-		
-		// enclose the output in the group tag
-		$strOut = '<div class="' . $this->arrColumnOption['strClassAttr'] . ' '
-				.  $this->arrColumnOption['strClassAttrGroup'] . ' '
-				. '"'
-				// . ' style="min-width:' . 200 * $intMaxCols . 'px;"'
-				. '>'
-				. implode( '', $arrOutput )
-				. '</div>';
-		
-		echo '<div class="amazon_auto_links_extension_container">' . $strOut . '</div>';
-		
+		$oExtensionLoader->printColumnOutput( $arrFeedItems );
+
 	}
 
 
@@ -1470,6 +1432,11 @@ return;
 						<td><?php echo $strImgUnavailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>						
+					<tr>
+						<td><?php _e( 'Advanced Search Options', 'amazon-auto-links' ); ?></td>
+						<td><?php echo $strImgUnavailable; ?></td>
+						<td><?php echo $strImgAvailable; ?></td>
+					</tr>							
 				</tbody>
 			</table>
 		</div>	

@@ -16,23 +16,23 @@ Text Domain: amazon-auto-links
 .amazon-products-container a {
 	text-decoration: none;	
 }
-.amazon-product-container {
+.amazon-products-container .amazon-product-container {
 	width: 100%;
 	display:table; 
 	clear:both;
 	margin-bottom: 20px;
 }
-.amazon-product-title {
+.amazon-products-container .amazon-product-title {
 }
-.amazon-product-thumbnail-container {
+.amazon-products-container .amazon-product-thumbnail-container {
 	width: 100%;
 }
-.amazon-product-thumbnail {
+.amazon-products-container .amazon-product-thumbnail {
 	margin: 20px auto;
 }
-.amazon-product-thumbnail img {
+.amazon-products-container .amazon-product-thumbnail img {
 	max-width: 100%;
 }
-.amazon-auto-links-credit {
+.amazon-products-container .amazon-auto-links-credit {
 	font-size: smaller;
 }

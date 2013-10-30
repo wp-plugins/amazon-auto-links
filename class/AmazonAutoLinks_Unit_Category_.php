@@ -49,6 +49,12 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 		'template_path' => '',	// the template can be specified by the template path. If this is set, the 'template' key won't take effect.
 		
 		'is_preview' => false,	// used to decide whether the global ASIN black/white list should be used.
+		
+		// The below are retrieved separately
+		// 'item_format' => '',
+		// 'image_format' => '',
+		// 'title_format' => '',
+		
 	);
 
 	public static $arrStructure_Product = array(
@@ -90,7 +96,7 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 	 */
 	public function setArguments( $arrArgs ) {
 		
-		$this->arrArgs = $arrArgs + self::$arrStructure_Args;
+		$this->arrArgs = $arrArgs + self::$arrStructure_Args + self::getItemFormatArray();
 		$this->arrRSSURLs = $this->getRSSURLsFromArguments( $this->arrArgs );
 		$this->arrExcludingRSSURLs = $this->getRSSURLsFromArguments( $this->arrArgs, 'categories_exclude' );
 // AmazonAutoLinks_Debug::logArray( $this->arrRSSURLs );		
@@ -272,6 +278,26 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 			$arrProduct['author'] = ( $oAuthor = $oItem->get_author() ) ? $oAuthor->get_name() : '';
 			$arrProduct['content'] = $oItem->get_content();
 			$arrProduct['date'] = $oItem->get_date();
+			
+			// Format the item
+			// Thumbnail
+			$arrProduct['formed_thumbnail'] = str_replace( 
+				array( "%href%", "%title_text%", "%src%", "%max_width%", "%description_text%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['thumbnail_url'], $this->arrArgs['image_size'], $arrProduct['text_description'] ),
+				$this->arrArgs['image_format'] 
+			);
+			// Title
+			$arrProduct['formed_title'] = str_replace( 
+				array( "%href%", "%title_text%", "%description_text%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['text_description'] ),
+				$this->arrArgs['title_format'] 
+			);
+			// Item		
+			$arrProduct['formed_item'] = str_replace( 
+				array( "%href%", "%title_text%", "%description_text%", "%title%", "%image%", "%description%" ),
+				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['text_description'], $arrProduct['formed_title'], $arrProduct['formed_thumbnail'], $arrProduct['description'] ),
+				$this->arrArgs['item_format'] 
+			);
 			
 			// Store the product output
 			$arrProducts[] = $arrProduct + self::$arrStructure_Product;

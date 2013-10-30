@@ -199,7 +199,7 @@ final class AmazonAutoLinks_Bootstrap {
 				'amazon_auto_links_template_meta_box',	// meta box ID
 				__( 'Template', 'amazon-auto-links' ),		// meta box title
 				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-				'side',
+				'normal',	// side 
 				'default'
 			);
 			
