@@ -244,7 +244,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 					: '',
 				'vDefault' => $strSection == 'support' 
 					? AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['support']['rate']
-					: 10,	// for initial_support
+					: 0,	// for initial_support
 			),
 			array(
 				'strFieldID' => $strPrefix . 'ads',
