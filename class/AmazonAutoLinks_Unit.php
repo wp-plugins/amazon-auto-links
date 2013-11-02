@@ -365,7 +365,7 @@ abstract class AmazonAutoLinks_Unit {
 		include( $strTemplatePath );
 		$strContent = ob_get_contents(); // assign the content buffer to a variable
 		ob_end_clean(); // end buffer and remove the buffer		
-		return $strContent 
+		return balanceTags( $strContent )
 			. $this->getCredit( $this->arrArgs['credit_link'] );
 		
 	}		

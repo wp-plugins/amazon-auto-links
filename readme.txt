@@ -2,9 +2,9 @@
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, sidebar, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
-Requires at least: 3.0
-Tested up to: 3.7
-Stable tag: 2.0.0
+Requires at least: 3.3
+Tested up to: 3.7.1
+Stable tag: 2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,9 @@ These options need to be reconfigured.
 4. **Widget Sample**
 
 == Changelog ==
+
+= 2.0.0.1b =
+* Tweaked: to force enclosing tags to the unit outputs.
 
 = 2 =
 * Changed: to ask user permission to display ads in the settings page and the support rate when the plugin is activated for the first time.
