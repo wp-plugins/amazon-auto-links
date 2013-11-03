@@ -367,7 +367,7 @@ abstract class AmazonAutoLinks_Unit {
 		$strContent = ob_get_contents(); // assign the content buffer to a variable
 		ob_end_clean(); // end buffer and remove the buffer		
 		
-		return apply_filters( "aal_filter_unit_output", $strContent . $this->getCredit( $this->arrArgs['credit_link'] ) );
+		return apply_filters( "aal_filter_unit_output", $strContent . $this->getCredit( $this->arrArgs['credit_link'] ), $arrArgs );
 		
 	}		
 		protected function getCredit( $fEnabled=true ) {
