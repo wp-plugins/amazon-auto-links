@@ -6,7 +6,8 @@
  * @copyright   	Copyright (c) 2013, Michael Uno
  * @license     	http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * 
- * @filter			aal_template_path
+ * @filter			aal_filter_template_path
+ * @filter			aal_filter_unit_output
  */
 
 abstract class AmazonAutoLinks_Unit {
@@ -353,7 +354,7 @@ abstract class AmazonAutoLinks_Unit {
 		$arrProducts = $this->fetch( $arrURLs );
 		
 		$strTemplatePath = apply_filters( 
-			"aal_template_path", 
+			"aal_filter_template_path", 
 			isset( $strTemplatePath ) ? $strTemplatePath : $this->getTemplatePath( $this->arrArgs ), 
 			$this->arrArgs 
 		);
@@ -365,8 +366,8 @@ abstract class AmazonAutoLinks_Unit {
 		include( $strTemplatePath );
 		$strContent = ob_get_contents(); // assign the content buffer to a variable
 		ob_end_clean(); // end buffer and remove the buffer		
-		return balanceTags( $strContent )
-			. $this->getCredit( $this->arrArgs['credit_link'] );
+		
+		return apply_filters( "aal_filter_unit_output", $strContent . $this->getCredit( $this->arrArgs['credit_link'] ) );
 		
 	}		
 		protected function getCredit( $fEnabled=true ) {
