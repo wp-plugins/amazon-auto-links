@@ -63,7 +63,8 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 							
 		}
 		
-		$this->oLink->strSettingPageLinkTitle = __( 'Auto-Insert', 'amazon-auto-links' );
+		if ( isset( $this->oLink ) )	// if not in admin or the post type slug is not set, the oLink object won't be set.
+			$this->oLink->strSettingPageLinkTitle = __( 'Auto-Insert', 'amazon-auto-links' );
 		
 	}
 		

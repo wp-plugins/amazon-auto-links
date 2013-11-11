@@ -136,7 +136,7 @@ These options need to be reconfigured.
 == Changelog ==
 
 = 2.0.0.1b =
-* Tweaked: to force enclosing tags to the unit outputs.
+* Fixed: the warning, Creating default object from empty value.
 
 = 2 =
 * Changed: to ask user permission to display ads in the settings page and the support rate when the plugin is activated for the first time.

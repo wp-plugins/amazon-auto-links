@@ -86,7 +86,9 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 		
 		add_filter( 'the_content', array( $this, 'previewProductLinks' ) );	
 
-		$this->oLink->strSettingPageLinkTitle = __( 'Units', 'amazon-auto-links' );
+		if ( isset( $this->oLink ) )	// if not in admin or the post type slug is not set, the oLink object won't be set.
+			$this->oLink->strSettingPageLinkTitle = __( 'Units', 'amazon-auto-links' );
+			
 	}
 	
 	public function enqueueCustomStyle() {
