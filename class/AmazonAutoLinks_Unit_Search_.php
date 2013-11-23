@@ -162,7 +162,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				)
 			);	
 			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) )
-				$arrResponseTrunk['Items']['Item'] = array_merge( $arrResponse['Items']['Item'], $arrResponseTrunk['Items']['Item'] );
+				$arrResponseTrunk['Items']['Item'] = array_merge( $arrResponseTrunk['Items']['Item'], $arrResponse['Items']['Item'] );
 			
 		}	
 		
