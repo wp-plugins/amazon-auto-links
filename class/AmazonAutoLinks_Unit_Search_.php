@@ -70,6 +70,33 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		
 // AmazonAutoLinks_Debug::dumpArray( $this->arrArgs );
 
+		$arrResponse = $this->getPagedRequests( $this->arrArgs['count'], ( $this->arrArgs['SearchIndex'] == 'All' || $this->arrArgs['SearchIndex'] == 'Blended' ) );
+		if ( isset( $arrResponse['Error']['Code']['Message'] ) ) 
+			return $arrResponse;
+			
+// AmazonAutoLinks_Debug::dumpArray( $arrResponse );			
+			
+// $arrProductItems = $arrResponse['Items'];
+// unset( $arrProductItems['Item'] );
+// AmazonAutoLinks_Debug::dumpArray( $arrProductItems );			
+		
+		$arrProducts = $this->composeArray( $arrResponse );
+		
+// AmazonAutoLinks_Debug::dumpArray( $arrProducts );
+			
+		return $arrProducts;
+		
+	}
+	
+	/**
+	 * Performs paged API requests.
+	 * 
+	 * This enables to retrieve more than 10 items. However, for it, it performs multiple requests, thus, it will be slow.
+	 * 
+	 * @since			2.0.1
+	 */
+	protected function getPagedRequests( $intCount, $fIsIndexAllOrBlended ) {
+		
 		$oAPI = new AmazonAutoLinks_ProductAdvertisingAPI( 
 			$this->arrArgs['country'], 
 			$this->oOption->getAccessPublicKey(),
@@ -77,8 +104,8 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			$this->arrArgs['associate_id']
 		);
 			
+		// First perform the search for the first page regardless the specified count (number of items).
 		// Keys with an empty value will be filtered out when performing the request.			
-		$fIsIndexAllOrBlended = ( $this->arrArgs['SearchIndex'] == 'All' || $this->arrArgs['SearchIndex'] == 'Blended' );
 		$arrResponse = $oAPI->request( 	
 			// Regarding the parameters see: http://docs.aws.amazon.com/AWSECommerceService/latest/DG/ItemSearch.html
 			array(
@@ -98,20 +125,48 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				'MinimumPrice' => ! $fIsIndexAllOrBlended && $this->arrArgs['MinimumPrice'] ? $this->arrArgs['MinimumPrice'] : null,
 				'MinPercentageOff' => $this->arrArgs['MinPercentageOff'] ? $this->arrArgs['MinPercentageOff'] : null,
 			)
-		);
-		if ( isset( $arrResponse['Error']['Code']['Message'] ) ) 
+		);	
+		if ( $intCount <= 10 )
 			return $arrResponse;
-			
-			
-// $arrProductItems = $arrResponse['Items'];
-// unset( $arrProductItems['Item'] );
-// AmazonAutoLinks_Debug::dumpArray( $arrProductItems );			
 		
-		$arrProducts = $this->composeArray( $arrResponse );
+		// Check necessary key is set
+		if ( ! isset( $arrResponse['Items']['Item'] ) || ! is_array( $arrResponse['Items']['Item'] ) )
+			return $arrResponse;
 		
-// AmazonAutoLinks_Debug::dumpArray( $arrProducts );
+		// Calculate the required number of pages.
+		$intPage = ceil( $intCount / 10 );
+		$intFoundTotalPages = isset( $arrResponse['Items']['TotalPages'] ) ? $arrResponse['Items']['TotalPages'] : 0;
+		$intPage = $intFoundTotalPages <= $intPage ? $intFoundTotalPages : $intPage;
+		
+		$arrResponseTrunk = $arrResponse;
+		for ( $i = 0; $i <= $intPage; $i++ ) {
 			
-		return $arrProducts;
+			$arrResponse = $oAPI->request( 	
+				// Regarding the parameters see: http://docs.aws.amazon.com/AWSECommerceService/latest/DG/ItemSearch.html
+				array(
+					'Keywords' => AmazonAutoLinks_Utilities::trimDelimitedElements( $this->arrArgs['Keywords'], ',', false ),			
+					'Title' => $fIsIndexAllOrBlended ? null : AmazonAutoLinks_Utilities::trimDelimitedElements( $this->arrArgs['Keywords'], ',', false ),
+					'Operation' => $this->arrArgs['Operation'],
+					'SearchIndex' => $this->arrArgs['SearchIndex'],
+					$this->arrArgs['search_by'] => $this->arrArgs['additional_attribute'] ? $this->arrArgs['additional_attribute'] : null,
+					'Sort' => $fIsIndexAllOrBlended ? null : $this->arrArgs['Sort'],	// when the search index is All, sort cannot be specified
+					'ResponseGroup' => "Large",
+					'BrowseNode' => ! $fIsIndexAllOrBlended && isset( $this->arrArgs['BrowseNode'] ) && $this->arrArgs['BrowseNode'] ? $this->arrArgs['BrowseNode'] : null,
+					'Availability' => isset( $this->arrArgs['Availability'] ) && $this->arrArgs['Availability'] ? 'Available' : null,
+					'Condition' => $fIsIndexAllOrBlended ? null : $this->arrArgs['Condition'],
+					'ItemPage' => $i,
+					'IncludeReviewsSummary' => "True",
+					'MaximumPrice' => ! $fIsIndexAllOrBlended && $this->arrArgs['MaximumPrice'] ? $this->arrArgs['MaximumPrice'] : null,
+					'MinimumPrice' => ! $fIsIndexAllOrBlended && $this->arrArgs['MinimumPrice'] ? $this->arrArgs['MinimumPrice'] : null,
+					'MinPercentageOff' => $this->arrArgs['MinPercentageOff'] ? $this->arrArgs['MinPercentageOff'] : null,
+				)
+			);	
+			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) )
+				$arrResponseTrunk['Items']['Item'] = array_merge( $arrResponse['Items']['Item'], $arrResponseTrunk['Items']['Item'] );
+			
+		}	
+		
+		return $arrResponseTrunk;
 		
 	}
 	

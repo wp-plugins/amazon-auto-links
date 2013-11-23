@@ -328,12 +328,13 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		}
 	
 		// Insert the Tag menu item before the Settings menu item.
-		array_splice( 
-			$GLOBALS['submenu'][ $strPageSlug ], // original array
-			$intMenuPos_Setting, 	// position
-			0, 	// offset - should be 0
-			$arrMenuEntry_Tag 	// replacement array
-		);		
+		if ( isset( $arrMenuEntry_Tag ) )
+			array_splice( 
+				$GLOBALS['submenu'][ $strPageSlug ], // original array
+				$intMenuPos_Setting, 	// position
+				0, 	// offset - should be 0
+				$arrMenuEntry_Tag 	// replacement array
+			);		
 
 		// Unfortunately array_splice() will lose all the associated keys(index).
 		
@@ -749,7 +750,7 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 
 		$arrSanitizedFields = $this->oOption->sanitizeUnitOpitons( $arrSanitizedFields );
 		
-AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );			
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );			
  				
 		// Create a post.			
 		$fDoAutoInsert = $arrSanitizedFields['auto_insert'];

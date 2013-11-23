@@ -14,6 +14,7 @@ abstract class AmazonAutoLinks_Form {
 	
 		$this->strPageSlug = $strPageSlug ? $strPageSlug : $this->strPageSlug;
 		$this->oUserAds = isset( $GLOBALS['oAmazonAutoLinksUserAds'] ) ? $GLOBALS['oAmazonAutoLinksUserAds'] : new AmazonAutoLinks_UserAds;	
+		$this->oOption = $GLOBALS['oAmazonAutoLinks_Option'];
 		
 	}
 	

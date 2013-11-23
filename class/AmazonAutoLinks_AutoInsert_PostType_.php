@@ -32,8 +32,7 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 				),
 				'public' => false,
 				'menu_position' => 120,
-				// 'supports' => array( 'title', 'editor', 'comments', 'thumbnail' ),	// 'custom-fields'
-				'supports' => array( 'title' ),
+				'supports' => array( 'title' ),	// 'supports' => array( 'title', 'editor', 'comments', 'thumbnail' ),	// 'custom-fields'
 				'taxonomies' => array( '' ),
 				'menu_icon' => AmazonAutoLinks_Commons::getPluginURL( '/image/menu_icon_16x16.png' ),
 				'has_archive' => false,
@@ -46,16 +45,17 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 				'show_in_menu' => false,
 			)		
 		);
-		// $this->setAutoSave( false );
-		$this->setAuthorTableFilter( false );
-
-    
-		// add_filter( 'post_row_actions', array( $this, 'modifyRowActions' ), 10, 2 );
-		add_filter( 'bulk_actions-edit-' . $this->oProps->strPostType, array( $this, 'modifyBulkActionsDropDownList' ) );
-		
+    		
 		// Check custom actions
 		if ( is_admin() && $GLOBALS['pagenow'] == 'edit.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == AmazonAutoLinks_Commons::PostTypeSlugAutoInsert ) {
-			
+
+			// add_filter( 'post_row_actions', array( $this, 'modifyRowActions' ), 10, 2 );
+			add_filter( 'bulk_actions-edit-' . $this->oProps->strPostType, array( $this, 'modifyBulkActionsDropDownList' ) );
+		
+		
+			// $this->setAutoSave( false );
+			$this->setAuthorTableFilter( false );
+		
 			$this->strCustomNonce = uniqid();
 			set_transient( 'AAL_Nonce_' . $this->strCustomNonce, $this->strCustomNonce, 60*10 );
 			

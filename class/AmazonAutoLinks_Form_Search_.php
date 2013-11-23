@@ -278,7 +278,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Number of Items', 'amazon-auto-links' ),
 				'strType' => 'number',
-				'vMax' => 10,
+				'vMax' => $GLOBALS['oAmazonAutoLinks_Option']->getMaximumProductLinkCount() ? $GLOBALS['oAmazonAutoLinks_Option']->getMaximumProductLinkCount() : null,
 				'vMin' => 1,
 				'strDescription' => __( 'The number of product links to display.' ),
 				'vDefault' => 10,

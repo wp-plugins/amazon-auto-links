@@ -257,7 +257,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 					0 => __( 'Off', 'amazon-auto-links' ),
 				),
 				'vAfterInputTag' => ! $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['support']['ads']
-					? "<span class='description upgrade-notice'>" . sprintf( __( 'Please consider upgrading to <a href="%1$s" target="_blank">Pro</a> to help the plugin development if you set it off!', 'amazon-auto-links' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) . "</div>"
+					? "<span class='description upgrade-notice'>" . sprintf( __( 'Please consider upgrading to <a href="%1$s" target="_blank">Pro</a> to help the plugin development if you set it off!', 'amazon-auto-links' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) . "</span>"
 					: '',
 				'vDefault' => $strSection == 'support' 
 					? AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['support']['ads']

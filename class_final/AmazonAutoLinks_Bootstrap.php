@@ -222,7 +222,7 @@ final class AmazonAutoLinks_Bootstrap {
 		
 		// 11. MISC
 		if ( is_admin() )
-			$GLOBALS['oFetchTweetsUserAds'] = isset( $GLOBALS['oFetchTweetsUserAds'] ) ? $GLOBALS['oFetchTweetsUserAds'] : new AmazonAutoLinks_UserAds;
+			$GLOBALS['oAmazonAutoLinksUserAds'] = isset( $GLOBALS['oAmazonAutoLinksUserAds'] ) ? $GLOBALS['oAmazonAutoLinksUserAds'] : new AmazonAutoLinks_UserAds;
 		
 // AmazonAutoLinks_Debug::logArray( $GLOBALS['arrAmazonAutoLinks_Classes'] );	
 

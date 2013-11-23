@@ -22,7 +22,9 @@
 .upgrade-to-pro {
 	
 }
-
+.description.upgrade-notice {
+	margin-left: 1em;
+}
 
 span.disabled { 
 	color: #AAA;
