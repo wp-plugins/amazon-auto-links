@@ -136,6 +136,7 @@ These options need to be reconfigured.
 == Changelog ==
 
 = 2.0.1b =
+* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library.
 * Added: the `aal_filter_unit_output` filter.
 * Fixed: a bug in form filed layout that an enclosing tag was missing.
 * Fixed: the warning, Creating default object from empty value.
