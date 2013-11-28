@@ -9,7 +9,6 @@
  * 
  */
 abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFramework {
-// abstract class AmazonAutoLinks_AdminPage_ extends AdminPageFramework {
 
 	public function start_AmazonAutoLinks_AdminPage() {
 		
@@ -22,7 +21,6 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 			$GLOBALS['pagenow'] == 'options.php'
 			|| isset( $_GET['post_type'] ) && ( $_GET['post_type'] == AmazonAutoLinks_Commons::PostTypeSlug || $_GET['post_type'] == AmazonAutoLinks_Commons::PostTypeSlugAutoInsert ) ) 
 		{
-	
 			wp_suspend_cache_addition( true );	
 			$GLOBALS['_wp_using_ext_object_cache'] = false;
 		}
