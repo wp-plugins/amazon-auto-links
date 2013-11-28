@@ -352,7 +352,7 @@ abstract class AmazonAutoLinks_Unit {
 		
 		$arrOptions = $this->oOption->arrOptions; 
 		$arrProducts = $this->fetch( $arrURLs );
-		
+
 		$strTemplatePath = apply_filters( 
 			"aal_filter_template_path", 
 			isset( $strTemplatePath ) ? $strTemplatePath : $this->getTemplatePath( $this->arrArgs ), 

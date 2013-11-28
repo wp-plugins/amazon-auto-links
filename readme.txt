@@ -136,6 +136,7 @@ These options need to be reconfigured.
 == Changelog ==
 
 = 2.0.1b =
+* Disabled: object caching in the plugin pages and the options.php (the page that stores the settings) in order to avoid conflicts with caching plugins.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library.
 * Added: the `aal_filter_unit_output` filter.
 * Fixed: a bug in form filed layout that an enclosing tag was missing.

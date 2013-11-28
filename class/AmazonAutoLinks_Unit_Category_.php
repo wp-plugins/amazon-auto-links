@@ -133,7 +133,7 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 			
 		$oFeed = $this->getFeedObj( $arrRSSURLs );				
 		$arrProducts = $this->composeAssociativeArray( $oFeed );
-		
+
 		// Revert the error message setting for DOM
 		libxml_use_internal_errors( $fDOMError );
 		
