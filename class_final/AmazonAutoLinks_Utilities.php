@@ -216,12 +216,13 @@ final class AmazonAutoLinks_Utilities {
 	/**
 	 * Calculates the relative path from the given path.
 	 * 
-	 * This funciton is used to generate a template path.
+	 * This function is used to generate a template path.
 	 * 
 	 * @author			Gordon
 	 * @see				http://stackoverflow.com/questions/2637945/getting-relative-path-from-absolute-path-in-php/2638272#2638272
 	 */
 	static public function getRelativePath( $from, $to ) {
+		
 		// some compatibility fixes for Windows paths
 		$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
 		$to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
@@ -251,7 +252,6 @@ final class AmazonAutoLinks_Utilities {
 			}
 		}
 		return implode('/', $relPath);
-	}	
 		
-	
+	}	
 }

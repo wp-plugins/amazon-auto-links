@@ -120,9 +120,8 @@ abstract class AmazonAutoLinks_Event_ {
 			. ( empty( $arrArgs['ref'] ) ? '' : 'ref=nosim' )
 			. "?tag={$arrArgs['tag']}";
 		
-		wp_redirect( $strStoreURL );
-		die( 'shoud not be read here' );
-		
+		die( wp_redirect( $strStoreURL ) );
+				
 	}
 	
 	

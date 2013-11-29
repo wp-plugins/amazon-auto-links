@@ -128,5 +128,25 @@ final class AmazonAutoLinks_WPUtilities {
 		return $strString;
 		
 	}		
+		
+	/**
+	 * Calculates the URL from the given path.
+	 * 
+	 * 
+	 * 
+	 * @since			2.0.1
+	 * @static
+	 * @access			public
+	 * @return			string			The source url
+	 */
+	static public function getSRCFromPath( $strFilePath ) {
+				
+		// It doesn't matter whether the file is a style or not. Just use the built-in WordPress class to calculate the SRC URL.
+		$oWPStyles = new WP_Styles();	
+		$strRelativePath = '/' . AmazonAutoLinks_Utilities::getRelativePath( ABSPATH, $strFilePath );
+		$strHref = $oWPStyles->_css_href( $strRelativePath, '', '' );
+		return $strHref;
+		
+	}
 	
 }

@@ -345,7 +345,8 @@ abstract class AmazonAutoLinks_Templates_ {
 				) 
 			)	continue;
 			
-			wp_register_style( "amazon-auto-links-{$arrTemplate['strID']}", site_url() . "?amazon_auto_links_style={$arrTemplate['strID']}" );
+			wp_register_style( "amazon-auto-links-{$arrTemplate['strID']}", AmazonAutoLinks_WPUtilities::getSRCFromPath( $arrTemplate['strCSSPath'] ) );
+			// wp_register_style( "amazon-auto-links-{$arrTemplate['strID']}", site_url() . "?amazon_auto_links_style={$arrTemplate['strID']}" );
 			wp_enqueue_style( "amazon-auto-links-{$arrTemplate['strID']}" );		
 			
 		}

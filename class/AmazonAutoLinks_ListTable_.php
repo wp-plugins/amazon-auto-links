@@ -48,7 +48,8 @@ class AmazonAutoLinks_ListTable_ extends WP_List_Table {
 				$arrActions = array(
 					'version'	=> sprintf( __( 'Version', 'amazon-auto-links' ) . '&nbsp;' . $arrItem['strVersion'] ),
 					'author'	=> sprintf( '<a href="%s">' . $arrItem['strAuthor'] . '</a>', $arrItem['strAuthorURI'] ),
-					'css'		=> sprintf( '<a href="%s">' . __( 'CSS', 'amazon-auto-links' ) . '</a>', site_url() . "?amazon_auto_links_style={$arrItem['strID']}" ),
+					'css'		=> sprintf( '<a href="%s">' . __( 'CSS', 'amazon-auto-links' ) . '</a>', AmazonAutoLinks_WPUtilities::getSRCFromPath( $arrItem['strCSSPath'] ) ),
+					// 'css'		=> sprintf( '<a href="%s">' . __( 'CSS', 'amazon-auto-links' ) . '</a>', site_url() . "?amazon_auto_links_style={$arrItem['strID']}" ),
 				);
 				
 				//Return the title contents
@@ -58,7 +59,8 @@ class AmazonAutoLinks_ListTable_ extends WP_List_Table {
 				);
             case 'thumbnail':
 				if ( ! file_exists( $arrItem['strThumbnailPath'] ) ) return;
-				$strImageURL = site_url() . "?amazon_auto_links_image=" . base64_encode( $arrItem['strThumbnailPath'] );
+				$strImageURL = AmazonAutoLinks_WPUtilities::getSRCFromPath( $arrItem['strThumbnailPath'] );
+				// $strImageURL = site_url() . "?amazon_auto_links_image=" . base64_encode( $arrItem['strThumbnailPath'] );
 				return "<a class='template-thumbnail' href='#thumb'>"
 						. "<img src='{$strImageURL}' style='max-width:80px; max-height:80px;' />"
 						. "<span>"
