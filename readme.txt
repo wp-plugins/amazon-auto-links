@@ -135,15 +135,15 @@ These options need to be reconfigured.
 
 == Changelog ==
 
-= 2.0.1b =
+= 2.0.1 - 2013/11/30 =
 * Improved: the method to load template stylesheets.
 * Disabled: object caching in the plugin pages and the options.php (the page that stores the settings) in order to avoid conflicts with caching plugins.
-* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library.
+* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.4.
 * Added: the `aal_filter_unit_output` filter.
 * Fixed: a bug in form filed layout that an enclosing tag was missing.
 * Fixed: the warning, Creating default object from empty value.
 
-= 2 =
+= 2 - 2013/11/01 =
 * Changed: to ask user permission to display ads in the settings page and the support rate when the plugin is activated for the first time.
 * Changed: the unit label option to a taxonomy.
 * Changed: the url cloak to use less characters (moved to the link style option).
