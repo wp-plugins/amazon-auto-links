@@ -23,7 +23,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strTitle'			=> __( 'AWS Access Key Identifiers', 'amazon-auto-links' ),
 				'strDescription'	=> sprintf( __( 'For the Search Unit type, credentials are required to perform search requests with Amazon <a href="%1$s" target="_blank">Product Advertising API</a>.', 'amazon-auto-links' ), 'https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html' )
 					. ' ' . sprintf( __( 'The keys can be obtained by logging in to the <a href="%1$s" target="_blank">Amazon Web Services web site</a>.', 'amazon-auto-links' ), 'http://aws.amazon.com/' )
-					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), 'http://docs.aws.amazon.com/fws/1.1/GettingStartedGuide/index.html?AWSCredentials.html' ),
+					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), '?post_type=amazon_auto_links&page=aal_help&tab=notes#How_to_Obtain_Access_Key_and_Secret_Key' ),
 			),
 
 			// general

@@ -15,7 +15,7 @@ table.aal-table {
 }
 .aal-table th {
 	border-top: 0px;
-	background-color:#F5F5F5;
+	background-color:#EEEEEE;
 }
 .aal-table td img {
 	border-bottom: 0px;
@@ -27,6 +27,9 @@ table.aal-table {
 	display: block;	
 }
 
+.aal-table-row {
+	background-color: #FFF;
+}
 
 .get-pro {
 	text-align: center;

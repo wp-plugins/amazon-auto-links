@@ -94,7 +94,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The public key consisting of 20 alphabetic characters.', 'amazon-auto-links' )
 					. ' e.g.<code>022QF06E7MXBSH9DHM02</code><br />'
 					. sprintf( __( 'The keys can be obtained by logging in to the <a href="%1$s" target="_blank">Amazon Web Services web site</a>.', 'amazon-auto-links' ), 'http://aws.amazon.com/' )
-					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), 'http://docs.aws.amazon.com/fws/1.1/GettingStartedGuide/index.html?AWSCredentials.html' ),
+					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), '?post_type=amazon_auto_links&page=aal_help&tab=notes#How_to_Obtain_Access_Key_and_Secret_Key' ),
 				'strType' => 'text',
 				'vSize' => 40,
 				'fIf' => empty( $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key'] ),

@@ -43,7 +43,7 @@ abstract class AmazonAutoLinks_Form_Template_ extends AmazonAutoLinks_Form {
 				'strType' => 'textarea',	
 				'vClassAttribute' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? '' : 'read-only',
 				'vReadOnly' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? false : true, 
-				'vCols' => 100,
+				'vCols' => 60,
 				'vRows' => 4,				
 				'strDescription'	=> __( 'Sets the layout of an item. The following variables are available.', 'amazon-auto-links' ) . '<br />'
 					. '<code>%href%</code> - ' . __( 'product link url', 'amazon-auto-links' ) . '<br />'
@@ -59,7 +59,7 @@ abstract class AmazonAutoLinks_Form_Template_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Title Format', 'amazon-auto-links' ),
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strType' => 'textarea',
-				'vCols' => 100,
+				'vCols' => 60,
 				'vRows' => 4,
 				'vClassAttribute' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? '' : 'read-only',
 				'vReadOnly' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? false : true, 
@@ -74,7 +74,7 @@ abstract class AmazonAutoLinks_Form_Template_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Image Format', 'amazon-auto-links' ),
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strType' => 'textarea',
-				'vCols' => 100,
+				'vCols' => 60,
 				'vRows' => 4,
 				'vClassAttribute' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? '' : 'read-only',
 				'vReadOnly' => $GLOBALS['oAmazonAutoLinks_Option']->isAdvancedAllowed() ? false : true, 

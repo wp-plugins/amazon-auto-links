@@ -51,7 +51,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		$this->arrAutoInsertIDs = $this->getAutoInsertIDs();
 		if ( count( $this->arrAutoInsertIDs ) == 0 ) return;
 		
-		// Set up hooks - add hooks regardless whether the widget box is not for the displaying page or not
+		// Set up hooks - add hooks regardless whether the unit output is not for the displaying page or not
 		// in order to let custom hooks being added which are loaded earlier than the $wp_query object is established.
 		add_action( 'init', array( $this, 'setUpHooks' ) );
 
@@ -258,9 +258,9 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 				[is_search] => 0
 			)
 		 */
-		foreach( $arrAutoInsertOptions['disable_page_types'] as $strKey => $fDisable ) {
+		foreach( ( array ) $arrAutoInsertOptions['disable_page_types'] as $strKey => $fDisable ) {
 			
-			if ( ! $fDisable ) continue;
+			if ( ! $fDisable || ! isset( $arrSubjectPostInfo[ $strKey ] ) ) continue;
 			
 			if ( $arrSubjectPostInfo[ $strKey ] )	// if the current page type is checked,
 				return true;	// it means it is denied.
@@ -300,7 +300,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		*/
 		// Since each term id is unique throughout the WordPress site settings, drop the taxonomy slugs.
 		$arrTerms = array();
-		foreach( $arrAutoInsertOptions['disable_taxonomy'] as $strTaxonomySlug => $arrTheseTerms ) 
+		foreach( ( array ) $arrAutoInsertOptions['disable_taxonomy'] as $strTaxonomySlug => $arrTheseTerms ) 
 			$arrTerms = $arrTerms + $arrTheseTerms;	// array_merge() loses numeric index.
 	
 		// Drop unchecked items
@@ -334,7 +334,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 					[is_search] => 0
 				)
 		 */
-		$arrAutoInsertOptions['enable_page_types'] = array_filter( $arrAutoInsertOptions['enable_page_types'] );
+		$arrAutoInsertOptions['enable_page_types'] = array_filter( ( array ) $arrAutoInsertOptions['enable_page_types'] );
 		if ( ! empty( $arrAutoInsertOptions['enable_page_types'] ) ) {			// means at least one item is selected	
 			$fIsEnabled = false;
 			foreach( $arrAutoInsertOptions['enable_page_types'] as $strKey => $fEnable ) {
@@ -356,7 +356,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 				[apf_posts] => 0
 			)
 		 */		
-		$arrAutoInsertOptions['enable_post_types'] = array_filter( $arrAutoInsertOptions['enable_post_types'] );	// drop unchedked items
+		$arrAutoInsertOptions['enable_post_types'] = array_filter( ( array ) $arrAutoInsertOptions['enable_post_types'] );	// drop unchedked items
 		if ( ! empty( $arrAutoInsertOptions['enable_post_types'] ) ) {
 			if ( 
 				! ( 

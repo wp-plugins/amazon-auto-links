@@ -48,7 +48,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		$this->arrParams = array(
 			'AWSAccessKeyId'	=> $strAccessKey,
 			'Version'			=> $strVersion,
-			'AssociateTag'		=> $strAssociateID,	
+			'AssociateTag'		=> empty ( $strAssociateID ) ? self::$arrMandatoryParameters['AssociateTag'] : $strAssociateID,
 		);				
 				
 		// The parent constructor has a cache renewal scheduling task so it must be called.
@@ -214,7 +214,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		// Compose the parameter array.
 		$arrParams['Timestamp'] = gmdate('Y-m-d\TH:i:s\Z');		// GMT timestamp
 		$arrParams = array_filter( $arrParams + $this->arrParams );		// Omits empty values.
-		$arrParams = $arrParams + self::$arrMandatoryParameters;	// Append mandataory elements.
+		$arrParams = $arrParams + self::$arrMandatoryParameters;	// Append mandatory elements.
 		ksort( $arrParams );
 		
 		// Build the query string.

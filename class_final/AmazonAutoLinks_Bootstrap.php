@@ -130,7 +130,7 @@ final class AmazonAutoLinks_Bootstrap {
 		// All the necessary classes have been already loaded.
 		
 		// 0. Load Necessary libraries
-		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/admin-page-framework-for-amazon-auto-links.php' );
+		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/admin-page-framework-for-amazon-auto-links.min.php' );
 
 		// 1. Include functions.
 		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/function/AmazonAutoLinks.php' );

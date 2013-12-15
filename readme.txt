@@ -1,7 +1,7 @@
 === Amazon Auto Links ===
 Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
-Tags: amazon, link, links, ad, ads, advertisement, widget, sidebar, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
+Tags: amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.3
 Tested up to: 3.7.1
 Stable tag: 2.0.1
@@ -52,11 +52,11 @@ Yes. Otherwise, you don't get any revenue. You can get it by signing up for [Ama
 
 = Do I need Amazon Access Keys? = 
 
-For the *category* and *tag* unit types, no, you don't need them. However, for the *search* unit type, you need them as the plugin uses Amazon API. 
+For the *category* and *tag* unit types, no, you don't need them. However, for the *search* unit type, you need them as the plugin uses Amazon API.
 
-The keys can be obtained by loggin in to [Amazon Web Services](http://aws.amazon.com/) and you need to get **Access Key ID** (public key) and **Secret Access Key** (private key).
+To use the keys you need to have an account with [Amazon Product Advertising API](https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html). The keys can be obtained by logging in to [Amazon Web Services](http://aws.amazon.com/) and you need to get **Access Key ID** (public key) and **Secret Access Key** (private key).
 
-More detailed instruction can be accessed [here](http://docs.aws.amazon.com/fws/1.1/GettingStartedGuide/index.html?AWSCredentials.html).
+More detailed instruction, refer to the [**How to Obtain Access Key and Secret Key**](http://wordpress.org/plugins/amazon-auto-links/other_notes/) section.
 
 = What would be the benefit to upgrade to the pro version? =
 
@@ -80,51 +80,73 @@ Post it in the [support section](http://wordpress.org/support/plugin/amazon-auto
 = Shortcode and Function Parameters =
 The following parameters can be used for the shortcode, `[amazon_auto_links]` or the PHP function of the plugin, `AmazonAutoLinks()`
 
-* **id** - the unit ID.
+<h5><strong>id</strong> - the unit ID</h5>
 
-`[amazon_auto_links id="123"]`
+`[amazon_auto_links id="123"]` 
+<!-- separator -->
 
 `<?php AmazonAutoLinks( array( 'id' => 123 ) ); ?>`
 
-* **label** - the label associated with the units.
+<h5><strong>label</strong> - the label associated with the units</h5>
 
-`[amazon_auto_links label="WordPress"]`
-
+`[amazon_auto_links label="WordPress"]` 
+<!-- separator -->
+ 
 `<?php AmazonAutoLinks( array( 'label' => 'WordPress' ) ); ?>`
 
 = How to Create Own Template =
 
-***Step 1***
+<h5><strong>Step 1</strong></h5>
 
 Copy an existing template that is located in `...wp-content/plugins/amazon-auto-links/template` and rename the copied folder.
 
-***Step 2***
+<h5><strong>Step 2</strong></h5>
 
 Remove the files besides `style.css` and `template.php` as other files are optional.
 
-***Step 3***
+<h5><strong>Step 3</strong></h5>
  
 Edit `style.css` and `template.php` to customize the layout.
 
-***Step 4***
+<h5><strong>Step 4</strong></h5>
 
 Create a folder named `amazon-auto-links` in your theme's folder. If you are using Twenty Thirteen, the location would be `...wp-content\themes\twentythirteen\amazon-auto-links`.
 
-***Step 5***
+<h5><strong>Step 5</strong></h5>
 
 Move the working folder(the copied one) to it (the `amazon-auto-links` folder you just created).
 
-***Step 6***
+<h5><strong>Step 6</strong></h5>
 
 The plugin will automatically detect your template and add it in the template listing table. So activate it.
 
 = Upgrading V1 to V2 = 
 When upgrading v1 to v2, a few options will be lost. That includes:
 
-- Sidebar widget 
-- The positions of the inserting area
+* Sidebar widget 
+* The positions of the inserting area
 
 These options need to be reconfigured.
+
+= How to Obtain Access Key and Secret Key =
+For the search unit type, an access key and its secret key are required to perform API requests. 
+
+We need to deal with additional two separate Amazon services apart from the Amazon Associates.
+
+<h5><strong>Step 1</strong> - Create a Product Advertising API Account</h5>
+Before you create an access key, you have to make sure you have singed up with [Amazon Product Advertising API](https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html).
+
+<h5><strong>Step 2</strong> - Sign up with Amazon Web Service</h5>
+Next, create an account with Amazon Web Service(http://aws.amazon.com/). At the top right pull-down menu, you can navigate to `My Account/Console` -> `Security Credential`.
+
+<h5><strong>Step 3</strong> - Create an Access Key</h5>
+In the [Security Credentials](https://console.aws.amazon.com/iam/home?#security_credential) page, find the section named `Access Keys (Access Key ID and Secret Access Key)` and click on that.
+
+Then press the `Create New Access Key` button to create a key. Don't forget to keep the secret access key as well. Amazon has changed the policy not to let the user to obtain the secret key later on.
+
+Also note that at the point that an access key is issued, if you have not created an account with Product Advertising API, the key will be invalid. If that happens, delete the created access key and go back to the previous step.
+
+You can check if your access key is valid or not with this tool (http://associates-amazon.s3.amazonaws.com/scratchpad/index.html). 
 
 == Screenshots ==
 
@@ -134,6 +156,12 @@ These options need to be reconfigured.
 4. **Widget Sample**
 
 == Changelog ==
+
+= 2.0.2b = 
+* Updated: the information regarding obtaining an Amazon access key since the linked documentation page has been closed.
+* Added: a help page and some information pages in the plugin admin pages.
+* Tweaked: the style of the option elements in the unit definition page.
+* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.6.
 
 = 2.0.1 - 2013/11/30 =
 * Improved: the method to load template stylesheets.

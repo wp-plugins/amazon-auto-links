@@ -98,7 +98,12 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 				'strPageTitle' => __( 'About', 'amazon-auto-links' ),
 				'strPageSlug' => 'aal_about',
 				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
-			)			
+			),
+			array(
+				'strPageTitle' => __( 'Help', 'amazon-auto-links' ),
+				'strPageSlug' => 'aal_help',
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+			)					
 		);
 		if ( $this->oOption->isDebugMode() )
 			$this->addSubMenuItems(
@@ -208,6 +213,11 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		$this->addInPageTabs(
 			array(
 				'strPageSlug'	=> 'aal_about',
+				'strTabSlug'	=> 'features',
+				'strTitle'		=> __( 'Features', 'amazon-auto-links' ),			
+			),
+			array(
+				'strPageSlug'	=> 'aal_about',
 				'strTabSlug'	=> 'get_pro',
 				'strTitle'		=> __( 'Get Pro!', 'amazon-auto-links' ),
 			),
@@ -215,9 +225,30 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 				'strPageSlug'	=> 'aal_about',
 				'strTabSlug'	=> 'contact',
 				'strTitle'		=> __( 'Contact', 'amazon-auto-links' ),			
-			)			
+			),
+			array(
+				'strPageSlug'	=> 'aal_about',
+				'strTabSlug'	=> 'change_log',
+				'strTitle'		=> __( 'Change Log', 'amazon-auto-links' ),			
+			)
 		);
-		
+		$this->addInPageTabs(
+			array(
+				'strPageSlug'	=> 'aal_help',
+				'strTabSlug'	=> 'install',
+				'strTitle'		=> __( 'Installation', 'amazon-auto-links' ),
+			),
+			array(
+				'strPageSlug'	=> 'aal_help',
+				'strTabSlug'	=> 'faq',
+				'strTitle'		=> __( 'FAQ', 'amazon-auto-links' ),			
+			), 
+			array(
+				'strPageSlug'	=> 'aal_help',
+				'strTabSlug'	=> 'notes',
+				'strTitle'		=> __( 'Other Notes', 'amazon-auto-links' ),			
+			)		
+		);		
 		/*
 		 * HTML elements and styling
 		 */
@@ -236,7 +267,8 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_settings.css' ), 'aal_settings' );
 		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_define_auto_insert.css' ), 'aal_define_auto_insert' );
 		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_templates.css' ), 'aal_templates' );
-		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_about.css' ), 'aal_about' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/readme.css' ), 'aal_about' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/readme.css' ), 'aal_help' );
 		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/get_pro.css' ), 'aal_about', 'get_pro' );
 		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'template/preview/style-preview.css' ), 'aal_add_category_unit', 'select_categories' );
 
@@ -1357,8 +1389,75 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 	}
 	
 	/*
+	 * The Help Page
+	 */
+	public function do_before_aal_help() {	// do_before_ + {page slug}
+		
+		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/wordpress-plugin-readme-parser/parse-readme.php' );
+		$this->oWPReadMe = new WordPress_Readme_Parser;
+		$this->arrWPReadMe = $this->oWPReadMe->parse_readme( AmazonAutoLinks_Commons::$strPluginDirPath . '/readme.txt' );
+		
+	}
+	public function do_aal_help_install() {		// do_ + page slug + _ + tab slug
+		echo $this->arrWPReadMe['sections']['installation'];
+	}	
+	public function do_aal_help_faq() {		// do_ + page slug + _ + tab slug
+		echo $this->arrWPReadMe['sections']['frequently_asked_questions'];
+	}
+	public function do_aal_help_notes() {		// do_ + page slug + _ + tab slug
+		
+		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/simple_html_dom.php' ) ;
+
+		$html = str_get_html( $this->arrWPReadMe['remaining_content'] );
+		
+		$html->find( 'h3', 0 )->outertext = '';
+		$html->find( 'h3', 1 )->outertext = '';
+		
+		$toc = '';
+		$last_level = 0;
+
+		foreach($html->find( 'h4,h5,h6' ) as $h){	// original: foreach($html->find('h1,h2,h3,h4,h5,h6') as $h
+			$innerTEXT = trim($h->innertext);
+			$id =  str_replace(' ','_',$innerTEXT);
+			$h->id= $id; // add id attribute so we can jump to this element
+			$level = intval($h->tag[1]);
+
+			if($level > $last_level)
+				$toc .= "<ol>";
+			else{
+				$toc .= str_repeat('</li></ol>', $last_level - $level);
+				$toc .= '</li>';
+			}
+
+			$toc .= "<li><a href='#{$id}'>{$innerTEXT}</a>";
+
+			$last_level = $level;
+		}
+
+		$toc .= str_repeat('</li></ol>', $last_level);
+		$html_with_toc = $toc . "<hr>" . $html->save();		
+		
+		echo $html_with_toc;
+		
+	}	
+	
+	/*
 	 * The About page
 	 */
+	public function do_before_aal_about() {		// do_before_ + {page slug}
+
+		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/wordpress-plugin-readme-parser/parse-readme.php' );
+		$this->oWPReadMe = new WordPress_Readme_Parser;
+		$this->arrWPReadMe = $this->oWPReadMe->parse_readme( AmazonAutoLinks_Commons::$strPluginDirPath . '/readme.txt' );
+	
+	}
+	public function do_aal_about_features() {		// do_ + page slug + _ + tab slug
+		echo $this->arrWPReadMe['sections']['description'];
+	}
+	public function do_aal_about_change_log() {		// do_ + page slug + _ + tab slug
+		echo "<p>" . sprintf( __( 'The other versions of Amazon Auto Links can be downloaded from <a href="%1$s">this page</a>.', 'amazon-auto-links' ), 'http://wordpress.org/plugins/amazon-auto-links/developers/' ) . "</p>";
+		echo $this->arrWPReadMe['sections']['changelog'];
+	}
 	public function do_aal_about_get_pro() {
 		
 		$strCheckMark = AmazonAutoLinks_Commons::getPluginURL( '/image/checkmark.gif' );
@@ -1376,72 +1475,72 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 		<div class="get-pro">
 			<table class="aal-table" cellspacing="0" cellpadding="10">
 				<tbody>
-					<tr>
+					<tr class="aal-table-head">
 						<th>&nbsp;</th>
 						<th><?php _e( 'Standard', 'amazon-auto-links' ); ?></th>
 						<th><?php _e( 'Pro', 'amazon-auto-links' ); ?></th>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Image Size', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Black and White List', 'amazon-auto-links'); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Sort Order', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Direct Link Bonus', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Insert in Posts and Feeds', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Widget', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>	
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Max Number of Items to Show', 'amazon-auto-links' ); ?></td>
 						<td>10</td>
 						<td><strong><?php _e( 'Unlimited', 'amazon-auto-links' ); ?></strong></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Max Number of Categories Per Unit', 'amazon-auto-links' ); ?></td>
 						<td>3</td>
 						<td><strong><?php _e( 'Unlimited', 'amazon-auto-links' ); ?></strong></td>
 					</tr>
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Max Number of Units', 'amazon-auto-links' ); ?></td>
 						<td>3</td>
 						<td><strong><?php _e( 'Unlimited', 'amazon-auto-links' ); ?></strong></td>
 					</tr>		
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Export and Import Units', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgUnavailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>						
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Exclude Sub Categories', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgUnavailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>					
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Multiple Columns', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgUnavailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
 					</tr>						
-					<tr>
+					<tr class="aal-table-row">
 						<td><?php _e( 'Advanced Search Options', 'amazon-auto-links' ); ?></td>
 						<td><?php echo $strImgUnavailable; ?></td>
 						<td><?php echo $strImgAvailable; ?></td>
