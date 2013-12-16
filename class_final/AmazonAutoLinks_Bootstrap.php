@@ -159,7 +159,8 @@ final class AmazonAutoLinks_Bootstrap {
 			
 			$GLOBALS['strAmazonAutoLinks_UnitType'] = AmazonAutoLinks_Option::getUnitType();
 			$strUnitType = $GLOBALS['strAmazonAutoLinks_UnitType'];
-			if ( $strUnitType == 'category' || ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' ) ) {	// when saving the meta data, the GET array is empty
+			$bIsUpdatinUnit = ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' );	// when saving the meta data, the GET array is empty
+			if ( $strUnitType == 'category' || $bIsUpdatinUnit ) {	
 				new AmazonAutoLinks_MetaBox_CategoryOptions(
 					'amazon_auto_links_category_unit_options_meta_box',	// meta box ID
 					__( 'Category Unit Options', 'amazon-auto-links' ),		// meta box title
@@ -169,7 +170,8 @@ final class AmazonAutoLinks_Bootstrap {
 				);	
 				new AmazonAutoLinks_MetaBox_Categories;
 			}
-			if ( $strUnitType == 'tag' || ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' ) ) {
+			// Do not use  else here for the meta box saving process
+			if ( $strUnitType == 'tag' || $bIsUpdatinUnit ) {
 				new AmazonAutoLinks_MetaBox_TagOptions(
 					'amazon_auto_links_tag_unit_options_meta_box',	// meta box ID
 					__( 'Tag Unit Options', 'amazon-auto-links' ),		// meta box title
@@ -178,7 +180,8 @@ final class AmazonAutoLinks_Bootstrap {
 					'default'
 				);					
 			}
-			if ( $strUnitType == 'search' || ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' ) ) {	// the second condition is for when updating the unit.
+			// Do not use  else here for the meta box saving process
+			if ( $strUnitType == 'search' || $bIsUpdatinUnit ) {
 				new AmazonAutoLinks_MetaBox_SearchOptions(
 					'amazon_auto_links_search_unit_options_meta_box',	// meta box ID
 					__( 'Search Unit Options', 'amazon-auto-links' ),		// meta box title
@@ -194,7 +197,24 @@ final class AmazonAutoLinks_Bootstrap {
 					'default'			
 				);	
 			}
-		
+			// Do not use else here for the meta box saving process
+			if ( $strUnitType == 'item_lookup' || $bIsUpdatinUnit ) {	// the second condition is for when updating the unit.
+				new AmazonAutoLinks_MetaBox_ItemLookupOptions(
+					'amazon_auto_links_item_lookup_unit_options_meta_box',	// meta box ID
+					__( 'Item Look-up Options', 'amazon-auto-links' ),		// meta box title
+					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+					'normal',
+					'default'			
+				);
+				new AmazonAutoLinks_MetaBox_ItemLookupOptions_Advanced(
+					'amazon_auto_links_advanced_item_lookup_unit_options_meta_box',	// meta box ID
+					__( 'Advanced Item Look-up Options', 'amazon-auto-links' ),		// meta box title
+					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+					'normal',
+					'default'				
+				);
+			}			
+			
 			new AmazonAutoLinks_MetaBox_Template(
 				'amazon_auto_links_template_meta_box',	// meta box ID
 				__( 'Template', 'amazon-auto-links' ),		// meta box title

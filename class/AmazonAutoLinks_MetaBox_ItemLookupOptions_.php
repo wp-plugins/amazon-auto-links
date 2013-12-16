@@ -1,11 +1,11 @@
 <?php
-abstract class AmazonAutoLinks_MetaBox_SearchOptions_ extends AmazonAutoLinks_AdminPageFramework_MetaBox {
-
+abstract class AmazonAutoLinks_MetaBox_ItemLookupOptions_ extends AmazonAutoLinks_AdminPageFramework_MetaBox {
+		
 	public function setUp() {
 			
 		$oSearchOptionFields = new AmazonAutoLinks_Form_Search;
-		foreach( $oSearchOptionFields->getFieldsOfProductSearch( '', '' ) as $arrField ) {
-						
+		foreach( $oSearchOptionFields->getFieldOfItemLookUp( '', '' ) as $arrField ) {
+					
 			if ( ! isset( $arrField['strFieldID'] ) || $arrField['strFieldID'] == 'unit_title' ) continue;
 			
 			// remove the section key because meta box don't use it. ( it is only necessary for Settings API for admin pages. )
@@ -34,24 +34,11 @@ abstract class AmazonAutoLinks_MetaBox_SearchOptions_ extends AmazonAutoLinks_Ad
 		
 	}
 	
-	
-	public function validation_AmazonAutoLinks_MetaBox_SearchOptions( $arrInput, $arrOriginal ) {	// validation_ + extended class name
+	public function validation_AmazonAutoLinks_MetaBox_ItemLookupOptions( $arrInput, $arrOriginal ) {	// validation_ + extended class name
 		
-		$arrInput['count'] = $this->oUtil->fixNumber( 
-			$arrInput['count'], 	// number to sanitize
-			10, 	// default
-			1, 		// minimum
-			$GLOBALS['oAmazonAutoLinks_Option']->getMaximumProductLinkCount() // max
-		);
-		$arrInput['image_size'] = $this->oUtil->fixNumber( 
-			$arrInput['image_size'], 	// number to sanitize
-			160, 	// default
-			0, 		// minimum
-			500 	// max
-		);				
-// AmazonAutoLinks_Debug::logArray( $arrInput );		
+		$arrInput = $GLOBALS['oAmazonAutoLinks_Option']->sanitizeUnitOpitons( $arrInput );	
 		return $arrInput;
 		
 	}
-	
+			
 }

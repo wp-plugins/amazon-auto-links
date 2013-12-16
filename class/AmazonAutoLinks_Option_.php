@@ -130,12 +130,13 @@ abstract class AmazonAutoLinks_Option_ {
 	
 	public function sanitizeUnitOpitons( $arrUnitOptions ) {
 		
-		$arrUnitOptions['count'] = AmazonAutoLinks_Utilities::fixNumber( 
-			$arrUnitOptions['count'], 	// number to sanitize
-			10, 	// default
-			1, 		// minimum
-			$this->getMaximumProductLinkCount() 	// max
-		);			
+		if( isset( $arrUnitOptions['count'] ) )	// the item lookup search unit type does not have a count field
+			$arrUnitOptions['count'] = AmazonAutoLinks_Utilities::fixNumber( 
+				$arrUnitOptions['count'], 	// number to sanitize
+				10, 	// default
+				1, 		// minimum
+				$this->getMaximumProductLinkCount() 	// max
+			);			
 		$arrUnitOptions['image_size'] = AmazonAutoLinks_Utilities::fixNumber( 
 			$arrUnitOptions['image_size'], 	// number to sanitize
 			160, 	// default
@@ -148,8 +149,28 @@ abstract class AmazonAutoLinks_Option_ {
 				4, 	// default
 				1, 		// minimum
 				$this->arrOptions['aal_settings']['template']['max_column'] 	// max
-			);				
+			);			
+
+		// For the 'item_lookup' unit type
+		if ( isset( $arrUnitOptions['unit_type'] ) && $arrUnitOptions['unit_type'] == 'item_lookup' ) 
+			$this->sanitizeUnitOptions_ItemLookUp( $arrUnitOptions );		
+		
 		return $arrUnitOptions;
+		
+	}
+	/**
+	 * Sanitizes the unit options of the item_lookup unit type.
+	 * 
+	 * @since			2.0.2
+	 */
+	protected function sanitizeUnitOptions_ItemLookUp( array &$aUnitOptions ) {
+		
+		// if the ISDN is spceified, the search index must be set to Books.
+		if ( isset( $aUnitOptions['IdType'], $aUnitOptions['SearchIndex'] ) && $aUnitOptions['IdType'] == 'ISBN' )
+			$aUnitOptions['SearchIndex'] = 'Books';
+		
+		$aUnitOptions['ItemId'] =  trim( AmazonAutoLinks_Utilities::trimDelimitedElements( $aUnitOptions['ItemId'], ',' ) );
+		
 		
 	}
 	

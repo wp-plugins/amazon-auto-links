@@ -117,17 +117,22 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 			$intCacheDuration,
 			$strLocale ? $strLocale : $this->strLocale
 		);
-			
+	
 		// If an error occurs, 
-		if ( is_array( $vResponse ) && isset( $vResponse['Error'] ) )
+		if ( ! is_string( $vResponse ) )	// if ( is_array( $vResponse ) && isset( $vResponse['Error'] ) )
 			return $vResponse;
 			
 		$strXMLResponse = $vResponse;
-			
+		
+		// It returns a string if it's not a valid XML content.
+		$osXML = AmazonAutoLinks_Utilities::getXMLObject( $strXMLResponse );
+		if ( is_string( $osXML ) ) 
+			return array( 'Error' => array( 'Message' => $osXML, 'Code' => 'Invalid XML' ) );	// compose an error array. 
+					
 		// Return the result with the specified type.
 		if ( $strType == 'xml' ) return $strXMLResponse;
-		if ( $strType == 'array' ) return AmazonAutoLinks_Utilities::convertXMLtoArray( $strXMLResponse );
-		if ( $strType == 'json' ) return AmazonAutoLinks_Utilities::convertXMLtoJSON( $strXMLResponse );
+		if ( $strType == 'array' ) return AmazonAutoLinks_Utilities::convertXMLtoArray( $osXML );
+		if ( $strType == 'json' ) return AmazonAutoLinks_Utilities::convertXMLtoJSON( $osXML );
 		
 	}
 	
@@ -135,6 +140,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 	 * 
 	 * 
 	 * @remark			Used by the parent class.
+	 * @return			string|array			Returns the retrieved HTML body string, and an error array on failure.
 	 */
 	public function requestSigned( $strRequestURI, $arrHTTPArgs=array() ) {
 		
@@ -159,22 +165,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 			);
 
 		return wp_remote_retrieve_body( $vResponse );	// returns the xml document.
-		
-		return $strBody;		
-		
-		// Return the result with the given file type.
-		if ( $strType == 'xml' )
-			return $strBoxy;
-			
-		$oXML = simplexml_load_string( $strBody );
-		$oJSON = json_encode( $oXML );
-		
-		if ( $strType == 'json' )
-			return json_decode( $oJSON );
-			
-		$arrResponse = json_decode( $oJSON, true );	
-		return $arrResponse;		
-		
+				
 	}
 		
 	/**

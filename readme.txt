@@ -158,6 +158,8 @@ You can check if your access key is valid or not with this tool (http://associat
 == Changelog ==
 
 = 2.0.2b = 
+* Added: the `Item Look-up` unit type which allows to pick one or more items by item ID.
+* Fixed: the method handling Amazon Product Advertising API to treat invalid XML returned by the API as an error.
 * Updated: the information regarding obtaining an Amazon access key since the linked documentation page has been closed.
 * Added: a help page and some information pages in the plugin admin pages.
 * Tweaked: the style of the option elements in the unit definition page.

@@ -65,6 +65,9 @@ abstract class AmazonAutoLinks_Units_ {
 				case 'search':
 					$oAALSearch = new AmazonAutoLinks_Unit_Search( $arrUnitOptions );
 					return $oAALSearch->getOutput();
+				case 'item_lookup':
+					$oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );				
+					return $oAALSearch->getOutput();
 				default:
 					return AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type.', 'amazon-auto-links' );
 

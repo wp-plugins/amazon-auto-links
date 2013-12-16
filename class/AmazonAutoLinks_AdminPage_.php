@@ -135,15 +135,22 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		$this->addInPageTabs(
 			array(
 				'strPageSlug'	=> 'aal_add_search_unit',
-				'strTabSlug'	=> 'first_tab',
+				'strTabSlug'	=> 'initial_search_settings',
 				'strTitle'		=> __( 'Initial Options', 'amazon-auto-links' ),
 				'fHide'			=> true,
 			),		
 			array(
 				'strPageSlug'	=> 'aal_add_search_unit',
-				'strTabSlug'	=> 'second_tab',
-				'strTitle'		=> __( 'Proceeding Options', 'amazon-auto-links' ),
-				'strParentTabSlug' => 'first_tab',
+				'strTabSlug'	=> 'search_products',
+				'strTitle'		=> __( 'Product Search', 'amazon-auto-links' ),
+				'strParentTabSlug' => 'initial_search_settings',
+				'fHide'			=> true,
+			),
+			array(
+				'strPageSlug'	=> 'aal_add_search_unit',
+				'strTabSlug'	=> 'item_lookup',
+				'strTitle'		=> __( 'Item Lookup', 'amazon-auto-links' ),
+				'strParentTabSlug' => 'initial_search_settings',
 				'fHide'			=> true,
 			)
 		);
@@ -296,10 +303,16 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		$oSearchFormElements = new AmazonAutoLinks_Form_Search( 'aal_add_search_unit' );
 		call_user_func_array( array( $this, "addSettingSections" ), $oSearchFormElements->getSections() );
 		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search' ) );
-		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_second' ) );
-		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_advanced' ) );
-		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_auto_insert' ) );
-		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_template' ) );
+		
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_second', 'search2_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_advanced', 'search2_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_auto_insert', 'search2_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_template', 'search2_' ) );
+		
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_item_lookup', 'search3_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_item_lookup_advanced', 'search3_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_auto_insert2', 'search3_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_template2', 'search3_' ) );
 		
 		// Form elements - Add / Edit Auto Insert
 		$oAutoInsertFormElements = new AmazonAutoLinks_Form_AutoInsert( 'aal_define_auto_insert' );
@@ -617,7 +630,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 // AmazonAutoLinks_Debug::logArray( '--After Escaping KSES Filter--' );
 // AmazonAutoLinks_Debug::logArray( $arrAllowedHTMLTags );
 // AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['item_format'] );
-AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 // AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['title_format'] );
 
 		// Create a post.			
@@ -659,7 +672,7 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 	 * The Add Unit by Search Page
 	 * 
 	 */ 	
-	public function load_aal_add_search_unit_second_tab() {
+	public function load_aal_add_search_unit_search_products() {
 
 		// Validation callbacks sets it in the $_POST array so check the $_REQUEST array.
 		if ( ! isset( $_REQUEST['transient_id'] ) || false === get_transient( "AAL_CreateUnit_" . $_REQUEST['transient_id'] ) ) {
@@ -672,7 +685,7 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 	
 	}
 	
-	public function validation_aal_add_search_unit_first_tab( $arrInput, $arrOldInput ) {
+	public function validation_aal_add_search_unit_initial_search_settings( $arrInput, $arrOldInput ) {	// validation_{page slug}_{tab slug}
 		
 		$fVerified = true;
 		$arrErrors = array();
@@ -730,7 +743,7 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 				
 			}		
 
-			// Authenticated so set the keys in the Settings option array.
+			// It is authenticated, so set the keys in the Settings option array.
 			// Since the validation_ callbacks internally merge with the framework's property option array,
 			// modify the property array, NOT the option object that plugin creates.
 			$this->oProps->arrOptions['aal_settings']['authentication_keys']['access_key'] = $strPublicKey;
@@ -754,10 +767,7 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 			return $arrOldInput;
 			
 		}					
-		
-// AmazonAutoLinks_Debug::logArray( 'validation passed' );	
-// AmazonAutoLinks_Debug::logArray( $arrInput );	
-		
+				
 		// Drop the sections.
 		$arrNewFields = array();
 		foreach( $arrInput['aal_add_search_unit'] as $strSection => $arrFields  ) 
@@ -768,15 +778,41 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 		foreach( $arrNewFields as $strKey => $vValue ) 
 			$arrSanitizedFields[ preg_replace( '/^search_/', '', $strKey ) ] = $vValue;
 	
+		// Set the unit type based on the chosen one.
+		$arrSanitizedFields['unit_type'] = $arrSanitizedFields['Operation'] == 'ItemLookup'
+			? 'item_lookup'
+			: 'search';
+			
+// AmazonAutoLinks_Debug::logArray( 'validation passed' );	
+// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );	
+			
+	
 		// Save the transient
 		$arrTempUnitOptions = ( array ) get_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'] );
-		set_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions ), 60*10*6*24 );
-													
-		return $arrInput;
-		
+		$aSavingUnitOptions = AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions );
+		set_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], $aSavingUnitOptions, 60*10*6*24 );
+									
+		// Redirect to the appropriate page by the search type.
+		$sURL = $aSavingUnitOptions['Operation'] == 'ItemLookup'
+			? add_query_arg( array( 'tab' => 'item_lookup', 'transient_id' => $arrSanitizedFields['transient_id'] ) + $_GET, $arrSanitizedFields['bounce_url'] )
+			: add_query_arg( array( 'tab' => 'search_products', 'transient_id' => $arrSanitizedFields['transient_id'] ) + $_GET, $arrSanitizedFields['bounce_url'] );
+		die( wp_redirect( $sURL ) );
+											
 	}
 	
-	public function validation_aal_add_search_unit_second_tab( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug
+	public function validation_aal_add_search_unit_search_products( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug
+		$this->createSearchUnit( $arrInput );
+	}
+
+	public function validation_aal_add_search_unit_item_lookup( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug		
+		$this->createSearchUnit( $arrInput );
+	}
+	
+	/**
+	 * Creates a search unit type 
+	 * @since			2.0.2
+	 */
+	protected function createSearchUnit( $arrInput ) {
 		
 		// Drop the sections.
 		$arrNewFields = array();
@@ -786,12 +822,9 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 		// Remove the search_ prefix in the keys.
 		$arrSanitizedFields = array();
 		foreach( $arrNewFields as $strKey => $vValue ) 
-			$arrSanitizedFields[ preg_replace( '/^search2_/', '', $strKey ) ] = $vValue;
-
+			$arrSanitizedFields[ preg_replace( '/^search\d_/', '', $strKey ) ] = $vValue;
 		$arrSanitizedFields = $this->oOption->sanitizeUnitOpitons( $arrSanitizedFields );
-		
-// AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );			
- 				
+
 		// Create a post.			
 		$fDoAutoInsert = $arrSanitizedFields['auto_insert'];
 		unset( $arrSanitizedFields['auto_insert'] );
@@ -799,13 +832,10 @@ AmazonAutoLinks_Debug::logArray( $arrSanitizedFields['image_format'] );
 		
 		// Create an auto insert
 		if ( $fDoAutoInsert ) {
-			
 			$arrAutoInsertOptions = array( 
 					'unit_ids' => array( $intNewPostID ) 
 				) + AmazonAutoLinks_Form_AutoInsert::$arrStructure_AutoInsertOptions;
-			
 			AmazonAutoLinks_Option::insertPost( $arrAutoInsertOptions, AmazonAutoLinks_Commons::PostTypeSlugAutoInsert );
-			
 		}		
 		die( wp_redirect( 
 			// e.g. http://.../wp-admin/post.php?post=196&action=edit&post_type=amazon_auto_links

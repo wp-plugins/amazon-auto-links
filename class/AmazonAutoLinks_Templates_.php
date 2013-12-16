@@ -62,6 +62,7 @@ abstract class AmazonAutoLinks_Templates_ {
 	public function getPluginDefaultTemplateID( $strType='category' ) {
 		
 		switch ( $strType ) {
+			case 'item_lookup':
 			case 'search':
 				$strDirBaseName = 'search';
 				break;

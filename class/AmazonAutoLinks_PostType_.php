@@ -131,6 +131,10 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 				$oAALSearch = new AmazonAutoLinks_Unit_Search( $arrUnitOptions );
 				$oAALSearch->render();
 				break;
+			case 'item_lookup':
+				$oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );
+				$oAALSearch->render();
+				break;
 			default:
 				echo AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type.', 'amazon-auto-links' );
 				break;
@@ -203,8 +207,10 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 	public function cell_amazon_auto_links_unit_type( $strCell, $intPostID ) {
 		
 		switch ( get_post_meta( $intPostID, 'unit_type', true ) ) {
-			case 'search':
-				return __( 'Search', 'amazon-auto-links' );
+			case 'item_lookup':
+				return __( 'Search - Item Look-up', 'amazon-auto-links' );
+ 			case 'search':
+				return __( 'Search - Products', 'amazon-auto-links' );
 			case 'tag':
 				return __( 'Tag', 'amazon-auto-links' );
 			case 'category':

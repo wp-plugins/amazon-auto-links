@@ -92,10 +92,23 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	public function setAPIRequestCache( $strRequestURI, $arrHTTPArgs, $strTransientID='' ) {
 		
 		// Perform the API request. - requestSigned() should be defined in the extended class.
-		$strXMLResponse =  $this->requestSigned( $strRequestURI, $arrHTTPArgs );
+		$asXMLResponse = $this->requestSigned( $strRequestURI, $arrHTTPArgs );
+
+		// If it has a HTTP connection error, an array is returned.
+		if ( is_array( $asXMLResponse ) )
+			return $asXMLResponse;
 		
-		$arrResponse = AmazonAutoLinks_Utilities::convertXMLtoArray( $strXMLResponse );
+		// If it's not a string, something went wrong.
+		if ( ! is_string( $asXMLResponse ) )
+			return $asXMLResponse;
 			
+		$osXML = AmazonAutoLinks_Utilities::getXMLObject( $asXMLResponse );
+		// If it's not a valid XML, it returns a string.
+		if ( ! is_object( $osXML ) )
+			return array( 'Error' => array( 'Message' => $osXML, 'Code' => 'Invalid XML' ) );	// compose an error array.
+			
+		$arrResponse = AmazonAutoLinks_Utilities::convertXMLtoArray( $osXML );
+
 // Debug
 // AmazonAutoLinks_Debug::logArray( 'the data is fetched: ' . $strRequestURI, dirname( __FILE__ ) . '/cache.txt' );		
  
@@ -112,9 +125,9 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		$strTransientID = empty( $strTransientID ) 
 			? AmazonAutoLinks_Commons::TransientPrefix . "_" . md5( trim( $strRequestURI ) )
 			: $strTransientID;
-		$this->setTransient( $strTransientID, $strXMLResponse );
+		$this->setTransient( $strTransientID, $asXMLResponse );
 
-		return  $strXMLResponse;
+		return  $asXMLResponse;
 		
 	}
 	

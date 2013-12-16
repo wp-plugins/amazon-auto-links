@@ -182,22 +182,52 @@ final class AmazonAutoLinks_Utilities {
 	}	
 
 	/**
+	 * Returns an XML object from the given XML string content.
+	 * 
+	 * Returns a tag-stripped string on error.
+	 */
+	static public function getXMLObject( $sXML ) {
+		
+		$bDOMError = libxml_use_internal_errors( true );	// Disable DOM related errors to be displayed.
+		$oXML = simplexml_load_string( $sXML );
+		libxml_use_internal_errors( $bDOMError );	// Restore the error setting.
+		if ( $oXML !== false )
+			return $oXML;
+			
+		// Possibly it's an 'HTML output
+		return strip_tags( $sXML );
+		
+		// return libxml_get_errors();
+		
+	}
+	
+	/**
 	 * Converts an XML document to json.
 	 * 
 	 */
-	static public function convertXMLtoJSON( $strXML ) {
+	static public function convertXMLtoJSON( $osXML ) {
+				
+		if ( is_object( $osXML ) )
+			return json_encode( $osXML );
+				
+		// Otherwise, it's a string.
+		$bDOMError = libxml_use_internal_errors( true );	// Disable DOM related errors to be displayed.
+		$oXML = simplexml_load_string( $osXML );
+		libxml_use_internal_errors( $bDOMError );	// Restore the error setting.
+		if ( $oXML !== false )
+			return json_encode( $oXML );	// Process XML structure here
 		
-		$oXML = simplexml_load_string( $strXML );
-		return json_encode( $oXML );
+		return  json_encode( libxml_get_errors() );	// libxml_get_errors() returns an array
+					
 	}
 	
 	/**
 	 * Converts an XML document to associative array.
 	 */
-	static public function convertXMLtoArray( $strXML ) {
+	static public function convertXMLtoArray( $osXML ) {
 		
-		$strJSON = self::convertXMLtoJSON( $strXML );
-		return json_decode( $strJSON, true );
+		$sJSON = self::convertXMLtoJSON( $osXML );
+		return json_decode( $sJSON, true );
 		
 	}
 	
