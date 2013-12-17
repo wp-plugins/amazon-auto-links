@@ -189,6 +189,6 @@ textarea.read-only {
 }		
 
 /* To give the footer area more space */
-#wpcontent, #wpbody {  
-	margin-bottom: 72px; 
-}"
+#wpbody-content {
+	padding-bottom: 140px;
+}
