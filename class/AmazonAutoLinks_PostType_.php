@@ -180,6 +180,9 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 	/*
 	 * Callback methods
 	 */
+	
+	protected $arrPostmeta = array();
+	
 	public function cell_amazon_auto_links_amazon_auto_links_tag( $strCell, $intPostID ) {	// cell_ + post type slug + column name
 		
 		// Get the genres for the post.
@@ -205,7 +208,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 		
 	}
 	public function cell_amazon_auto_links_unit_type( $strCell, $intPostID ) {
-		
+				
 		switch ( get_post_meta( $intPostID, 'unit_type', true ) ) {
 			case 'item_lookup':
 				return __( 'Search - Item Look-up', 'amazon-auto-links' );

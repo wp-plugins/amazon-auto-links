@@ -15,13 +15,13 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		// Set objects
 		$this->oOption = & $GLOBALS['oAmazonAutoLinks_Option'];
 		$this->oEncode = new AmazonAutoLinks_Encrypt;
-		
+
 		// Disable object caching in the plugin pages and the options.php (the page that stores the settings)
 		if ( 
 			$GLOBALS['pagenow'] == 'options.php'
 			|| isset( $_GET['post_type'] ) && ( $_GET['post_type'] == AmazonAutoLinks_Commons::PostTypeSlug || $_GET['post_type'] == AmazonAutoLinks_Commons::PostTypeSlugAutoInsert ) ) 
 		{
-			wp_suspend_cache_addition( true );	
+			// wp_suspend_cache_addition( true );	
 			$GLOBALS['_wp_using_ext_object_cache'] = false;
 		}
 	
@@ -256,6 +256,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 				'strTitle'		=> __( 'Other Notes', 'amazon-auto-links' ),			
 			)		
 		);		
+	
 		/*
 		 * HTML elements and styling
 		 */

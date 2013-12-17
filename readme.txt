@@ -157,7 +157,8 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.2b = 
+= 2.0.2 - 12/17/2013 = 
+* Fixed: an issue that too many database queries were performed in the plugin setting pages as of v2.0.1 due to disabling object caching.
 * Added: the `Item Look-up` unit type which allows to pick one or more items by item ID.
 * Fixed: the method handling Amazon Product Advertising API to treat invalid XML returned by the API as an error.
 * Updated: the information regarding obtaining an Amazon access key since the linked documentation page has been closed.
@@ -165,7 +166,7 @@ You can check if your access key is valid or not with this tool (http://associat
 * Tweaked: the style of the option elements in the unit definition page.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.6.
 
-= 2.0.1 - 2013/11/30 =
+= 2.0.1 - 11/30/2013 =
 * Improved: the method to load template stylesheets.
 * Disabled: object caching in the plugin pages and the options.php (the page that stores the settings) in order to avoid conflicts with caching plugins.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.4.
@@ -173,7 +174,7 @@ You can check if your access key is valid or not with this tool (http://associat
 * Fixed: a bug in form filed layout that an enclosing tag was missing.
 * Fixed: the warning, Creating default object from empty value.
 
-= 2 - 2013/11/01 =
+= 2 - 11/01/2013 =
 * Changed: to ask user permission to display ads in the settings page and the support rate when the plugin is activated for the first time.
 * Changed: the unit label option to a taxonomy.
 * Changed: the url cloak to use less characters (moved to the link style option).

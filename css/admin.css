@@ -174,3 +174,21 @@ textarea.read-only {
 	.amazon_auto_links_col_element_of_12
 	{	width: 49.2%;  }			
 }
+
+
+/* Footer page load info */
+/* Page Load Stats */
+#admin-page-framework-page-load-stats {
+	clear: both;
+	display: inline-block;
+	width: 100%
+}
+#admin-page-framework-page-load-stats li{
+	display: inline;
+	margin-right: 1em;
+}		
+
+/* To give the footer area more space */
+#wpcontent, #wpbody {  
+	margin-bottom: 72px; 
+}"

@@ -236,11 +236,13 @@ Class WordPress_Readme_Parser {
 		}
 		return $text;
 	}
-
+	
+	protected $sCharSet;
+	
 	function sanitize_text( $text ) { // not fancy
 		$text = strip_tags($text);
 		// $text = esc_html($text);
-		$text = htmlspecialchars( $text, ENT_QUOTES, get_bloginfo( 'charset' ) );
+		$text = htmlspecialchars( $text, ENT_QUOTES, $this->sCharSet ? $this->sCharSet : $this->sCharSet = get_bloginfo( 'charset' ) );
 		$text = trim($text);
 		return $text;
 	}
