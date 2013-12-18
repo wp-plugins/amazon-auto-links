@@ -152,6 +152,13 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 				'strTitle'		=> __( 'Item Lookup', 'amazon-auto-links' ),
 				'strParentTabSlug' => 'initial_search_settings',
 				'fHide'			=> true,
+			),
+			array(
+				'strPageSlug'	=> 'aal_add_search_unit',
+				'strTabSlug'	=> 'similarity_lookup',
+				'strTitle'		=> __( 'Similarity Lookup', 'amazon-auto-links' ),
+				'strParentTabSlug' => 'initial_search_settings',
+				'fHide'			=> true,
 			)
 		);
 		// The Settings page
@@ -314,6 +321,11 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_item_lookup_advanced', 'search3_' ) );
 		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_auto_insert2', 'search3_' ) );
 		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_template2', 'search3_' ) );
+
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'similarity_lookup', 'search4_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'similarity_lookup_advanced', 'search4_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_auto_insert3', 'search4_' ) );
+		call_user_func_array( array( $this, "addSettingFields" ), $oSearchFormElements->getFields( 'search_template3', 'search4_' ) );
 		
 		// Form elements - Add / Edit Auto Insert
 		$oAutoInsertFormElements = new AmazonAutoLinks_Form_AutoInsert( 'aal_define_auto_insert' );
@@ -780,24 +792,31 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 			$arrSanitizedFields[ preg_replace( '/^search_/', '', $strKey ) ] = $vValue;
 	
 		// Set the unit type based on the chosen one.
-		$arrSanitizedFields['unit_type'] = $arrSanitizedFields['Operation'] == 'ItemLookup'
-			? 'item_lookup'
-			: 'search';
-			
+		// Redirect to the appropriate page by the search type.
+		switch( $arrSanitizedFields['Operation'] ) {
+			case 'ItemSearch':
+				$arrSanitizedFields['unit_type'] = 'search';
+				$sTabSlug = 'search_products';				
+				break;
+			case 'ItemLookup':
+				$arrSanitizedFields['unit_type'] = 'item_lookup';
+				$sTabSlug = 'item_lookup';
+				break;
+			case 'SimilarityLookup':
+				$arrSanitizedFields['unit_type'] = 'similarity_lookup';
+				$sTabSlug = 'similarity_lookup';
+				break;
+		}
 // AmazonAutoLinks_Debug::logArray( 'validation passed' );	
 // AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );	
 			
-	
 		// Save the transient
 		$arrTempUnitOptions = ( array ) get_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'] );
 		$aSavingUnitOptions = AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions );
 		set_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], $aSavingUnitOptions, 60*10*6*24 );
 									
-		// Redirect to the appropriate page by the search type.
-		$sURL = $aSavingUnitOptions['Operation'] == 'ItemLookup'
-			? add_query_arg( array( 'tab' => 'item_lookup', 'transient_id' => $arrSanitizedFields['transient_id'] ) + $_GET, $arrSanitizedFields['bounce_url'] )
-			: add_query_arg( array( 'tab' => 'search_products', 'transient_id' => $arrSanitizedFields['transient_id'] ) + $_GET, $arrSanitizedFields['bounce_url'] );
-		die( wp_redirect( $sURL ) );
+		// Go to the next page.
+		die( wp_redirect( add_query_arg( array( 'tab' => $sTabSlug, 'transient_id' => $arrSanitizedFields['transient_id'] ) + $_GET, $arrSanitizedFields['bounce_url'] ) ) );
 											
 	}
 	
@@ -806,6 +825,10 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	}
 
 	public function validation_aal_add_search_unit_item_lookup( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug		
+		$this->createSearchUnit( $arrInput );
+	}
+
+	public function validation_aal_add_search_unit_similarity_lookup( $arrInput, $arrOldInput ) {	// validation_ + page slug + tab slug		
 		$this->createSearchUnit( $arrInput );
 	}
 	
@@ -1633,6 +1656,5 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 		$this->oDebug->dumpArray( $arrV1Options );
 			
 	 }
-	
 	
 }

@@ -5,6 +5,7 @@
  * @package     	Amazon Auto Links
  * @copyright   	Copyright (c) 2013, Michael Uno
  * @license     	http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since			2.0.2
  */
 
 abstract class AmazonAutoLinks_Unit_Search_ItemLookup_ extends AmazonAutoLinks_Unit_Search_ {

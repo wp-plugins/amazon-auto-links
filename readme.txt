@@ -157,6 +157,10 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.3 = 
+* Added: the `Similarity Look-up` unit type which allows to display similar products by ASIN.
+* Changed: the message "Could not identify the unit type." to be inserted as an HTML comment.
+
 = 2.0.2 - 12/17/2013 = 
 * Fixed: an issue that too many database queries were performed in the plugin setting pages as of v2.0.1 due to disabling object caching.
 * Added: the `Item Look-up` unit type which allows to pick one or more items by item ID.

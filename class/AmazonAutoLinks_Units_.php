@@ -68,11 +68,12 @@ abstract class AmazonAutoLinks_Units_ {
 				case 'item_lookup':
 					$oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );				
 					return $oAALSearch->getOutput();
+				case 'similarity_lookup':
+					$oAALSearch = new AmazonAutoLinks_Unit_Search_SimilarityLookup( $arrUnitOptions );				
+					return $oAALSearch->getOutput();				
 				default:
-					return AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type.', 'amazon-auto-links' );
-
+					return "<!-- " . AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type. Please make sure to update the auto-insert definition if you have deleted the unit.', 'amazon-auto-links' ) . " -->";
 			}		
-			
 		}
 		
 		protected function getPostIDsByLabel( $arrLabels, $strOperator ) {

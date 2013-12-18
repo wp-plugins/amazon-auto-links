@@ -68,8 +68,8 @@ final class AmazonAutoLinks_Bootstrap {
 		// Stores request url's transient info.
 		$GLOBALS['arrAmazonAutoLinks_APIRequestURIs'] = array();
 	
-		// Stores the current unit type in admin pages.
-		$GLOBALS['strAmazonAutoLinks_UnitType'] = '';	//
+		// Stores the current unit type in admin pages. This will be set in the method that loads meta boxes.
+		$GLOBALS['strAmazonAutoLinks_UnitType'] = '';
 		
 		// ASINs blacklist 
 		$GLOBALS['arrBlackASINs'] = array();
@@ -149,82 +149,13 @@ final class AmazonAutoLinks_Bootstrap {
 		if ( is_admin() ) 
 			new AmazonAutoLinks_AdminPage( AmazonAutoLinks_Commons::AdminOptionKey, $this->strFilePath );		
 		
-		// 5. Post Type
-		// Should not use "if ( is_admin() )" for the this class because posts of custom post type can be accessed from front-end regular pages.
+		// 5. Post Type - It should not use "if ( is_admin() )" for the this class because posts of custom post type can be accessed from front-end regular pages.
 		new AmazonAutoLinks_PostType( AmazonAutoLinks_Commons::PostTypeSlug, null, $this->strFilePath ); 	// post type slug
 		new AmazonAutoLinks_AutoInsert_PostType( AmazonAutoLinks_Commons::PostTypeSlugAutoInsert, null, $this->strFilePath ); 	// post type slug
 	
 		// 6. Meta Boxes
-		if ( is_admin() ) {
-			
-			$GLOBALS['strAmazonAutoLinks_UnitType'] = AmazonAutoLinks_Option::getUnitType();
-			$strUnitType = $GLOBALS['strAmazonAutoLinks_UnitType'];
-			$bIsUpdatinUnit = ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' );	// when saving the meta data, the GET array is empty
-			if ( $strUnitType == 'category' || $bIsUpdatinUnit ) {	
-				new AmazonAutoLinks_MetaBox_CategoryOptions(
-					'amazon_auto_links_category_unit_options_meta_box',	// meta box ID
-					__( 'Category Unit Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'
-				);	
-				new AmazonAutoLinks_MetaBox_Categories;
-			}
-			// Do not use  else here for the meta box saving process
-			if ( $strUnitType == 'tag' || $bIsUpdatinUnit ) {
-				new AmazonAutoLinks_MetaBox_TagOptions(
-					'amazon_auto_links_tag_unit_options_meta_box',	// meta box ID
-					__( 'Tag Unit Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'
-				);					
-			}
-			// Do not use  else here for the meta box saving process
-			if ( $strUnitType == 'search' || $bIsUpdatinUnit ) {
-				new AmazonAutoLinks_MetaBox_SearchOptions(
-					'amazon_auto_links_search_unit_options_meta_box',	// meta box ID
-					__( 'Search Unit Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'			
-				);	
-				new AmazonAutoLinks_MetaBox_SearchOptions_Advanced(
-					'amazon_auto_links_advanced_search_unit_options_meta_box',	// meta box ID
-					__( 'Advanced Search Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'			
-				);	
-			}
-			// Do not use else here for the meta box saving process
-			if ( $strUnitType == 'item_lookup' || $bIsUpdatinUnit ) {	// the second condition is for when updating the unit.
-				new AmazonAutoLinks_MetaBox_ItemLookupOptions(
-					'amazon_auto_links_item_lookup_unit_options_meta_box',	// meta box ID
-					__( 'Item Look-up Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'			
-				);
-				new AmazonAutoLinks_MetaBox_ItemLookupOptions_Advanced(
-					'amazon_auto_links_advanced_item_lookup_unit_options_meta_box',	// meta box ID
-					__( 'Advanced Item Look-up Options', 'amazon-auto-links' ),		// meta box title
-					array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-					'normal',
-					'default'				
-				);
-			}			
-			
-			new AmazonAutoLinks_MetaBox_Template(
-				'amazon_auto_links_template_meta_box',	// meta box ID
-				__( 'Template', 'amazon-auto-links' ),		// meta box title
-				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
-				'normal',	// side 
-				'default'
-			);
-			
-			new AmazonAutoLinks_MetaBox_Misc;
-		}
+		if ( is_admin() ) 
+			$this->loadMetaBoxes();
 				
 		// 7. Shortcode - e.g. [amazon_auto_links id="143"]
 		new AmazonAutoLinks_Shortcode( AmazonAutoLinks_Commons::ShortCode );	// amazon_auto_links
@@ -247,6 +178,101 @@ final class AmazonAutoLinks_Bootstrap {
 // AmazonAutoLinks_Debug::logArray( $GLOBALS['arrAmazonAutoLinks_Classes'] );	
 
 
+	}
+	
+	/**
+	 * Loads the plugin meta boxes
+	 * 
+	 * @since			2.0.3
+	 */
+	private function loadMetaBoxes() {
+		
+		$GLOBALS['strAmazonAutoLinks_UnitType'] = AmazonAutoLinks_Option::getUnitType();
+		$strUnitType = $GLOBALS['strAmazonAutoLinks_UnitType'];
+		$bIsUpdatinUnit = ( empty( $_GET ) && $GLOBALS['pagenow'] == 'post.php' );	// when saving the meta data, the GET array is empty
+		if ( $strUnitType == 'category' || $bIsUpdatinUnit ) {	
+			new AmazonAutoLinks_MetaBox_CategoryOptions(
+				'amazon_auto_links_category_unit_options_meta_box',	// meta box ID
+				__( 'Category Unit Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'
+			);	
+			new AmazonAutoLinks_MetaBox_Categories;
+		}
+		// Do not use  else here for the meta box saving process
+		if ( $strUnitType == 'tag' || $bIsUpdatinUnit ) {
+			new AmazonAutoLinks_MetaBox_TagOptions(
+				'amazon_auto_links_tag_unit_options_meta_box',	// meta box ID
+				__( 'Tag Unit Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'
+			);					
+		}
+		// Do not use  else here for the meta box saving process
+		if ( $strUnitType == 'search' || $bIsUpdatinUnit ) {
+			new AmazonAutoLinks_MetaBox_SearchOptions(
+				'amazon_auto_links_search_unit_options_meta_box',	// meta box ID
+				__( 'Search Unit Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'			
+			);	
+			new AmazonAutoLinks_MetaBox_SearchOptions_Advanced(
+				'amazon_auto_links_advanced_search_unit_options_meta_box',	// meta box ID
+				__( 'Advanced Search Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'			
+			);	
+		}
+		// Do not use else here for the meta box saving process
+		if ( $strUnitType == 'item_lookup' || $bIsUpdatinUnit ) {	// the second condition is for when updating the unit.
+			new AmazonAutoLinks_MetaBox_ItemLookupOptions(
+				'amazon_auto_links_item_lookup_unit_options_meta_box',	// meta box ID
+				__( 'Item Look-up Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'			
+			);
+			new AmazonAutoLinks_MetaBox_ItemLookupOptions_Advanced(
+				'amazon_auto_links_advanced_item_lookup_unit_options_meta_box',	// meta box ID
+				__( 'Advanced Item Look-up Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'				
+			);
+		}			
+		// Do not use else here for the meta box saving process
+		if ( $strUnitType == 'similarity_lookup' || $bIsUpdatinUnit ) {	// the second condition is for when updating the unit.
+			new AmazonAutoLinks_MetaBox_SimilarityLookupOptions(
+				'amazon_auto_links_similarity_lookup_unit_options_meta_box',	// meta box ID
+				__( 'Similarity Look-up Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'			
+			);
+			new AmazonAutoLinks_MetaBox_SimilarityLookupOptions_Advanced(
+				'amazon_auto_links_advanced_similarity_lookup_unit_options_meta_box',	// meta box ID
+				__( 'Advanced Similarity Look-up Options', 'amazon-auto-links' ),		// meta box title
+				array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+				'normal',
+				'default'				
+			);
+		}				
+		
+		
+		new AmazonAutoLinks_MetaBox_Template(
+			'amazon_auto_links_template_meta_box',	// meta box ID
+			__( 'Template', 'amazon-auto-links' ),		// meta box title
+			array( AmazonAutoLinks_Commons::PostTypeSlug ),	// post, page, etc.
+			'normal',	// side 
+			'default'
+		);
+		
+		new AmazonAutoLinks_MetaBox_Misc;		
+		
 	}
 	
 	/**

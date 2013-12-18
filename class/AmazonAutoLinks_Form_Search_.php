@@ -68,7 +68,32 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strPageSlug'		=> $strPageSlug,
 				'strTabSlug'		=> 'item_lookup',
 				'strTitle'			=> __( 'Template', 'amazon-auto-links' ),
-			),			
+			),	
+			// for the similarity lookup search type.
+			array(
+				'strSectionID'		=> 'similarity_lookup',
+				'strTabSlug'		=> 'similarity_lookup',
+				'strPageSlug'		=> $strPageSlug,
+				'strTitle'			=> __( 'Item Look-up', 'amazon-auto-links' ),
+			),
+			array(
+				'strSectionID'		=> 'similarity_lookup_advanced',
+				'strTabSlug'		=> 'similarity_lookup',
+				'strPageSlug'		=> $strPageSlug,
+				'strTitle'			=> __( 'Advanced Item Look-up Options', 'amazon-auto-links' ),
+			),
+			array(
+				'strSectionID'		=> 'search_auto_insert3',
+				'strPageSlug'		=> $strPageSlug,
+				'strTabSlug'		=> 'similarity_lookup',
+				'strTitle'			=> __( 'Auto Insert', 'amazon-auto-links' ),
+			),
+			array(
+				'strSectionID'		=> 'search_template3',
+				'strPageSlug'		=> $strPageSlug,
+				'strTabSlug'		=> 'similarity_lookup',
+				'strTitle'			=> __( 'Template', 'amazon-auto-links' ),
+			),				
 		);
 	
 	}
@@ -92,13 +117,20 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				return $this->getFieldOfItemLookUp( $strSectionID, $strPrefix );
 			case 'search_item_lookup_advanced':
 				return $this->getFieldOfItemLookUpAdvanced( $strSectionID, $strPrefix );
+			case 'similarity_lookup':
+				return $this->getFieldOfSimilarityLookUp( $strSectionID, $strPrefix );
+			case 'similarity_lookup_advanced':
+				return $this->getFieldOfSimilarityLookUpAdvanced( $strSectionID, $strPrefix );
 			case 'search_auto_insert':
 			case 'search_auto_insert2':
+			case 'search_auto_insert3':
 				return $this->getFieldsOfAutoInsert( $strSectionID, $strPrefix ); 
 			case 'search_template':
 				return $this->getFieldsOfTemplate( $strSectionID, $strPrefix, 'search' ); 
 			case 'search_template2':
 				return $this->getFieldsOfTemplate( $strSectionID, $strPrefix, 'item_lookup' ); 
+			case 'search_template3':
+				return $this->getFieldsOfTemplate( $strSectionID, $strPrefix, 'similarity_lookup' ); 
 			default:
 				return array();
 		}
@@ -182,14 +214,14 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'vLabel' => array(						
 					'ItemSearch'		=> '<strong>' . __( 'Products', 'amazon-auto-links' ) . '</strong> - ' . __( 'returns items that satisfy the search criteria in the title and descriptions.', 'amazon-auto-links' ),
 					'ItemLookup'		=> '<span class=""><strong>' . __( 'Item Look-up', 'amazon-auto-links' ) . '</strong> - ' . __( 'returns some or all of the item attributes with the given item identifier.', 'amazon-auto-links' ) . '</span>',
-					'SimilarityLookup'	=> '<span class="disabled"><strong>' . __( 'Similar Products', 'amazon-auto-links' ) . '</strong> - ' . __( 'returns products that are similar to one or more items specified.', 'amazon-auto-links' ) . '</span>',
+					'SimilarityLookup'	=> '<span class=""><strong>' . __( 'Similar Products', 'amazon-auto-links' ) . '</strong> - ' . __( 'returns products that are similar to one or more items specified.', 'amazon-auto-links' ) . '</span>',
 				),
-				'vDisable' => array(
-					'ItemSearch' => false,
-					'ItemLookup' => false,
-					'SimilarityLookup'	=> true,
-				),
-				'strDescription' => __( 'Currently the Similar Products type is still work in progress.', 'amazon-auto-links' ),
+				// 'vDisable' => array(
+					// 'ItemSearch' => false,
+					// 'ItemLookup' => false,
+					// 'SimilarityLookup'	=> true,
+				// ),
+				// 'strDescription' => __( 'Currently the Similar Products type is still work in progress.', 'amazon-auto-links' ),
 				'vDefault' => 'ItemSearch', // array( 'ItemSearch' => true ),
 			),
 			array(  // single button
@@ -227,7 +259,6 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				? $GLOBALS['oAmazonAutoLinks_Option']->getUnitOptionsByPostID( $_GET['post'] )
 				: array()
 			);
-		
 							
 		return array(
 			array(
@@ -631,7 +662,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 	 */
 	public function getFieldOfItemLookUp( $strSectionID, $strPrefix ) {
 		
-		$bIsSearchUnitType = $GLOBALS['strAmazonAutoLinks_UnitType'] == 'search' || $GLOBALS['strAmazonAutoLinks_UnitType'] == 'item_lookup';
+		$bIsSearchUnitType = in_array( $GLOBALS['strAmazonAutoLinks_UnitType'], array( 'search', 'item_lookup', 'similarity_lookup ' ) );
 		$arrUnitOptions = isset( $_REQUEST['transient_id'] )
 			? get_transient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
 			: ( $bIsSearchUnitType && isset( $_GET['post'] ) && $_GET['post'] != 0
@@ -641,7 +672,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 							
 		$bUPCAllowed = ( isset( $arrUnitOptions['country'] ) && $arrUnitOptions['country'] != 'CA' );
 		$bISBNAllowed = ( isset( $arrUnitOptions['country'] ) && $arrUnitOptions['country'] == 'US' );
-// var_dump( $arrUnitOptions );
+
 		return array(
 			array(
 				'strFieldID' => $strPrefix . 'unit_title',
@@ -657,7 +688,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Item ID', 'amazon-auto-links' ),
 				'strType' => 'text',
 				'vSize' => 60,
-				'strDescription' => __( 'Enter the ID(s) of the product. More more than one items, use the <code>,</code> (comma) characters to delimit the items.', 'amazon-auto-links' ) 
+				'strDescription' => __( 'Enter the ID(s) of the product. For more more than one items, use the <code>,</code> (comma) characters to delimit the items.', 'amazon-auto-links' ) 
 					. ' e.g. <code>B009ZVO3H6, B0043D2DZA</code>',
 				'vValue' => '',	// the previous value should not appear
 			),
@@ -854,4 +885,168 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 		);		
 		
 	}
+	
+	/**
+	 * 
+	 * @remark			The scope is public because the meta box calls it.
+	 */
+	public function getFieldOfSimilarityLookUp( $strSectionID, $strPrefix ) {
+		
+		$bIsSearchUnitType = in_array( $GLOBALS['strAmazonAutoLinks_UnitType'], array( 'search', 'item_lookup', 'similarity_lookup ' ) );
+		$arrUnitOptions = isset( $_REQUEST['transient_id'] )
+			? get_transient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
+			: ( $bIsSearchUnitType && isset( $_GET['post'] ) && $_GET['post'] != 0
+				? $GLOBALS['oAmazonAutoLinks_Option']->getUnitOptionsByPostID( $_GET['post'] )
+				: array()
+			);
+				
+		return array(
+			array(
+				'strFieldID' => $strPrefix . 'unit_title',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Unit Name', 'amazon-auto-links' ),
+				'strType' => 'text',
+				'fIf' => isset( $_REQUEST['transient_id'] ),
+				'vValue' => isset( $arrUnitOptions['unit_title'] ) ? $arrUnitOptions['unit_title'] : null,
+			),			
+			array(
+				'strFieldID' => $strPrefix . 'ItemId',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Item ASIN', 'amazon-auto-links' ),
+				'strType' => 'text',
+				'vSize' => 60,
+				'strDescription' => __( 'Enter the ASIN(s) of the product. For more more than one items, use the <code>,</code> (comma) characters to delimit the items.', 'amazon-auto-links' ) 
+					. ' e.g. <code>B009ZVO3H6</code>',
+				'vValue' => $strSectionID ? '' : null,	// the previous value should not appear
+			),		
+			array(
+				'strFieldID' => $strPrefix . 'SimilarityType',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Similarity Type', 'amazon-auto-links' ),
+				'strType' => 'radio',
+				'vLabel' => array(						
+					'Intersection'		=> __( 'Intersection', 'amazon-auto-links' ) . ' - ' . __( 'returns the intersection of items that are similar to all of the ASINs specified', 'amazon-auto-links' ),
+					'Random'		=> __( 'Random', 'amazon-auto-links' ) . ' - ' . __( 'returns the union of randomly picked items that are similar to all of the ASINs specified.', 'amazon-auto-links' ),
+				),
+				'strDescription' => __( 'The maximum of only ten items can be retrieved.' , 'amazon-auto-links' ),
+				'vDefault' => 'Intersection',
+			),								
+			array(
+				'strFieldID' => $strPrefix . 'search_type',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Search Type', 'amazon-auto-links' ),
+				'strType' => 'text',
+				'vDisable' => true,
+				'vReadOnly' => true,
+				'vValue' => isset( $arrUnitOptions['Operation'] ) ? $this->getSearchTypeLabel( $arrUnitOptions['Operation'] ) : __( 'Similar Products', 'amazon-auto-links' ),
+			),							
+			array(
+				'strFieldID' => $strPrefix . 'Operation',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Operation', 'amazon-auto-links' ),
+				'strType' => 'hidden',
+				'vReadOnly' => true,
+				'vValue' => isset( $arrUnitOptions['Operation'] ) ? $arrUnitOptions['Operation'] : 'SimilarityLookup',
+			),
+			array(
+				'strFieldID' => $strPrefix . 'country',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Locale', 'amazon-auto-links' ),
+				'strType' => 'text',
+				'vReadOnly' => true,
+				'vValue' => isset( $arrUnitOptions['country'] ) ? $arrUnitOptions['country'] : null,	// for the meta box, pass null so it uses the stored value
+			),					
+			array(
+				'strFieldID' => $strPrefix . 'associate_id',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Associate ID', 'amazon-auto-links' ),
+				'strType' => 'text',
+				'strDescription' => 'e.g. <code>miunosoft-20</code>',
+				'vValue' => isset( $arrUnitOptions['associate_id'] ) ? $arrUnitOptions['associate_id'] : null,	// for the meta box, pass null so it uses the stored value
+			),			
+			array(
+				'strFieldID' => $strPrefix . 'image_size',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Image Size', 'amazon-auto-links' ),
+				'strType' => 'number',
+				'vAfterInputTag' => ' ' . __( 'pixel', 'amazon-auto-links' ),
+				'vDelimiter' => '',
+				'strDescription' => __( 'The maximum width of the product image in pixel. Set <code>0</code> for no image.', 'amazon-auto-links' )
+					. ' ' . __( 'Max', 'amazon-auto-links' ) . ': <code>500</code> ' 
+					. __( 'Default', 'amazon-auto-links' ) . ': <code>160</code>',				
+				'vMax' => 500,
+				'vMin' => 0,
+				'vDefault' => 160,
+			),				
+			array(
+				'strFieldID' => $strPrefix . 'ref_nosim',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Direct Link Bonus', 'amazon-auto-links' ),
+				'strType' => 'radio',
+				'vLabel' => array(						
+					1		=> __( 'On', 'amazon-auto-links' ),
+					0		=> __( 'Off', 'amazon-auto-links' ),
+				),
+				'strDescription'	=> sprintf( __( 'Inserts <code>ref=nosim</code> in the link url. For more information, visit <a href="%1$s">this page</a>.', 'amazon-auto-links' ), 'https://affiliate-program.amazon.co.uk/gp/associates/help/t5/a21' ),
+				'vDefault' => 0,
+			),		
+			array(
+				'strFieldID' => $strPrefix . 'title_length',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Title Length', 'amazon-auto-links' ),
+				'strType' => 'number',
+				'strDescription' => __( 'The allowed character length for the title.', 'amazon-auto-links' ) . '&nbsp;'
+					. __( 'Use it to prevent a broken layout caused by a very long product title. Set -1 for no limit.', 'amazon-auto-links' ) . '<br />'
+					. __( 'Default', 'amazon-auto-links' ) . ": <code>-1</code>",
+				'vDefault' => -1,
+			),				
+			array(
+				'strFieldID' => $strPrefix . 'description_length',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Description Length', 'amazon-auto-links' ),
+				'strType' => 'number',
+				'strDescription' => __( 'The allowed character length for the description.', 'amazon-auto-links' ) . '&nbsp;'
+					. __( 'Set -1 for no limit.', 'amazon-auto-links' ) . '<br />'
+					. __( 'Default', 'amazon-auto-links' ) . ": <code>250</code>",
+				'vDefault' => 250,
+			),		
+			array(
+				'strFieldID' => $strPrefix . 'link_style',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Link Style', 'amazon-auto-links' ),
+				'strType' => 'radio',
+				'vLabel' => array(						
+					1	=> 'http://www.amazon.<code>[domain-suffix]</code>/<code>[product-name]</code>/dp/<code>[asin]</code>/ref=<code>[...]</code>?tag=<code>[associate-id]</code>'
+						. "&nbsp;<span class='description'>(" . __( 'Default', 'amazon-auto-links' ) . ")</span>",
+					2	=> 'http://www.amazon.<code>[domain-suffix]</code>/exec/obidos/ASIN/<code>[asin]</code>/<code>[associate-id]</code>/ref=<code>[...]</code>',
+					3	=> 'http://www.amazon.<code>[domain-suffix]</code>/gp/product/<code>[asin]</code>/?tag=<code>[associate-id]</code>&ref=<code>[...]</code>',
+					4	=> 'http://www.amazon.<code>[domain-suffix]</code>/dp/ASIN/<code>[asin]</code>/ref=<code>[...]</code>?tag=<code>[associate-id]</code>',
+					5	=> site_url() . '?' . $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['query']['cloak'] . '=<code>[asin]</code>&locale=<code>[...]</code>&tag=<code>[associate-id]</code>'
+				),
+				'vDefault' => 1,
+			),		
+			array(
+				'strFieldID' => $strPrefix . 'credit_link',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Credit Link', 'amazon-auto-links' ),
+				'strType' => 'radio',
+				'vLabel' => array(						
+					1		=> __( 'On', 'amazon-auto-links' ),
+					0		=> __( 'Off', 'amazon-auto-links' ),
+				),
+				'strDescription'	=> sprintf( __( 'Inserts the credit link at the end of the unit output.', 'amazon-auto-links' ), '' ),
+				'vDefault' => 1,
+			),	
+		);		
+		
+	}
+
+	/**
+	 * 
+	 * @remark			The scope is public because the meta box calls it.
+	 */
+	public function getFieldOfSimilarityLookUpAdvanced( $strSectionID, $strPrefix ) {
+		return $this->getFieldOfItemLookUpAdvanced( $strSectionID, $strPrefix );		
+	}
+	
 }
