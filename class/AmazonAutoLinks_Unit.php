@@ -83,6 +83,8 @@ abstract class AmazonAutoLinks_Unit {
 	 */
 	protected function isBlocked( $strString, $strType ) {
 
+		if ( ! is_string( $strString ) && ! is_integer( $strString ) ) return false;
+	
 		switch ( strtolower( $strType ) ) {
 			default:
 			case 'asin': 

@@ -157,7 +157,7 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.3 = 
+= 2.0.3 - 12/20/2013 = 
 * Added: the `Similarity Look-up` unit type which allows to display similar products by ASIN.
 * Changed: the message "Could not identify the unit type." to be inserted as an HTML comment.
 
