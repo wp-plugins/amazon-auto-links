@@ -228,7 +228,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			$arrProduct['meta'] .= $arrProduct['lowest_used_price'] ? "<span class='amazon-product-lowest-used-price'>" . sprintf( __( 'Used from %1$s', 'amazon-auto-links' ) . "</span> ", $arrProduct['lowest_used_price'] ) . ' ' : '';
 			$arrProduct['meta'] = empty( $arrProduct['meta'] ) ? '' : "<div class='amazon-product-meta'>{$arrProduct['meta']}</div>";
 			$arrProduct['description'] = $arrProduct['meta'] . $arrProduct['description'];
-						
+
 			// Format the item
 			// Thumbnail
 			$arrProduct['formed_thumbnail'] = str_replace( 
@@ -249,9 +249,10 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				$this->arrArgs['item_format'] 
 			);
 			
-			$arrProducts[] = $arrProduct;		
+			$arrProducts[] = $arrProduct;
 			
-			
+			// Max Number of Items 
+			if ( count( $arrProducts ) >= $this->arrArgs['count'] ) break;			
 			
 		}
 			

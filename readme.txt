@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.3
-Tested up to: 3.7.1
+Tested up to: 3.8
 Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,10 @@ You can check if your access key is valid or not with this tool (http://associat
 4. **Widget Sample**
 
 == Changelog ==
+
+= 2.0.3.1b =
+* Fixed: an issue that some outputs broke html tags due to unescaped characters.
+* Fixed: a bug that search units did not return results with the correct item count.
 
 = 2.0.3 - 12/20/2013 = 
 * Added: the `Similarity Look-up` unit type which allows to display similar products by ASIN.

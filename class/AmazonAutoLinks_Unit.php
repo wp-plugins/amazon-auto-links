@@ -151,21 +151,23 @@ abstract class AmazonAutoLinks_Unit {
 		
 		// Title character length
 		$numMaxLength = $numMaxLength ? $numMaxLength : $this->arrArgs['description_length'];
-		if ( $numMaxLength == 0 )
-			return '';
-		if ( $numMaxLength > 0 && mb_strlen( $strDescription ) > $numMaxLength )	
-			$strDescription = mb_substr( $strDescription, 0, $numMaxLength ) . '...'
+		if ( $numMaxLength == 0 ) return '';
+		
+		$strDescription = ( $numMaxLength > 0 && mb_strlen( $strDescription ) > $numMaxLength )
+			? esc_attr( mb_substr( $strDescription, 0, $numMaxLength ) ) . '...'
 				. ( $strReadMoreURL 
 					? " <a href='{$strReadMoreURL}' target='_blank' rel='nofollow'>" . __( 'read more', 'amazon-auto-links' ) . "</a>"
 					: ''
-				);
+				)
+			: esc_attr( $strDescription );
 		
-		return $strDescription;		
+		return $strDescription;
+		
 		
 	}
 	
 	/**
-	 * Sanitizes the product title.
+	 * Strips HTML tags and sanitizes the product title.
 	 * 
 	 */
 	protected function sanitizeTitle( $strTitle ) {
@@ -182,7 +184,8 @@ abstract class AmazonAutoLinks_Unit {
 		if ( $this->arrArgs['title_length'] > 0 && mb_strlen( $strTitle ) > $this->arrArgs['title_length'] )	
 			$strTitle = mb_substr( $strTitle, 0, $this->arrArgs['title_length'] ) . '...';
 		
-		return $strTitle;
+		// return $strTitle;
+		return esc_attr( $strTitle );
 
 	}
 		
@@ -230,7 +233,7 @@ abstract class AmazonAutoLinks_Unit {
 	 */
 	protected function formatProductLinkURL( $strURL, $strASIN ) {
 
-		return $this->styleProductLink( 
+		$sStyledURL = $this->styleProductLink( 
 			$strURL, 
 			$strASIN, 
 			$this->arrArgs['link_style'], 
@@ -238,6 +241,8 @@ abstract class AmazonAutoLinks_Unit {
 			$this->arrArgs['associate_id'], 
 			$this->arrArgs['country']
 		);
+		// return $sStyledURL;
+		return esc_url( $sStyledURL );
 			
 	}
 	

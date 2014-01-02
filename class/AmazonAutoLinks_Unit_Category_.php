@@ -370,7 +370,7 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 		$arrDescription = preg_split( '/<br.*?\/?>/i', $this->oDOM->getInnerHTML( $oNode ) );		
 		array_splice( $arrDescription, -2 );		// remove the last two elements	
 		$strHTMLDescription = implode( "&nbsp;", $arrDescription );
-		return html_entity_decode( trim( strip_tags( $strHTMLDescription ) ), ENT_QUOTES, $this->strCharEncoding );		
+		return esc_attr( html_entity_decode( trim( strip_tags( $strHTMLDescription ) ), ENT_QUOTES, $this->strCharEncoding ) );		
 		
 	}
 
