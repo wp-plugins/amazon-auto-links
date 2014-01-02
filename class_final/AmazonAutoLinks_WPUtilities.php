@@ -134,18 +134,19 @@ final class AmazonAutoLinks_WPUtilities {
 	 * 
 	 * 
 	 * 
-	 * @since			2.0.1
 	 * @static
 	 * @access			public
 	 * @return			string			The source url
+	 * @since			2.0.1
+	 * @since			2.0.3.1			Prevented "/./" to be inserted in the url.
 	 */
 	static public function getSRCFromPath( $strFilePath ) {
-				
-		// It doesn't matter whether the file is a style or not. Just use the built-in WordPress class to calculate the SRC URL.
-		$oWPStyles = new WP_Styles();	
-		$strRelativePath = '/' . AmazonAutoLinks_Utilities::getRelativePath( ABSPATH, $strFilePath );
-		$strHref = $oWPStyles->_css_href( $strRelativePath, '', '' );
-		return $strHref;
+						
+		$oWPStyles = new WP_Styles();	// It doesn't matter whether the file is a style or not. Just use the built-in WordPress class to calculate the SRC URL.
+		$strRelativePath = AmazonAutoLinks_Utilities::getRelativePath( ABSPATH, $strFilePath );		
+		$strRelativePath = preg_replace( "/^\.[\/\\\]/", '', $strRelativePath, 1 );	// removes the heading ./ or .\ 
+		$sHref = trailingslashit( $oWPStyles->base_url ) . $strRelativePath;
+		return esc_url( $sHref );
 		
 	}
 	
