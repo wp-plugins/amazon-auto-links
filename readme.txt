@@ -157,7 +157,7 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.3.1b2 =
+= 2.0.3.1 - 01/03/2014 =
 * Fixed: an issue that the stylesheet urls included the characters, `/./`, which may have caused a problem for third-party plugins that minifies CSS.
 * Fixed: an issue that some outputs broke html tags due to unescaped characters.
 * Fixed: a bug that search units did not return results with the correct item count.
