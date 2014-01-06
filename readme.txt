@@ -157,6 +157,10 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.3.2b = 
+* Fixed: an issue that an image element was inserted when no image of the product was found in the search unit type.
+* Fixed: a bug in the advanced search option that the Title option did not take effect.
+
 = 2.0.3.1 - 01/03/2014 =
 * Fixed: an issue that the stylesheet urls included the characters, `/./`, which may have caused a problem for third-party plugins that minifies CSS.
 * Fixed: an issue that some outputs broke html tags due to unescaped characters.

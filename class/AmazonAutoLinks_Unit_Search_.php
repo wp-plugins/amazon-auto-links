@@ -17,6 +17,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		'image_size' => 160,
 		'Keywords'	=> '',	// the keyword to search
 		'Operation' => 'ItemSearch',	// ItemSearch, ItemLookup, SimilarityLookup
+		'Title' => '',		// for the advanced Title option
 		'Sort' => 'salesrank',		// pricerank, inversepricerank, sales_rank, relevancerank, reviewrank
 		'SearchIndex' => 'All',		
 		'BrowseNode' => '',	// ( optional )
@@ -49,6 +50,18 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		'operator' => 'AND', // this is for fetching by label. AND, IN, NOT IN can be used
 	);
 	
+	public static $aStructure_Item = array(
+		'AISN'	=>	null,
+		'ItemAttributes'	=>	null,
+		'DetailPageURL'	=>	null,
+		'EditorialReviews'	=>	null,
+		'ItemLinks'	=>	null,
+		'ImageSets'	=>	null,
+		'BrowseNodes'	=>	null,
+		'SimilarProducts'	=>	null,
+		'MediumImage'	=>	null,
+		'OfferSummary'	=>	null,
+	);
 	function __construct( $arrArgs=array() ) {
 			
 		parent::__construct();
@@ -152,7 +165,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		$bIsIndexAllOrBlended = ( $this->arrArgs['SearchIndex'] == 'All' || $this->arrArgs['SearchIndex'] == 'Blended' );
 		$aParams = array(
 			'Keywords' => AmazonAutoLinks_Utilities::trimDelimitedElements( $this->arrArgs['Keywords'], ',', false ),			
-			'Title' => $bIsIndexAllOrBlended ? null : AmazonAutoLinks_Utilities::trimDelimitedElements( $this->arrArgs['Keywords'], ',', false ),
+			'Title' => $bIsIndexAllOrBlended ? null : AmazonAutoLinks_Utilities::trimDelimitedElements( $this->arrArgs['Title'], ',', false ),
 			'Operation' => $this->arrArgs['Operation'],
 			'SearchIndex' => $this->arrArgs['SearchIndex'],
 			$this->arrArgs['search_by'] => $this->arrArgs['additional_attribute'] ? $this->arrArgs['additional_attribute'] : null,
@@ -183,6 +196,8 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		$arrProducts = array();
 		foreach ( ( array ) $arrItems as $arrItem )	{
 
+			$arrItem = $arrItem + self::$aStructure_Item;
+		
 			if ( $this->isBlocked( $arrItem['ASIN'], 'asin' ) ) continue;
 			if ( $this->arrArgs['is_preview'] || ! $this->fNoDuplicate )
 				$this->arrBlackListASINs[] = $arrItem['ASIN'];	// this search unit type does not have the preview mode so it won't be triggered
@@ -193,13 +208,13 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			if ( $this->isBlocked( $strTitle, 'title' ) ) continue;
 			
 			$strProductURL = $this->formatProductLinkURL( rawurldecode( $arrItem['DetailPageURL'] ), $arrItem['ASIN'] );
-// AmazonAutoLinks_Debug::dumpArray( $arrItem );			
+
 			$strContent = isset( $arrItem['EditorialReviews']['EditorialReview'] ) 
 				? $this->joinIfArray( $arrItem['EditorialReviews']['EditorialReview'], 'Content' )
 				: '';
 			$strDescription = $this->sanitizeDescription( $strContent, $this->arrArgs['description_length'], $strProductURL );
 			if ( $this->isBlocked( $strDescription, 'description' ) ) continue;
-			
+
 		// unset( $arrItem['ItemLinks'], $arrItem['ImageSets'], $arrItem['BrowseNodes'], $arrItem['SimilarProducts'] );
 			$arrProduct = array(
 				'ASIN' => $arrItem['ASIN'],
@@ -210,7 +225,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				'meta' => '',
 				'content'  => $strContent,
 				'image_size' => $this->arrArgs['image_size'],
-				'thumbnail_url' => $this->formatImage( $arrItem['MediumImage']['URL'], $this->arrArgs['image_size'] ),	
+				'thumbnail_url' => isset( $arrItem['MediumImage'] ) ? $this->formatImage( $arrItem['MediumImage']['URL'], $this->arrArgs['image_size'] ) : null,
 				'author' => isset( $arrItem['ItemAttributes']['Author'] ) ? implode( ', ', ( array ) $arrItem['ItemAttributes']['Author'] ) : '',
 				// 'manufacturer' => $arrItem['ItemAttributes']['Manufacturer'], 
 				'category' => isset( $arrItem['ItemAttributes']['ProductGroup'] ) ? $arrItem['ItemAttributes']['ProductGroup'] : '',
@@ -229,13 +244,16 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			$arrProduct['meta'] = empty( $arrProduct['meta'] ) ? '' : "<div class='amazon-product-meta'>{$arrProduct['meta']}</div>";
 			$arrProduct['description'] = $arrProduct['meta'] . $arrProduct['description'];
 
-			// Format the item
+			/* Format the item */
 			// Thumbnail
-			$arrProduct['formed_thumbnail'] = str_replace( 
-				array( "%href%", "%title_text%", "%src%", "%max_width%", "%description_text%" ),
-				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['thumbnail_url'], $this->arrArgs['image_size'], $arrProduct['text_description'] ),
-				$this->arrArgs['image_format'] 
-			);
+			$arrProduct['formed_thumbnail'] = isset( $arrProduct['thumbnail_url'] )
+				? str_replace( 
+					array( "%href%", "%title_text%", "%src%", "%max_width%", "%description_text%" ),
+					array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['thumbnail_url'], $this->arrArgs['image_size'], $arrProduct['text_description'] ),
+					$this->arrArgs['image_format'] 
+				) 
+				: '';
+				
 			// Title
 			$arrProduct['formed_title'] = str_replace( 
 				array( "%href%", "%title_text%", "%description_text%" ),
