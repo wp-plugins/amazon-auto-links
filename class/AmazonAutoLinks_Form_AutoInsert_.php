@@ -66,12 +66,12 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 		'action_hooks' => null,
 		'enable_allowed_area' => 0,
 		'enable_post_ids' => null,
-		'enable_page_types' => array( 'is_single' => true, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),
+		'enable_page_types' => array( 'is_single' => true, 'is_singular' => true, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),	// the is_single key is deprecated
 		'enable_post_types' => true,
 		'enable_taxonomy' => true,
 		'enable_denied_area' => 0,
 		'diable_post_ids' => null,
-		'disable_page_types' => array( 'is_single' => false, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ),
+		'disable_page_types' => array( 'is_single' => true, 'is_singular' => false, 'is_home' => false, 'is_404' => false, 'is_archive' => false, 'is_search' => false ), // the is_single key is deprecated
 		'disable_post_types' => array(),
 		'disable_taxonomy' => array(),	
 	);
@@ -315,7 +315,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Page Types', 'amazon-auto-links' ),
 				'strType' => 'checkbox',
 				'vLabel' => array(
-					'is_single'		=> __( 'Single Post', 'amazon-auto-links' ),
+					'is_singular'	=> __( 'Single Post', 'amazon-auto-links' ),
 					'is_home'		=> __( 'Home / Front', 'amazon-auto-links' ),
 					'is_archive'	=> __( 'Archive', 'amazon-auto-links' ),
 					'is_404'		=> __( '404', 'amazon-auto-links' ),
@@ -387,7 +387,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strTitle' => __( 'Page Types', 'amazon-auto-links' ),
 				'strType' => 'checkbox',
 				'vLabel' => array(
-					'is_single'		=> __( 'Single Post', 'amazon-auto-links' ),
+					'is_singular'	=> __( 'Single Post', 'amazon-auto-links' ),
 					'is_home'		=> __( 'Home / Front', 'amazon-auto-links' ),
 					'is_archive'	=> __( 'Archive', 'amazon-auto-links' ),
 					'is_404'		=> __( '404', 'amazon-auto-links' ),

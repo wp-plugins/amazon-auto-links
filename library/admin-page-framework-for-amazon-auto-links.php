@@ -15,14 +15,14 @@
  * @remarks				To use the framework, 1. Extend the class 2. Override the setUp() method. 3. Use the hook functions.
  * @remarks				Requirements: WordPress 3.3 or above, PHP 5.2.4 or above.
  * @remarks				The documentation employs the <a href="http://en.wikipedia.org/wiki/PHPDoc">PHPDOc(DocBlock)</a> syntax.
- * @version				2.1.7b
+ * @version				2.1.7.1
  */
 /*
 	Library Name: Admin Page Framework
 	Library URI: http://wordpress.org/extend/plugins/admin-page-framework/
 	Author:  Michael Uno
 	Author URI: http://michaeluno.jp
-	Version: 2.1.7b
+	Version: 2.1.7.1
 	Requirements: WordPress 3.3 or above, PHP 5.2.4 or above.
 	Description: Provides simpler means of building administration pages for plugin and theme developers.
 */
@@ -341,6 +341,9 @@ abstract class AmazonAutoLinks_AdminPageFramework_WPUtilities {
 	 * @since			2.1.6			Moved from the AmazonAutoLinks_AdminPageFramework_HeadTag_Base class. Added the $fReturnNullIfNotExist parameter.
 	 */
 	static public function resolveSRC( $strSRC, $fReturnNullIfNotExist=false ) {	
+		
+		if ( ! $strSRC )	
+			return $fReturnNullIfNotExist ? null : $strSRC;	
 		
 		// It is a url
 		if ( filter_var( $strSRC, FILTER_VALIDATE_URL ) )
@@ -2280,11 +2283,11 @@ abstract class AmazonAutoLinks_AdminPageFramework_Menu extends AmazonAutoLinks_A
 		$this->oProps->arrRootMenu = array(
 			'strTitle'			=> $strRootMenuLabel,
 			'strPageSlug' 		=> $strSlug ? $strSlug : $this->oProps->strClassName,	
-			'strURLIcon16x16'	=> $this->oUtil->resolveSRC( $strURLIcon16x16, true ),
+			'strURLIcon16x16'	=> $this->oUtil->resolveSRC( $strURLIcon16x16 ),
 			'intPosition'		=> $intMenuPosition,
 			'fCreateRoot'		=> $strSlug ? false : true,
 		);	
-					
+
 	}
 	
 	/**
@@ -2364,7 +2367,7 @@ abstract class AmazonAutoLinks_AdminPageFramework_Menu extends AmazonAutoLinks_A
 			'strPageTitle'				=> $strPageTitle,
 			'strPageSlug'				=> $strPageSlug,
 			'strType'					=> 'page',	// this is used to compare with the link type.
-			'strURLIcon32x32'			=> $this->oUtil->resolveSRC( $strScreenIcon, true ),
+			'strURLIcon32x32'			=> $strScreenIcon ? $this->oUtil->resolveSRC( $strScreenIcon, true ) : null,
 			'strScreenIconID'			=> in_array( $strScreenIcon, self::$arrScreenIconIDs ) ? $strScreenIcon : null,
 			'strCapability'				=> isset( $strCapability ) ? $strCapability : $this->oProps->strCapability,
 			'numOrder'					=> is_numeric( $numOrder ) ? $numOrder : $intCount + 10,
@@ -3261,9 +3264,18 @@ abstract class AmazonAutoLinks_AdminPageFramework_SettingsAPI extends AmazonAuto
 			return $arrStoredOptions;	// do not change the framework's options.
 		}
 		
-		// Check the uploaded file type.
-		if ( ! in_array( $oImport->getType(), array( 'text/plain', 'application/octet-stream' ) ) ) {	// .json file is dealt as binary file.
-			$this->setSettingNotice( $this->oMsg->___( 'uploaded_file_type_not_supported' ) );		
+		// Apply filters to the uploaded file's MIME type.
+		$arrMIMEType = $this->oUtil->addAndApplyFilters(
+			$this,
+			array( "import_mime_types_{$strPageSlug}_{$strTabSlug}", "import_mime_types_{$strPageSlug}", "import_mime_types_{$this->oProps->strClassName}_{$strPressedInputID}", "import_mime_types_{$this->oProps->strClassName}_{$strPressedFieldID}", "import_mime_types_{$this->oProps->strClassName}" ),
+			array( 'text/plain', 'application/octet-stream' ),	// .json file is dealt as a binary file.
+			$strPressedFieldID,
+			$strPressedInputID
+		);		
+
+		// Check the uploaded file MIME type.
+		if ( ! in_array( $oImport->getType(), $arrMIMEType ) ) {	
+			$this->setSettingNotice( $this->oMsg->___( 'uploaded_file_type_not_supported' ) );
 			return $arrStoredOptions;	// do not change the framework's options.
 		}
 		
@@ -5890,7 +5902,7 @@ class AmazonAutoLinks_AdminPageFramework_ImportOptions extends AmazonAutoLinks_A
 		
 	}
 	public function getType() {
-		
+
 		return $this->getElementInFilesArray( $this->arrFilesImport, $this->arrElementKey, 'type' );
 		
 	}
@@ -6731,7 +6743,7 @@ class AmazonAutoLinks_AdminPageFramework_Debug {
 }
 endif;
 
-if ( ! class_exists( 'AmazonAutoLinks_AdminPageFramework_InputFieldType_Base' ) ) :
+if ( ! class_exists( 'AmazonAutoLinks_AdminPageFramework_InputFieldTypeDefinition_Base' ) ) :
 /**
  * The base class of field type classes that define input field types.
  * 
@@ -10041,7 +10053,7 @@ class AmazonAutoLinks_AdminPageFramework_BuiltinInputFieldTypeDefinitions  {
 		'image' => array( 'image' ),
 		'media' => array( 'media' ),
 		'color' => array( 'color' ),
-		'taxonomy' => array( 'color' ),
+		'taxonomy' => array( 'taxonomy' ),
 		'posttype' => array( 'posttype' ),
 		'size' => array( 'size' ),
 	);	

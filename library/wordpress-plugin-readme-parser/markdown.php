@@ -108,7 +108,7 @@ if (isset($wp_version)) {
 			$parser_class = MARKDOWN_PARSER_CLASS;
 			$parser = new $parser_class;
 		}
-		if (is_single() || is_page() || is_feed()) {
+		if (is_singular() || is_page() || is_feed()) {
 			$parser->fn_id_prefix = "";
 		} else {
 			$parser->fn_id_prefix = get_the_ID() . ".";

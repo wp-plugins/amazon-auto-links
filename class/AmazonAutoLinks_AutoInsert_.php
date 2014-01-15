@@ -17,7 +17,8 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	protected $arrFilterHooks = array();	// stores all the filter hooks.
 	
 	protected $arrDisplayedPageTypes = array(		// stores the current page type information.
-		'is_single' => null,
+		'is_single' => null,	// deprecated
+		'is_singular' => null,
 		'is_home' => null,
 		'is_archive' => null,
 		'is_404' => null,
@@ -36,7 +37,8 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	protected static $arrStructure_SubjectPageInfo = array(
 		'post_id' => null,
 		'post_type' => null, 
-		'is_single' => null,
+		'is_single' => null,	// deprecated
+		'is_singular' => null,
 		'is_home' => null,
 		'is_archive' => null,
 		'is_404' => null,
@@ -56,7 +58,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		add_action( 'init', array( $this, 'setUpHooks' ) );
 
 		// Set up the properties for currently displaying page 
-		// The `init` hook is too early to perform the functions including is_single(), is_page() etc. 
+		// The `init` hook is too early to perform the functions including is_singular(), is_page() etc. 
 		// as $wp_query is not established yet.
 		add_action( 'wp', array( $this, 'setupPageTypeProperties' ) );
 
@@ -251,7 +253,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		/* 
 		 * Page Types - structure example
 			[disable_page_types] => Array (
-				[is_single] => 0
+				[is_singular] => 0
 				[is_home] => 1
 				[is_archive] => 0
 				[is_404] => 1
@@ -327,7 +329,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		/* 
 		 * Page Types - structure example
 		 *     [enable_page_types] => Array (
-					[is_single] => 1
+					[is_singular] => 1
 					[is_home] => 1
 					[is_archive] => 0
 					[is_404] => 1
@@ -398,7 +400,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 			
 		// Drop unchecked items
 		$arrTerms = array_filter( $arrTerms );
-		if ( ! empty( $arrTerms ) ) {		// at least one item is cheched for the taxonomies of the current post
+		if ( ! empty( $arrTerms ) ) {		// at least one item is checked for the taxonomies of the current post
 		
 			$arrTermIDs = array_keys( $arrTerms ); // get the keys as the values.
 			$fIsEnabled = false;
@@ -467,7 +469,8 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		$this->intPostID = $this->getPostID();
 		
 		$this->arrDisplayedPageTypes = array(
-			'is_single' => is_single(),
+			'is_single'	=> is_single(),	// deprecated
+			'is_singular' => is_singular(),
 			'is_home' => ( is_home() || is_front_page() ),
 			'is_archive' => is_archive(),
 			'is_404' => is_404(),

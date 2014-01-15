@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.3.3 - 01/15/2014 =
+* Fixed: a bug that the `Single Post` check option did not take effect in the Page post type.
+* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.7.1.
+* Fixed: a bug that taxonomy check list boxes were gone since v2.0.2.
+
 = 2.0.3.2 - 01/07/2014 = 
 * Fixed: an issue that an image element was inserted when no image of the product was found in the search unit type.
 * Fixed: undefined index warnings with the search unit types.
