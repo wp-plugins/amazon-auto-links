@@ -157,7 +157,7 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.3.3 - 01/15/2014 =
+= 2.0.3.3 - 01/17/2014 =
 * Fixed: a bug that the `Single Post` check option did not take effect in the Page post type.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.7.1.
 * Fixed: a bug that taxonomy check list boxes were gone since v2.0.2.
