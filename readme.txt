@@ -157,6 +157,10 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.3.4 - 01/19/2014 =
+* Fixed the warning: `Strict standards: Declaration of ... should be compatible with ...`.
+* Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.7.2.
+
 = 2.0.3.3 - 01/17/2014 =
 * Fixed: a bug that the `Single Post` check option did not take effect in the Page post type.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.7.1.

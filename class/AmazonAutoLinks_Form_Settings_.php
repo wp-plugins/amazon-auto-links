@@ -107,7 +107,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 	 * Pass an empty string to the parameter for meta box options. 
 	 * 
 	 */	
-	public function getFields() {
+	public function getFields( $strSectionID='', $strPrefix='' ) {
 		
 		return array_merge( 
 			$this->getFieldsOfAuthenticationKeys(),
