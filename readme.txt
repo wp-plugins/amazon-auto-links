@@ -158,6 +158,7 @@ You can check if your access key is valid or not with this tool (http://associat
 == Changelog ==
 
 = 2.0.3.4 - 01/19/2014 =
+* Added: the `Number of Items` option for the Similarity Look-up search unit type.
 * Fixed the warning: `Strict standards: Declaration of ... should be compatible with ...`.
 * Updated: the [Admin Page Framework](http://wordpress.org/plugins/admin-page-framework/) library to v2.1.7.2.
 

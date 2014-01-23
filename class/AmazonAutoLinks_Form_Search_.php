@@ -930,7 +930,17 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				),
 				'strDescription' => __( 'The maximum of only ten items can be retrieved.' , 'amazon-auto-links' ),
 				'vDefault' => 'Intersection',
-			),								
+			),
+			array(
+				'strFieldID' => $strPrefix . 'count',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Number of Items', 'amazon-auto-links' ),
+				'strType' => 'number',
+				'vMax' => 10,	// regardless of whether it's pro or not, the max is 10.
+				'vMin' => 1,
+				'strDescription' => __( 'The number of product links to display. This unit type cannot display more than 10 items.' ),
+				'vDefault' => 10,
+			),				
 			array(
 				'strFieldID' => $strPrefix . 'search_type',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
