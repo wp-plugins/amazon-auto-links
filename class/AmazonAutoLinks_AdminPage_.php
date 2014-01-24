@@ -356,6 +356,9 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPageFrame
 	
 		parent::buildMenus();
 
+		// Somehow the settings link in the plugin listing page points to the Create Rule by List page. So fix it to the Settings page.
+		$this->oProps->strDefaultPageSlug = 'aal_settings';
+		
 		// Remove the default post type menu item.
 		$strPageSlug = $this->oProps->arrRootMenu['strPageSlug'];
 		foreach ( $GLOBALS['submenu'][ $strPageSlug ] as $intIndex => $arrSubMenu ) {
