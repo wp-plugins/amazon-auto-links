@@ -51,7 +51,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 	);
 	
 	public static $aStructure_Item = array(
-		'AISN'	=>	null,
+		'ASIN'	=>	null,
 		'ItemAttributes'	=>	null,
 		'DetailPageURL'	=>	null,
 		'EditorialReviews'	=>	null,
@@ -196,6 +196,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		$arrProducts = array();
 		foreach ( ( array ) $arrItems as $arrItem )	{
 
+			if ( ! is_array( $arrItem ) ) continue;
 			$arrItem = $arrItem + self::$aStructure_Item;
 		
 			if ( $this->isBlocked( $arrItem['ASIN'], 'asin' ) ) continue;
