@@ -157,7 +157,8 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.3.5 =
+= 2.0.3.5 - 02/01/2014 =
+* Fixed a possible security issue in the plugin admin pages.
 * Tweaked the form text input length.
 * Fixed an issue that `(recently, newly) tagged...` message was inserted in the title of product links of Tag unit type.
 * Fixed the warning: `Strict standards: Declaration of ... should be compatible with ...` when displaying the output of the tag unit type.

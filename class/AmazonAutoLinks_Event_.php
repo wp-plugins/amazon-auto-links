@@ -31,9 +31,9 @@ abstract class AmazonAutoLinks_Event_ {
 			$oRedirect = new AmazonAutoLinks_Redirects;
 			$oRedirect->go( $_GET['amazon_auto_links_link'] );	// will exit there.
 		}
-			
+		
 		// Draw cached image.
-		if ( isset( $_GET['amazon_auto_links_image'] ) && $_GET['amazon_auto_links_image'] ) {
+		if ( isset( $_GET['amazon_auto_links_image'] ) && $_GET['amazon_auto_links_image'] && is_user_logged_in() ) {
 			
 			$oImageLoader = new AmazonAutoLinks_ImageHandler( AmazonAutoLinks_Commons::TransientPrefix );
 			$oImageLoader->draw( $_GET['amazon_auto_links_image'] );
