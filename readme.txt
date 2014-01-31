@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.3.5 =
+* Tweaked the form text input length.
+* Fixed an issue that `(recently, newly) tagged...` message was inserted in the title of product links of Tag unit type.
+* Fixed the warning: `Strict standards: Declaration of ... should be compatible with ...` when displaying the output of the tag unit type.
+
 = 2.0.3.4 - 01/25/2014 =
 * Fixed: a bug that the Settings link of the plugin in the plugin listing table did not point to the Setting page.
 * Fixed: a bug that caused a broken output in the search unit type due to an undefined index in an array when the authentication keys are not properly set in some PHP versions.

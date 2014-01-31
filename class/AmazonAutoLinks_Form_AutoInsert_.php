@@ -193,7 +193,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID,
 				'strTitle' => __( 'Filter Hooks', 'amazon-auto-links' ) . " <span class='description'>(" . __( 'advanced', 'amazon-auto-links' ) . ")</span>",
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'strDescription' => sprintf( __( 'Enter the WordPress <a href="%1$s" target="_blank">filter hooks</a> with which the auto-insertion is performed, separated by commas.', 'amazon-auto-links' ) , 'http://codex.wordpress.org/Plugin_API/Filter_Reference' ) . "<br />"
 					. "e.g. <code>my_custom_filter, other_plugin_filter</code>",	
 				'vValue' => $this->arrAutoInsertOptions['filter_hooks'],					
@@ -216,7 +216,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID,
 				'strTitle' => __( 'Action Hooks', 'amazon-auto-links' ) . " <span class='description'>(" . __( 'advanced', 'amazon-auto-links' ) . ")</span>",
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'strDescription' => sprintf( __( 'Enter the WordPress <a href="%1$s" target="_blank">action hooks</a> with which the auto-insertion is performed, separated by commas.', 'amazon-auto-links' ) , 'http://codex.wordpress.org/Plugin_API/Action_Reference' ) . "<br />"
 					. "e.g. <code>login_footer, comment_form_before, comment_form_after, my_custom_action, other_plugin_action</code>",
 				'vValue' => $this->arrAutoInsertOptions['action_hooks'],
@@ -304,7 +304,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID,
 				'strTitle' => __( 'Post IDs', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 80,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'strDescription' => __( 'Enter post IDs separated by commas.', 'amazon-auto-links' ) 
 					. ' ' . __( 'Leave this empty to disable this option.', 'amazon-auto-links' ),
 				'vValue' => $this->arrAutoInsertOptions['enable_post_ids'],
@@ -377,7 +377,7 @@ abstract class AmazonAutoLinks_Form_AutoInsert_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID,
 				'strTitle' => __( 'Post IDs', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 80,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'strDescription' => __( 'Enter post IDs separated by commas.', 'amazon-auto-links' ),
 				'vValue' => $this->arrAutoInsertOptions['diable_post_ids'],
 			),

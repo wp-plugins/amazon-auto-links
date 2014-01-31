@@ -11,9 +11,6 @@
  * @filter			aal_filter_description_node
  * 		first parameter:	the description node
  * 		second parameter:	the AmazonAutoLinks_Core object
- * @filter			amazon_auto_links_template_path
- * 		first parameter:	template path
- * 		second parameter:	arguments(unit options)
  * @action			aal_action_output_rss
  * 		first parameter: 	the AmazonAutoLinks_Core object
  * 		second paramter:	the unit option array 

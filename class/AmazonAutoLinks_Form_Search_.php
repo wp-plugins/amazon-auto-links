@@ -163,7 +163,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 					. sprintf( __( 'The keys can be obtained by logging in to the <a href="%1$s" target="_blank">Amazon Web Services web site</a>.', 'amazon-auto-links' ), 'http://aws.amazon.com/' )
 					. ' ' . sprintf( __( 'The instruction is documented <a href="%1$s" target="_blank">here</a>.', 'amazon-auto-links' ), '?post_type=amazon_auto_links&page=aal_help&tab=notes#How_to_Obtain_Access_Key_and_Secret_Key' ),
 				'strType' => 'text',
-				'vSize' => 40,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'fIf' => empty( $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key'] ),
 				'vDefault' => $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key'],
 			),
@@ -174,7 +174,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The private key consisting of 40 alphabetic characters.', 'amazon-auto-links' )
 					. ' e.g.<code>kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct</code>',
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'fIf' => empty( $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key_secret'] ),
 				'vDefault' => $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['authentication_keys']['access_key_secret'],
 			),			
@@ -274,7 +274,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Search Keyword', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'strDescription' => __( 'Enter the keyword to search. For multiple items, separate them by commas.', 'amazon-auto-links' ) 
 					. ' e.g. <code>WordPress, PHP</code>',
 				'vValue' => '',	// the previous value should not appear
@@ -687,7 +687,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Item ID', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'strDescription' => __( 'Enter the ID(s) of the product. For more more than one items, use the <code>,</code> (comma) characters to delimit the items.', 'amazon-auto-links' ) 
 					. ' e.g. <code>B009ZVO3H6, B0043D2DZA</code>',
 				'vValue' => '',	// the previous value should not appear
@@ -914,7 +914,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Item ASIN', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'strDescription' => __( 'Enter the ASIN(s) of the product. For more more than one items, use the <code>,</code> (comma) characters to delimit the items.', 'amazon-auto-links' ) 
 					. ' e.g. <code>B009ZVO3H6</code>',
 				'vValue' => $strSectionID ? '' : null,	// the previous value should not appear

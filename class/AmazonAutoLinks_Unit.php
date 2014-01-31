@@ -7,6 +7,8 @@
  * @license     	http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * 
  * @filter			aal_filter_template_path
+ * 		first parameter:	(string) template path
+ * 		second parameter:	(array) arguments(unit options) 
  * @filter			aal_filter_unit_output
  */
 
@@ -20,7 +22,6 @@ abstract class AmazonAutoLinks_Unit {
 		$this->oDOM = new AmazonAutoLinks_DOM;
 			
 		$this->setBlackWhiteLists();	
-		
 		
 	}
 	
@@ -369,10 +370,10 @@ abstract class AmazonAutoLinks_Unit {
 		
 		// Capture the output buffer
 		ob_start(); // start buffer
-		$arrArgs = $this->arrArgs;	// this lets the template file to aces the local $arrArgs variable.
-		include( $strTemplatePath );
+		$arrArgs = $this->arrArgs;	// this lets the template file to access the local $arrArgs variable.
+		include( $strTemplatePath );	// not include_once() as it may be called many times.
 		$strContent = ob_get_contents(); // assign the content buffer to a variable
-		ob_end_clean(); // end buffer and remove the buffer		
+		ob_end_clean(); // end and remove the buffer		
 		
 		return apply_filters( "aal_filter_unit_output", $strContent . $this->getCredit( $this->arrArgs['credit_link'] ), $arrArgs );
 		
@@ -381,7 +382,6 @@ abstract class AmazonAutoLinks_Unit {
 			
 			return "<!-- Rendered with Amazon Auto Links by miunosoft -->"
 				. ( $fEnabled ? "<span class='amazon-auto-links-credit'>by <a href='" . AmazonAutoLinks_Commons::$strPluginURI . "' rel='author' title='" . AmazonAutoLinks_Commons::$strPluginDescription . "'>Amazon Auto Links</a></span>" : "" );
-			
 			
 		}
 		

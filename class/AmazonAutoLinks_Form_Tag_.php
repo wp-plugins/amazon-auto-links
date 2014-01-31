@@ -99,7 +99,7 @@ abstract class AmazonAutoLinks_Form_Tag_ extends AmazonAutoLinks_Form {
 				'strSectionID' => $strSectionID ? $strSectionID : null,
 				'strTitle' => __( 'Tags', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 80,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 				'strDescription' => __( 'Enter keywords that represent tags separated by commas.', 'amazon-auto-links' )
 					. ' ' . __( 'If the customer ID is provided, this option is optional and if it is left empty, all products tagged by the customer will be fetched.', 'amazon-auto-links' )
 					. ' ' . __( 'Any upper-case characters will be converted to lower-cases.', 'amazon-auto-links' )
@@ -114,7 +114,7 @@ abstract class AmazonAutoLinks_Form_Tag_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'Enter a 13-character ID of the customer who tagged the products.', 'amazon-auto-links' ) 
 					. ' ' . sprintf( __( 'You can find it by looking at the url of the customer profile page. The format is <code>%1$s</code>.', 'amazon-auto-links' ), 'http://www.amazon.com/gp/pdp/profile/[customer_id]/' )
 					. ' ' . __( 'This is recommended to filter spam tagged products.', 'amazon-auto-links' ) 
-					. ' ' . __( 'If not specified, tagged products link by all customers will be fetched.', 'amazon-auto-links' )
+					. ' ' . __( 'If not specified, product links tagged by all customers will be fetched.', 'amazon-auto-links' )
 					. '<br />e.g. <code>AJM38DLD0P3H8</code>' . ' ' . sprintf( __( 'An example of the <a href="%1$s" target="_blank">customer profile page</a>.', 'amazon-auto-links' ), 'http://www.amazon.com/gp/pdp/profile/AJM38DLD0P3H8/' ),
 				// 'vAfterInputTag' => "<span class='description optional'>(" . __( 'optional', 'amazon-auto-links' ) . ")</span>",
 				// 'vValue' => '',	// the previous value should not appear

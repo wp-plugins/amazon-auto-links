@@ -133,7 +133,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The public key consisting of 20 alphabetic characters.', 'amazon-auto-links' )
 					. ' e.g.<code>022QF06E7MXBSH9DHM02</code>',
 				'strType' => 'text',
-				'vSize' => 40,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 20 : 40,
 			),
 			array(
 				'strFieldID' => 'access_key_secret',
@@ -142,7 +142,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'The private key consisting of 40 alphabetic characters.', 'amazon-auto-links' )
 					. ' e.g.<code>kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct</code>',
 				'strType' => 'text',
-				'vSize' => 60,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 40 : 60,
 			),
 			array(  // single button
 				'strFieldID' => 'submit_authentication',
@@ -166,7 +166,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'Enter characters separated by commas.', 'amazon-auto-links' )
 					. ' ' . __( 'Product links that do not contain the white list items will be omitted.', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 80, 
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'vLabel' => array(	
 					'asin' => 'ASIN',
 					'title' => __( 'Title', 'amazon-auto-links' ),
@@ -185,7 +185,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'Enter characters separated by commas.', 'amazon-auto-links' )
 					. ' ' . __( 'Product links that contain the black list items will be omitted.', 'amazon-auto-links' ),
 				'strType' => 'text',
-				'vSize' => 80, 
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'vLabel' => array(	
 					'asin' => 'ASIN',
 					'title' => __( 'Title', 'amazon-auto-links' ),
@@ -357,7 +357,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strDescription' => __( 'Enter the allowed HTML tags for the form input, separated by commas. By default, WordPress applies a filter called KSES that strips out certain tags before the user input is saved in the database for security reasons.', 'amazon-auto-links' ) . '<br />'
 					. ' e.g. <code>noscript, style</code>',
 				'strType' => 'text',
-				'vSize' => 80,
+				'vSize' => version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ? 60 : 80,
 				'strCapability' => 'manage_options',
 			)
 		);		

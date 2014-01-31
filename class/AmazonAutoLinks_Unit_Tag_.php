@@ -1,7 +1,28 @@
 <?php
 class AmazonAutoLinks_Unit_Tag_ extends AmazonAutoLinks_Unit_Category_ {
 	
-	protected function getRSSURLsFromArguments( $arrArgs ) {
+	/**
+	 * Fixes the 'newly tagged...' and 'tagged "..." x times' insertion. 
+	 * 
+	 * @since			2.0.3.5b
+	 */
+	protected function sanitizeTitle( $sTitle ) {
+		
+		$sTitle = parent::sanitizeTitle( $sTitle );
+		$aPatterns = array(
+			'/\s(newly|recently)\stagged.+$/',
+			'/\stagged\s.+times$/',
+		);
+		$sTitle = preg_replace( $aPatterns, '', $sTitle );
+		return $sTitle;
+		
+	}
+	
+	/**
+	 * @param			array			The argument array/
+	 * @param			null			This is only to be compatible with the parent class method.
+	 */
+	protected function getRSSURLsFromArguments( $arrArgs, $_deprecated=null ) {
 		
 		$arrRSSURLs = array();
 		$strScheme = $this->fIsSSL ? 'https' : 'http';
