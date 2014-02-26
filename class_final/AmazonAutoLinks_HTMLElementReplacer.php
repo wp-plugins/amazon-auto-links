@@ -27,9 +27,9 @@ class AmazonAutoLinks_HTMLElementReplacer {
 				
 	public function Perform( $strHTML ) {	
 	
-		// Performs replacements. This is Responsive Column Widgets specific method.
-		// replaces a tag's href values <a href="http://something"> -> <a href="http://siteurl?fetch_tweets_link=encodedstring">
-		// replaces img tag's src values <img src="http://something" /> -> <img src="http://siteurl?fetch_tweets_link=encodedstring">
+		// Performs replacements. 
+		// replaces a tag's href values <a href="http://something"> -> <a href="http://siteurl?..._link=encodedstring">
+		// replaces img tag's src values <img src="http://something" /> -> <img src="http://siteurl?..._link=encodedstring">
 		
 		if ( ! $this->bImageCache ) return $strHTML;	// if the server does not support necessary libraries, do not perform replacements.
 		

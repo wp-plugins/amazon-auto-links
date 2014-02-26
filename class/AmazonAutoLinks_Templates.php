@@ -1,6 +1,6 @@
 <?php
 /**	
-	Handles templates that display fetched tweets.
+	Handles templates that display fetched data.
 	
 	@package			Amazon Auto Links
 	@copyright			Copyright (c) 2013, Michael Uno

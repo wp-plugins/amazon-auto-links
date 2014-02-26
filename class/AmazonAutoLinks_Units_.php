@@ -99,11 +99,11 @@ abstract class AmazonAutoLinks_Units_ {
 
 			$arrPostObjects = get_posts( 
 				array(
-					'post_type' => AmazonAutoLinks_Commons::PostTypeSlug,	// fetch_tweets
+					'post_type' => AmazonAutoLinks_Commons::PostTypeSlug,	
 					'posts_per_page' => -1, // ALL posts
 					'tax_query' => array(
 						array(
-							'taxonomy' => AmazonAutoLinks_Commons::TagSlug,	// fetch_tweets_tag
+							'taxonomy' => AmazonAutoLinks_Commons::TagSlug,	
 							'field' => $strFieldType,	// id or slug
 							'terms' => $arrTermSlugs,	// the array of term slugs
 							'operator' => $this->sanitizeOperator( $strOperator ),	// 'IN', 'NOT IN', 'AND. If the item is only one, use AND.

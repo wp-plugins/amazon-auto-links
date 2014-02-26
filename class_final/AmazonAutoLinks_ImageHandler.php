@@ -119,7 +119,7 @@ class AmazonAutoLinks_ImageHandler extends IXR_Message {
 		if ( ! $arrImageData ) {
 			
 			if ( ! $arrImageData = $this->SetTransient() ) 
-				die( __( 'The image data is empty.', 'fetch-tweets' ) );
+				die( __( 'The image data is empty.', 'amazon-auto-links' ) );
 			
 		}
 		

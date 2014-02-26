@@ -13,7 +13,7 @@ class AmazonAutoLinks_Cron  {
 	static $sTransientKey = 'doing_amazon_auto_links_cron';
 		
 	/**
-	 * Handles Fetch Tweets cron tasks.
+	 * Handles plugin cron tasks.
 	 * 
 	 * Called from the constructor. 
 	 * 
