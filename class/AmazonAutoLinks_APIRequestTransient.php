@@ -24,7 +24,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	function __construct() {
 		
 		// Schedule the transient update task.
-		add_action( 'shutdown', array( $this, 'scheduleUpdatingCaches' ) );
+		add_action( 'shutdown', array( $this, '_replyToScheduleUpdatingCaches' ) );
 		
 		$this->oEncrypt = new AmazonAutoLinks_Encrypt;
 		
@@ -57,27 +57,19 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		) {
 			
 			// Check the cache expiration.
-			if ( ( $arrTransient['mod'] + ( ( int ) $intCacheDuration ) ) < time() ) 	// expired
+			if ( ( $arrTransient['mod'] + ( ( int ) $intCacheDuration ) ) < time() ) {	// expired
+							
 				$GLOBALS['arrAmazonAutoLinks_APIRequestURIs'][ $strTransientID ] = array( 
 					// these keys will be checked in the cache renewal events.
 					'parameters' => $arrParams,
 					'locale' => $strLocale,
 				);
-// AmazonAutoLinks_Debug::logArray( 'the cache IS used: ' . $strRequestURI, dirname( __FILE__ ) . '/cache.txt' );		
+			}	
+
 			return $this->oEncrypt->decode( $arrTransient['data'] );
 			
 		}
-// AmazonAutoLinks_Debug::logArray( 'the cache is NOT used: ' . $strRequestURI, dirname( __FILE__ ) . '/cache.txt' );		
-// AmazonAutoLinks_Debug::logArray( 
-	// array( 
-		// 'transient' => $strTransientID,
-		// 'is_exist' => $arrTransient ? 'exists' : 'does not exist',
-		// 'is_array' => is_array( $arrTransient ) ? 'array' : 'not array',
-		// 'isset' => isset( $arrTransient['mod'], $arrTransient['data'] ) ? 'mod, data are set' : 'mod, data are not set',
 
-	// ),
-	// dirname( __FILE__ ) . '/cache.txt' 
- // );		
 		return $this->setAPIRequestCache( $strRequestURI, $arrHTTPArgs, $strTransientID );
 		
 	}	
@@ -90,7 +82,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	 * @remark			The scope is public since the cache renewal event also uses it.
 	 */
 	public function setAPIRequestCache( $strRequestURI, $arrHTTPArgs, $strTransientID='' ) {
-		
+	
 		// Perform the API request. - requestSigned() should be defined in the extended class.
 		$asXMLResponse = $this->requestSigned( $strRequestURI, $arrHTTPArgs );
 
@@ -103,15 +95,13 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 			return $asXMLResponse;
 			
 		$osXML = AmazonAutoLinks_Utilities::getXMLObject( $asXMLResponse );
+		
 		// If it's not a valid XML, it returns a string.
 		if ( ! is_object( $osXML ) )
 			return array( 'Error' => array( 'Message' => $osXML, 'Code' => 'Invalid XML' ) );	// compose an error array.
 			
 		$arrResponse = AmazonAutoLinks_Utilities::convertXMLtoArray( $osXML );
 
-// Debug
-// AmazonAutoLinks_Debug::logArray( 'the data is fetched: ' . $strRequestURI, dirname( __FILE__ ) . '/cache.txt' );		
- 
 		// If empty, return an empty array.
 		if ( empty( $arrResponse ) ) return array();
 		
@@ -125,6 +115,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		$strTransientID = empty( $strTransientID ) 
 			? AmazonAutoLinks_Commons::TransientPrefix . "_" . md5( trim( $strRequestURI ) )
 			: $strTransientID;
+
 		$this->setTransient( $strTransientID, $asXMLResponse );
 
 		return  $asXMLResponse;
@@ -136,15 +127,33 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	 * 
 	 */
 	public function setTransient( $strTransientKey, $vData, $intTime=null ) {
-// AmazonAutoLinks_Debug::logArray( 'the transient is set: ' . $strTransientKey, dirname( __FILE__ ) . '/cache.txt' );		
+
+		$sLockTransient = AmazonAutoLinks_Commons::TransientPrefix . '_' . md5( "Lock_{$strTransientKey}" );
+		 
+		// Check if the transient is locked
+		if ( get_transient( $sLockTransient ) !== false ) {
+			return;	// it means the cache is being modified right now in a different process.
+		}
+		
+		// Set a lock flag transient that indicates the transient is being renewed.
+		set_transient(
+			$sLockTransient, 
+			time(), // the value can be anything that yields true
+			AmazonAutoLinks_Utilities::getAllowedMaxExecutionTime( 30, 30 )	// max 30 seconds
+		);
+		
+		// Save the cache
 		set_transient(
 			$strTransientKey, 
 			array( 
 				'mod' => $intTime ? $intTime : time(), 
 				'data' => $this->oEncrypt->encode( $vData ) 
-			), 
-			9999999999 // this barely expires by itself. $intCacheDuration 
-		);
+			)
+		);	// no expiration by itself
+
+// AmazonAutoLinks_Debug::logArray( 'the transient is saved: ' . $strTransientKey , dirname( dirname( __FILE__ ) ) . '/class_final/cache_renewals.txt' );
+
+		// delete_transient( $sLockTransient );
 		
 	}
 	
@@ -189,8 +198,9 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	public function generateIDFromRequestParameter( $arrParams ) {
 		
 		$arrParams = array_filter( $arrParams + $this->arrParams );		// Omits empty values.
-		$arrParams = $arrParams + self::$arrMandatoryParameters;	// Append mandataory elements.
+		$arrParams = $arrParams + self::$arrMandatoryParameters;	// Append mandatory elements.
 		ksort( $arrParams );		
+		unset( $arrParams['AssociateTag'] );
 		$strQuery = implode( '&', $arrParams );
 		return AmazonAutoLinks_Commons::TransientPrefix . "_"  . md5( $strQuery );		
 		
@@ -199,10 +209,11 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	/*
 	 * Callbacks
 	 * */
-	public function scheduleUpdatingCaches() {	// for the shutdown hook
+	public function _replyToScheduleUpdatingCaches() {	// for the shutdown hook
 		
 		if ( empty( $GLOBALS['arrAmazonAutoLinks_APIRequestURIs'] ) ) return;
-				
+		
+		$_iScheduled = 0;
 		foreach( $GLOBALS['arrAmazonAutoLinks_APIRequestURIs'] as $arrExpiredCacheRequest ) {
 			
 			/* the structure of $arrExpiredCacheRequest = array(
@@ -219,8 +230,13 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 				'aal_action_api_transient_renewal', 	// the AmazonAutoLinks_Event class will check this action hook and executes it with WP Cron.
 				array( $arrExpiredCacheRequest )	// must be enclosed in an array.
 			);	
+			$_iScheduled++; 
 			
 		}
-				
+		
+		if ( $_iScheduled ) {			
+			AmazonAutoLinks_Cron::triggerBackgroundProcess();
+		}
+		
 	}	
 }

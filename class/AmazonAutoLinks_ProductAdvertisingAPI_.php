@@ -84,7 +84,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 			'US',	// or 'com' would work
 			null	 // do not use cache
 		);		
-// var_dump( $arrResponse );		
+	
 		return isset( $arrResponse['Error'] ) || empty( $arrResponse )
 			? false
 			: true;

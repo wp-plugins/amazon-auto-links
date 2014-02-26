@@ -305,9 +305,10 @@ final class AmazonAutoLinks_Bootstrap {
 				),
 				'constants'	=> array(),
 			),
-			True, 			// if it fails it will deactivate the plugin
+			true, 			// if it fails it will deactivate the plugin
 			'admin_init'
 		);	
+
 	}
 	
 

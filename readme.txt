@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.4 =
+* Improved the caching mechanism.
+* Fixed a bug that caches for the search unit type renewed in the background were not saved properly with the right name.
+* Fixed a bug that caches durations for the search unit type were not set properly.
+
 = 2.0.3.5 - 02/01/2014 =
 * Fixed a possible security issue in the plugin admin pages.
 * Tweaked the form text input length.

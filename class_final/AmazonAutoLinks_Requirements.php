@@ -46,11 +46,11 @@ final class AmazonAutoLinks_Requirements {
 		$this->arrParams['wordpress'] = $this->arrParams['wordpress'] + $this->arrDefaultParams['wordpress'];
 
 		$this->strPluginFilePath = $strPluginFilePath;
-		$this->arrScriptInfo = debug_backtrace();
+		// $this->arrScriptInfo = debug_backtrace();
 		$this->bDeactivate = $bDeactivate;
 		
 		$this->strAdminNotice = '<strong>' . AmazonAutoLinks_Commons::$strPluginName . '</strong><br />';
-
+;
 		if ( ! empty( $strHook ) ) 
 			add_action( $strHook, array( $this, 'checkRequirements' ) );
 		else if ( $strHook === '' )		
@@ -150,6 +150,7 @@ final class AmazonAutoLinks_Requirements {
 		foreach( $arrFuncs as $strFunc => $strError ) 
 			if ( ! function_exists( $strFunc ) ) 
 				$arrNonExistentFuncs[] = sprintf( $strError, $strFunc );
+				
 		return $arrNonExistentFuncs;
 		
 	}	

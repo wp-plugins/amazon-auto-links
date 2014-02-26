@@ -11,21 +11,24 @@
  * @action		aal_action_simplepie_renew_cache
  * @action		aal_action_api_transient_renewal	
  */
-abstract class AmazonAutoLinks_Event_ {
+abstract class AmazonAutoLinks_Event_ extends AmazonAutoLinks_Cron {
 
 	public function __construct() {
+
+		// For SimplePie cache renewal events 
+		add_action( 'aal_action_simplepie_renew_cache', array( $this, '_replyToRenewSimplePieCaches' ) );
+	
+		// For API transient (cache) renewal events
+		add_action( 'aal_action_api_transient_renewal', array( $this, '_replyToRenewAPITransients' ) );
 		
-		// if WP Cron is the one which loaded the page,
-		if ( isset( $_GET['doing_wp_cron'] ) )	{
-					
-			// For SimplePie cache renewal events 
-			add_action( 'aal_action_simplepie_renew_cache', array( $this, 'renewSimplePieCaches' ) );
-		
-			// For API transient (cache) renewal events
-			add_action( 'aal_action_api_transient_renewal', array( $this, 'renewAPITransients' ) );
-		
-		}
-				
+		// This must be called after the above action hooks are added.
+		$this->_handleCronTasks(	// defined in the parent class. 			
+			array(
+				'aal_action_simplepie_renew_cache',
+				'aal_action_api_transient_renewal',
+			) 
+		);	
+			
 		// User ads redirects
 		if ( isset( $_GET['amazon_auto_links_link'] ) && $_GET['amazon_auto_links_link'] ) {			
 			$oRedirect = new AmazonAutoLinks_Redirects;
@@ -42,7 +45,7 @@ abstract class AmazonAutoLinks_Event_ {
 		}			
 		
 		// For the activation hook
-		add_action( 'aal_action_setup_transients', array( $this, 'setUpTransients' ) );
+		add_action( 'aal_action_setup_transients', array( $this, '_replyToSetUpTransients' ) );
 		
 		// Load styles of templates
 		if ( isset( $_GET['amazon_auto_links_style'] ) )
@@ -55,9 +58,7 @@ abstract class AmazonAutoLinks_Event_ {
 
 	}
 
-	public function renewAPITransients( $arrRequestInfo ) {
-		
-// AmazonAutoLinks_Debug::logArray( $arrRequestInfo, dirname( __FILE__ ) . '/cache_renewals.txt' );			
+	public function _replyToRenewAPITransients( $arrRequestInfo ) {
 		
 		$strLocale = $arrRequestInfo['locale'];
 		$arrParams = $arrRequestInfo['parameters'];
@@ -68,17 +69,16 @@ abstract class AmazonAutoLinks_Event_ {
 		);
 		$oAmazonAPI->request( $arrParams, $strLocale, null );	// passing null will fetch the data right away and sets the cache.
 		
-		
 	}
 	
-	public function setUpTransients() {
+	public function _replyToSetUpTransients() {
 		
 		$oUA = new AmazonAutoLinks_UserAds();
 		$oUA->setupTransients();		
 		
 	}
 	
-	public function renewSimplePieCaches( $vURLs ) {
+	public function _replyToRenewSimplePieCaches( $vURLs ) {
 		
 		// Setup Caches
 		$oFeed = new AmazonAutoLinks_SimplePie();

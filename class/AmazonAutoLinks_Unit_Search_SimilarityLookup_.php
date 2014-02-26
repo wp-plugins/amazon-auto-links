@@ -38,11 +38,10 @@ abstract class AmazonAutoLinks_Unit_Search_SimilarityLookup_ extends AmazonAutoL
 		);
 			
 		// Perform the search for the first page regardless the specified count (number of items).
-		// Keys with an empty value will be filtered out when performing the request.			
-		return $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ) );	
+		// Keys with an empty value will be filtered out when performing the request.		
+		return $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );	
 		 		
 	}
-	
 	
 	/**
 	 * 

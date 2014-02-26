@@ -127,7 +127,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			
 		// First, perform the search for the first page regardless the specified count (number of items).
 		// Keys with an empty value will be filtered out when performing the request.			
-		$arrResponse = $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ) );	
+		$arrResponse = $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );	
 		if ( $intCount <= 10 )
 			return $arrResponse;
 		
@@ -144,7 +144,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		for ( $i = 0; $i <= $intPage; $i++ ) {
 			
 			$this->arrArgs['ItemPage'] = $i;
-			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'] ) );
+			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );
 			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) )
 				$arrResponseTrunk['Items']['Item'] = array_merge( $arrResponseTrunk['Items']['Item'], $arrResponse['Items']['Item'] );
 			

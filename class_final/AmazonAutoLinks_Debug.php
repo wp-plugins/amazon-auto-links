@@ -2,15 +2,12 @@
 /**
  * Methods used for debugging
  * 
-	
-	
  * @package     Amazon Auto Links
  * @copyright   Copyright (c) 2013, Michael Uno
  * @authorurl	http://michaeluno.jp
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		1.0.0
  * 
-	
 */
 
 final class AmazonAutoLinks_Debug {
@@ -34,17 +31,39 @@ final class AmazonAutoLinks_Debug {
 		return "<div><pre class='dump-array'>" . htmlspecialchars( print_r( $arr, true ) ) . "</pre><div>";	
 		
 	}
-	static public function logArray( $arr, $strFilePath=null ) {
+	
+	static public function logArray( $asArray, $sFilePath=null ) {
 		
 		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) return;
-					
+			
+		static $_iPageLoadID;
+		$_iPageLoadID = $_iPageLoadID ? $_iPageLoadID : uniqid();		
+		
+		$oCallerInfo = debug_backtrace();
+		$sCallerFunction = $oCallerInfo[ 1 ]['function'];
+		$sCallerClasss = $oCallerInfo[ 1 ]['class'];
 		file_put_contents( 
-			$strFilePath ? $strFilePath : dirname( __FILE__ ) . '/array_log.txt', 
-			date( "Y/m/d H:i:s" ) . PHP_EOL
-			. print_r( $arr, true ) . PHP_EOL . PHP_EOL
-			, FILE_APPEND 
+			$sFilePath ? $sFilePath : dirname( __FILE__ ) . '/array_log.txt', 
+			date( "Y/m/d H:i:s", current_time( 'timestamp' ) ) . ' ' . "{$_iPageLoadID} {$sCallerClasss}::{$sCallerFunction} " . self::getCurrentURL() . PHP_EOL	
+			. print_r( $asArray, true ) . PHP_EOL . PHP_EOL,
+			FILE_APPEND 
 		);					
 							
+	}	
+
+	/**
+	 * Retrieves the currently loaded page url.
+	 * 
+	 * @since			1.3.3.11
+	 */
+	static public function getCurrentURL() {
+		$sSSL = ( !empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ? true:false;
+		$sServerProtocol = strtolower( $_SERVER['SERVER_PROTOCOL'] );
+		$sProtocol = substr( $sServerProtocol, 0, strpos( $sServerProtocol, '/' ) ) . ( ( $sSSL ) ? 's' : '' );
+		$sPort = $_SERVER['SERVER_PORT'];
+		$sPort = ( ( !$sSSL && $sPort=='80' ) || ( $sSSL && $sPort=='443' ) ) ? '' : ':' . $sPort;
+		$sHost = isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+		return $sProtocol . '://' . $sHost . $sPort . $_SERVER['REQUEST_URI'];
 	}
 	
 	static public function echoMemoryUsage() {
