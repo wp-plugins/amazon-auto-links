@@ -157,7 +157,7 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.4 =
+= 2.0.4 - 02/27/2014 =
 * Improved the caching mechanism.
 * Fixed a bug that caches for the search unit type renewed in the background were not saved properly with the right name.
 * Fixed a bug that caches durations for the search unit type were not set properly.
