@@ -158,6 +158,7 @@ You can check if your access key is valid or not with this tool (http://associat
 == Changelog ==
 
 = 2.0.4.1 =
+* Fixed a bug with the Auto-insert feature that set page type for the `Where to Enable` section did not take effect.
 * Added the ability to use an image when no product is found for the search unit type.
 * Fixed a bug with the search unit type that results of the same API request but with a different locale were saved with the same name.
 * Fixed a bug with the search unit type that same products were stored in the response array when more than 10 items were set.

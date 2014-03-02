@@ -109,7 +109,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		foreach( $this->arrFilterHooks[ $strFilterName ] as $intAutoInsertID ) {
 			
 			if ( ! $this->isAutoInsertEnabledPage( $intAutoInsertID, $arrSubjectPageInfo ) ) continue;
-			
+	
 			$arrAutoInsertOptions = $this->arrAutoInsertOptions[ $intAutoInsertID ];		
 			
 			// position - above, below, or both,
@@ -200,7 +200,7 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 		foreach( $this->arrFilterHooks[ 'wp_insert_post_data' ] as $intAutoInsertID ) {
 			
 			if ( ! $this->isAutoInsertEnabledPage( $intAutoInsertID, $arrSubjectPostInfo ) ) continue;
-			
+
 			$arrAutoInsertOptions = $this->arrAutoInsertOptions[ $intAutoInsertID ];		
 			
 			// position - above, below, or both,
@@ -318,12 +318,11 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 	}
 	
 	protected function isAllowed( $arrAutoInsertOptions, $arrSubjectPostInfo ) {
-		
+// AmazonAutoLinks_Debug::logArray( $arrAutoInsertOptions );
 		/* Post IDs - the option field is converted to array at earlier point in this class */
-		$arrAutoInsertOptions['enable_post_ids'] = array_filter( $arrAutoInsertOptions['enable_post_ids'] );
-		if ( ! empty( $arrAutoInsertOptions['enable_post_ids'] ) ) {	// at least on id is set
-			if ( ! in_array( $arrSubjectPostInfo['post_id'], $arrAutoInsertOptions['enable_post_ids'] ) )
-				return false;			
+		$_aEnabledPostIDs = array_filter( $arrAutoInsertOptions['enable_post_ids'] );
+		if ( ! empty( $_aEnabledPostIDs ) && ! in_array( $arrSubjectPostInfo['post_id'], $_aEnabledPostIDs ) ) {	// at least one id is set
+			return false;			
 		}
 		
 		/* 
@@ -336,17 +335,17 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 					[is_search] => 0
 				)
 		 */
-		$arrAutoInsertOptions['enable_page_types'] = array_filter( ( array ) $arrAutoInsertOptions['enable_page_types'] );
-		if ( ! empty( $arrAutoInsertOptions['enable_page_types'] ) ) {			// means at least one item is selected	
-			$fIsEnabled = false;
-			foreach( $arrAutoInsertOptions['enable_page_types'] as $strKey => $fEnable ) {
-				
-				if ( $fEnable )	// if the current page type is checked,
-					$fIsEnabled = true;	// it means it is denied.
-				
+		$_aEnabledPageTypes = array_filter( ( array ) $arrAutoInsertOptions['enable_page_types'] );
+		if ( ! empty( $_aEnabledPageTypes ) ) {			// means at least one item is selected	
+			$_fIsEnabled = false;
+			foreach( $_aEnabledPageTypes as $strKey => $_fEnable ) {
+				if ( isset( $arrSubjectPostInfo[ $strKey ] ) && $arrSubjectPostInfo[ $strKey ] && $_fEnable ) {
+					$_fIsEnabled = true;	// it means it is denied.
+				}				
 			}	
-			if ( ! $fIsEnabled )
+			if ( ! $_fIsEnabled ) {
 				return false;
+			}
 		}
 
 		/*	
@@ -358,15 +357,12 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 				[apf_posts] => 0
 			)
 		 */		
-		$arrAutoInsertOptions['enable_post_types'] = array_filter( ( array ) $arrAutoInsertOptions['enable_post_types'] );	// drop unchedked items
-		if ( ! empty( $arrAutoInsertOptions['enable_post_types'] ) ) {
-			if ( 
-				! ( 
-					isset( $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] ) 
-					&& $arrAutoInsertOptions['enable_post_types'][ $arrSubjectPostInfo['post_type'] ] 
-				)
-			)
+		$_aEnabledPostTypes = array_filter( ( array ) $arrAutoInsertOptions['enable_post_types'] );	// drop unchecked items
+		$_sCurrentPostType = $arrSubjectPostInfo['post_type'];
+		if ( ! empty( $_aEnabledPostTypes ) ) {	// if one more post types are enabled
+			if ( ! ( isset( $_aEnabledPostTypes[ $_sCurrentPostType ] ) && $_aEnabledPostTypes[ $_sCurrentPostType ] ) ) {
 				return false;
+			}
 		}
 			
 		/* 
@@ -392,11 +388,6 @@ abstract class AmazonAutoLinks_AutoInsert_ {
 			$arrTerms = isset( $arrAutoInsertOptions['enable_taxonomy'][ $strTaxonomySlug ] )
 				? $arrTerms + $arrAutoInsertOptions['enable_taxonomy'][ $strTaxonomySlug ]
 				: $arrTerms;
-
-		// Since each term id is unique throughout the WordPress site settings, drop the taxonomy slugs.
-		// $arrTerms = array();
-		// foreach( $arrAutoInsertOptions['enable_taxonomy'] as $strTaxonomySlug => $arrTheseTerms ) 
-			// $arrTerms = $arrTerms + $arrTheseTerms;
 			
 		// Drop unchecked items
 		$arrTerms = array_filter( $arrTerms );
