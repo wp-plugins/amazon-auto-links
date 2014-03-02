@@ -49,7 +49,7 @@ abstract class AmazonAutoLinks_Unit_Search_SimilarityLookup_ extends AmazonAutoL
 	 * @see				http://docs.aws.amazon.com/AWSECommerceService/latest/DG/SimilarityLookup.html
 	 * @since			2.0.3
 	 */
-	protected function getAPIParameterArray( $sOperation='SimilarityLookup' ) {
+	protected function getAPIParameterArray( $sOperation='SimilarityLookup', $iItemPage=null ) {
 
 		$this->arrArgs = $this->arrArgs + self::$aStructure_SimilarityLookup;
 		return array(

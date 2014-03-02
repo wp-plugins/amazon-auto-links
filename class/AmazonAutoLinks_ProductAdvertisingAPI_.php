@@ -35,6 +35,8 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		'AssociateTag'		=> 'amazon-auto-links-20',		// the key must be provided; otherwise, API returns an error.
 	);
 	
+	protected $strLocale = 'US';
+	
 	protected $strUserAgent = "Amazon Auto Links";
 	
 	function __construct( $strLocale, $strAccessKey, $strSecretAccessKey, $strAssociateID='', $strVersion='2011-08-01' ) {
@@ -91,6 +93,23 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		
 	}
 	
+	/**
+	 * Preforms an API request in the background if no cache is available.
+	 * 
+	 * @since			2.0.4.1b
+	 */
+	public function scheduleInBackground( array $aParams, $sLocale='' ) {
+
+		if ( ! $this->isCached( $aParams ) ) {
+			return $this->_scheduleCacheRenewal(
+				array(
+					'parameters' => $aParams,
+					'locale' => $sLocale ? $sLocale : $this->strLocale,
+				)			
+			);
+		}
+		return false;
+	}
 	
 	/**
 	 * Performs an API request from the given request API parameters and returns the result as associative array.
@@ -201,7 +220,7 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		$strMethod = 'GET';
 		$strURI = '/onca/xml';
 		$strDomain = empty( $strLocale ) ? $this->strDomain : $this->getDomain( $strLocale );
-		
+
 		// Compose the parameter array.
 		$arrParams['Timestamp'] = gmdate('Y-m-d\TH:i:s\Z');		// GMT timestamp
 		$arrParams = array_filter( $arrParams + $this->arrParams );		// Omits empty values.

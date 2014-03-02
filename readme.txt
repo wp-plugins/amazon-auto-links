@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.4.1 =
+* Added the ability to use an image when no product is found for the search unit type.
+* Fixed a bug with the search unit type that results of the same API request but with a different locale were saved with the same name.
+* Fixed a bug with the search unit type that same products were stored in the response array when more than 10 items were set.
+
 = 2.0.4 - 02/27/2014 =
 * Improved the caching mechanism.
 * Fixed a bug that caches for the search unit type renewed in the background were not saved properly with the right name.

@@ -2,8 +2,8 @@
 /**
  * Provides methods to render the HTML elements of the category selection page in the plugin admin area.
  * 
- * This class shuld be instantiated before the header gets sent since it checks the form and if the Save/Create button is pressed,
- * it needs to redirect the page to another page. In that case, if the header is already sent, an error occur.
+ * This class should be instantiated before the header gets sent since it checks the form and if the Save/Create button is pressed,
+ * it needs to redirect the page to another page. In that case, if the header is already sent, an error occurs.
  * 
  */
 abstract class AmazonAutoLinks_CategorySelect_ {
@@ -272,6 +272,7 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 	
 // $arrComponents['strRSSURL'] = 'http://www.amazon.com/gp/rss/bestsellers/arts-crafts/ref=zg_bs_arts-crafts_rsslink';
 // AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
+// AmazonAutoLinks_Debug::logArray( $arrComponents );
 		
 		?>
 		<form action="" method="post">		

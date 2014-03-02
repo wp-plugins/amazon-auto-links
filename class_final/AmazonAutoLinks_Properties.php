@@ -59,6 +59,21 @@ final class AmazonAutoLinks_Properties {
 		'MX'	=> 'http://www.amazon.com.mx/gp/product/black-curtain-redirect.html',
 	);
 
+	public static $aNoImageAvailable = array(	// the domain can be g-ecx.images-amazon.com
+		'CA'	=> 'http://g-images.amazon.com/images/G/01/x-site/icons/no-img-sm.gif',
+		'CN'	=> 'http://g-images.amazon.com/images/G/28/x-site/icons/no-img-sm.gif',
+		'FR'	=> 'http://g-images.amazon.com/images/G/08/x-site/icons/no-img-sm.gif',
+		'DE'	=> 'http://g-images.amazon.com/images/G/03/x-site/icons/no-img-sm.gif',
+		'IT'	=> 'http://g-images.amazon.com/images/G/29/x-site/icons/no-img-sm.gif',
+		'JP'	=> 'http://g-images.amazon.com/images/G/09/x-site/icons/no-img-sm.gif',
+		'UK'	=> 'http://g-images.amazon.com/images/G/01/x-site/icons/no-img-sm.gif',
+		'ES'	=> 'http://g-images.amazon.com/images/G/30/x-site/icons/no-img-sm.gif',
+		'US'	=> 'http://g-images.amazon.com/images/G/01/x-site/icons/no-img-sm.gif',
+		'IN'	=> 'http://g-images.amazon.com/images/G/01/x-site/icons/no-img-sm.gif',
+		'BR'	=> 'http://g-images.amazon.com/images/G/01/x-site/icons/no-img-sm.gif',	// should be Portuguese but could not find
+		'MX'	=> 'http://g-images.amazon.com/images/G/30/x-site/icons/no-img-sm.gif',	// Spanish
+	);
+	
 	public static $arrTokens = array(
 		'CA' => 'bWl1bm9zb2Z0Y2EtMjA=',
 		'CN' => 'bWl1bm9zb2Z0LTIz',

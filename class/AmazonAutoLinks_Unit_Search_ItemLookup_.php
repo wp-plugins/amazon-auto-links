@@ -57,7 +57,7 @@ abstract class AmazonAutoLinks_Unit_Search_ItemLookup_ extends AmazonAutoLinks_U
 	 * @see				http://docs.aws.amazon.com/AWSECommerceService/latest/DG/ItemLookup.html
 	 * @since			2.0.2
 	 */
-	protected function getAPIParameterArray( $sOperation='ItemLookup' ) {
+	protected function getAPIParameterArray( $sOperation='ItemLookup', $iItemPage=null ) {
 
 		$this->arrArgs = $this->arrArgs + self::$aStructure_ItemLookup;
 		$aParams = array(

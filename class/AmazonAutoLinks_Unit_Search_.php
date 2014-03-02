@@ -90,7 +90,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		if ( isset( $arrResponse['Error']['Code']['Message'] ) ) 
 			return $arrResponse;
 		
-// AmazonAutoLinks_Debug::dumpArray( $arrResponse );			
+// AmazonAutoLinks_Debug::logArray( $arrResponse );			
 		// Error in the Request element.
 		if ( isset( $arrResponse['Items']['Request']['Errors'] ) )
 			return $arrResponse['Items']['Request']['Errors'];
@@ -124,7 +124,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			$this->oOption->getAccessPrivateKey(),
 			$this->arrArgs['associate_id']
 		);
-			
+
 		// First, perform the search for the first page regardless the specified count (number of items).
 		// Keys with an empty value will be filtered out when performing the request.			
 		$arrResponse = $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );	
@@ -136,31 +136,82 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			return $arrResponse;
 		
 		// Calculate the required number of pages.
-		$intPage = ceil( $intCount / 10 );
-		$intFoundTotalPages = isset( $arrResponse['Items']['TotalPages'] ) ? $arrResponse['Items']['TotalPages'] : 0;
-		$intPage = $intFoundTotalPages <= $intPage ? $intFoundTotalPages : $intPage;
+		$intPage = $this->_getTotalPageNumber( $intCount, $arrResponse, $this->arrArgs['SearchIndex'] );
 		
 		$arrResponseTrunk = $arrResponse;
-		for ( $i = 0; $i <= $intPage; $i++ ) {
+		
+		
+		// First perform fetching data in the background if caches are not available. Parse backwards 
+		$_fScheduled = null;
+		for ( $i = $intPage; $i >= 2 ; $i-- ) {
+			$_fResult = $oAPI->scheduleInBackground( $this->getAPIParameterArray( $this->arrArgs['Operation'], $i ) );
+			$_fScheduled = $_fScheduled ? $_fScheduled : $_fResult;
+		}
+		if ( $_fScheduled ) {
+			// there are items scheduled to fetch in the background, do it right now.
+			AmazonAutoLinks_Shadow::gaze();
+		}
+		
+		// Start from the second page since the first page it's already done. 
+		for ( $i = 2; $i <= $intPage; $i++ ) {
 			
-			$this->arrArgs['ItemPage'] = $i;
-			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );
-			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) )
-				$arrResponseTrunk['Items']['Item'] = array_merge( $arrResponseTrunk['Items']['Item'], $arrResponse['Items']['Item'] );
-			
+			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'], $i ), '', $this->arrArgs['cache_duration'] );
+			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) ) {
+				$arrResponseTrunk['Items']['Item'] = $this->_addItems( $arrResponseTrunk['Items']['Item'], $arrResponse['Items']['Item'] );	
+			}
+							
 		}	
 		
 		return $arrResponseTrunk;
 		
 	}
-	
+		/**
+		 * Returns the total page number
+		 * 
+		 * @since			2.0.4.1b
+		 */
+		protected function _getTotalPageNumber( $iCount, $aResponse, $sSearchIndex='All' ) {
+			
+			$iMaxAllowedPages = $sSearchIndex == 'All' ? 5 : 10;		// see the API documentation: http://docs.aws.amazon.com/AWSECommerceService/latest/DG/ItemSearch.html
+			$iPage = ceil( $iCount / 10 );
+			$iPage = $iPage > $iMaxAllowedPages ? $iMaxAllowedPages : $iPage;
+			$iFoundTotalPages = isset( $aResponse['Items']['TotalPages'] ) ? $aResponse['Items']['TotalPages'] : 1;
+			return $iFoundTotalPages <= $iPage ? 
+				$iFoundTotalPages 
+				: $iPage;
+			
+		}	
+		/**
+		 * Adds product item elements in a response array if the same ASIN is not already in there
+		 * 
+		 * @since			2.0.4.1
+		 */
+		protected function _addItems( $aMain, $aItems ) {
+			
+			// Extract all ASINs from the main array.
+			$_aASINs = array();
+			foreach( $aMain as $_aItem ) {
+				if ( ! isset( $_aItem['ASIN'] ) ) continue;
+				$_aASINs[ $_aItem['ASIN'] ] = $_aItem['ASIN'];
+			}
+			
+			// Add the items if not already there.
+			foreach ( $aItems as $_aItem ) {
+				if ( ! isset( $_aItem['ASIN'] ) ) continue;
+				if ( in_array( $_aItem['ASIN'], $_aASINs ) ) continue;
+				$aMain[] = $_aItem;	// finally add the item
+			}
+			
+			return $aMain;
+			
+		}
 	/**
 	 * 
 	 * 'Operation' => 'ItemSearch',	// ItemSearch, ItemLookup, SimilarityLookup
 	 * @since			2.0.2
 	 * @see				http://docs.aws.amazon.com/AWSECommerceService/latest/DG/ItemSearch.html
 	 */
-	protected function getAPIParameterArray( $sOperation='ItemSearch' ) {
+	protected function getAPIParameterArray( $sOperation='ItemSearch', $iItemPage=null ) {
 
 		$bIsIndexAllOrBlended = ( $this->arrArgs['SearchIndex'] == 'All' || $this->arrArgs['SearchIndex'] == 'Blended' );
 		$aParams = array(
@@ -180,8 +231,8 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			'MinimumPrice' => ! $bIsIndexAllOrBlended && $this->arrArgs['MinimumPrice'] ? $this->arrArgs['MinimumPrice'] : null,
 			'MinPercentageOff' => $this->arrArgs['MinPercentageOff'] ? $this->arrArgs['MinPercentageOff'] : null,
 		);							
-		return $this->arrArgs['ItemPage']
-			? $aParams + array( 'ItemPage' => $this->arrArgs['ItemPage'] )
+		return $iItemPage
+			? $aParams + array( 'ItemPage' => $iItemPage )
 			: $aParams;
 
 	}
@@ -226,7 +277,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 				'meta' => '',
 				'content'  => $strContent,
 				'image_size' => $this->arrArgs['image_size'],
-				'thumbnail_url' => isset( $arrItem['MediumImage'] ) ? $this->formatImage( $arrItem['MediumImage']['URL'], $this->arrArgs['image_size'] ) : null,
+				'thumbnail_url' => $this->formatImage( isset( $arrItem['MediumImage'] ) ? $arrItem['MediumImage']['URL'] : null, $this->arrArgs['image_size'] ),
 				'author' => isset( $arrItem['ItemAttributes']['Author'] ) ? implode( ', ', ( array ) $arrItem['ItemAttributes']['Author'] ) : '',
 				// 'manufacturer' => $arrItem['ItemAttributes']['Manufacturer'], 
 				'category' => isset( $arrItem['ItemAttributes']['ProductGroup'] ) ? $arrItem['ItemAttributes']['ProductGroup'] : '',
@@ -296,11 +347,20 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		}
 		
 	
-	protected function formatImage( $strImageURL, $numImageSize ) {
+	protected function formatImage( $sImageURL, $numImageSize ) {
 		
-		if ( $this->fIsSSL )
-			$strImageURL = $this->respectSSLImage( $strImageURL );
-		return $this->setImageSize( $strImageURL, $numImageSize );
+		// If no product image is found
+		if ( ! $sImageURL ) {
+			$sImageURL = isset( AmazonAutoLinks_Properties::$aNoImageAvailable[ $this->arrArgs['country'] ] )
+				? AmazonAutoLinks_Properties::$aNoImageAvailable[ $this->arrArgs['country'] ]
+				: AmazonAutoLinks_Properties::$aNoImageAvailable['US'];			
+		}
+		
+		if ( $this->fIsSSL ) {
+			$sImageURL = $this->respectSSLImage( $sImageURL );
+		}
+		
+		return $this->setImageSize( $sImageURL, $numImageSize );
 		
 	}
 	

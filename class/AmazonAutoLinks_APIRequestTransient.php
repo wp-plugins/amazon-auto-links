@@ -32,6 +32,22 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	}
 	
 	/**
+	 * Checks if the request is cached or not from the given request array.
+	 * 
+	 * Note that this does not check if it's expired or not. Just checks the existance of the transient.
+	 * 
+	 */
+	protected function isCached( $aParams=array() ) {
+		
+		$sTransientID = $this->generateIDFromRequestParameter( $aParams );
+		$aCache = $this->getTransient( $sTransientID );
+		return ( $aCache )
+			? true 
+			: false;
+
+	}
+	
+	/**
 	 * Performs the Twitter API request by the given URI.
 	 * 
 	 * This checks the existent caches and if it's not expired it uses the cache.
@@ -43,7 +59,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	 * @return			array
 	 */ 
 	protected function requestWithCache( $strRequestURI, $arrHTTPArgs=array(), $arrParams=array(), $intCacheDuration=3600, $strLocale='US' ) {
-	
+// AmazonAutoLinks_Debug::logArray( $strRequestURI );	
 		// Create an ID from the URI - it's better not use the ID from an Amazon API request URI because it is built upon a timestamp.
 		$strTransientID = $this->generateIDFromRequestParameter( $arrParams );
 
@@ -141,7 +157,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 			time(), // the value can be anything that yields true
 			AmazonAutoLinks_Utilities::getAllowedMaxExecutionTime( 30, 30 )	// max 30 seconds
 		);
-		
+// AmazonAutoLinks_Debug::logArray( 'set transient: ' . $strTransientKey );
 		// Save the cache
 		set_transient(
 			$strTransientKey, 
@@ -201,6 +217,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		$arrParams = $arrParams + self::$arrMandatoryParameters;	// Append mandatory elements.
 		ksort( $arrParams );		
 		unset( $arrParams['AssociateTag'] );
+		$arrParams['locale'] = $this->strLocale;	
 		$strQuery = implode( '&', $arrParams );
 		return AmazonAutoLinks_Commons::TransientPrefix . "_"  . md5( $strQuery );		
 		
@@ -216,27 +233,37 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		$_iScheduled = 0;
 		foreach( $GLOBALS['arrAmazonAutoLinks_APIRequestURIs'] as $arrExpiredCacheRequest ) {
 			
-			/* the structure of $arrExpiredCacheRequest = array(
-				'parameters' => the request parameter values
-				'locale' => the locale 
-			*/
-			
 			// Schedules the action to run in the background with WP Cron.
+			$_iScheduled += $this->_scheduleCacheRenewal( $arrExpiredCacheRequest );
+			
+		}
+		if ( $_iScheduled ) {			
+			AmazonAutoLinks_Shadow::see();
+		}
+		
+	}	
+		/**
+		 * Schedules to renew the cache with WP Cron.
+		 * 
+		 * @since			2.0.4.1b
+		 * @param			array			$aExpiredCacheRequest			The cache request array. The structure should look like
+		 *	array(
+		 *		'parameters' => the request parameter values
+		 *		'locale' => the locale 
+		 *	)
+		 * @return			0 for not scheduling and 1 for scheduling.
+		 */
+		protected function _scheduleCacheRenewal( $aExpiredCacheRequest ) {
+			
 			// If already scheduled, skip.
-			if ( wp_next_scheduled( 'aal_action_api_transient_renewal', array( $arrExpiredCacheRequest ) ) ) continue; 
+			if ( wp_next_scheduled( 'aal_action_api_transient_renewal', array( $aExpiredCacheRequest ) ) ) return 0; 
 			
 			wp_schedule_single_event( 
 				time(), 
 				'aal_action_api_transient_renewal', 	// the AmazonAutoLinks_Event class will check this action hook and executes it with WP Cron.
-				array( $arrExpiredCacheRequest )	// must be enclosed in an array.
-			);	
-			$_iScheduled++; 
+				array( $aExpiredCacheRequest )	// must be enclosed in an array.
+			);			
+			return 1;
 			
 		}
-		
-		if ( $_iScheduled ) {			
-			AmazonAutoLinks_Cron::triggerBackgroundProcess();
-		}
-		
-	}	
 }

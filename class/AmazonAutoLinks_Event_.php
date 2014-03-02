@@ -11,7 +11,7 @@
  * @action		aal_action_simplepie_renew_cache
  * @action		aal_action_api_transient_renewal	
  */
-abstract class AmazonAutoLinks_Event_ extends AmazonAutoLinks_Cron {
+abstract class AmazonAutoLinks_Event_ {
 
 	public function __construct() {
 
@@ -22,7 +22,7 @@ abstract class AmazonAutoLinks_Event_ extends AmazonAutoLinks_Cron {
 		add_action( 'aal_action_api_transient_renewal', array( $this, '_replyToRenewAPITransients' ) );
 		
 		// This must be called after the above action hooks are added.
-		$this->_handleCronTasks(	// defined in the parent class. 			
+		new AmazonAutoLinks_Shadow(	// defined in the parent class. 			
 			array(
 				'aal_action_simplepie_renew_cache',
 				'aal_action_api_transient_renewal',
@@ -59,7 +59,7 @@ abstract class AmazonAutoLinks_Event_ extends AmazonAutoLinks_Cron {
 	}
 
 	public function _replyToRenewAPITransients( $arrRequestInfo ) {
-		
+
 		$strLocale = $arrRequestInfo['locale'];
 		$arrParams = $arrRequestInfo['parameters'];
 		$oAmazonAPI = new AmazonAutoLinks_ProductAdvertisingAPI( 
