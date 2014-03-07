@@ -158,7 +158,7 @@ You can check if your access key is valid or not with this tool (http://associat
 == Changelog ==
 
 = 2.0.5 =
-* Added the class attributes indicating the unit ID and the label(plugin custom taxonomy) in each products container output.
+* Added the class selectors representing unit ID and the label to the products container element.
 * Fixed a bug that the `column` option was saved always as 1 for the first time.
 * Refactored the code.
 
