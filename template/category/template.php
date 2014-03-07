@@ -17,7 +17,9 @@ $arrStructure_Product = array(
 	'thumbnail_url' => '',	
 );
   
-	 
+$sClassAttributes_ProductsContainer = 'amazon-products-container' . ' amazon-unit-' . $arrArgs['id'];
+$sClassAttributes_ProductsContainer .= empty( $arrArgs['_labels'] ) ? '' : ' amazon-label-' . implode( ' amazon-label-', $arrArgs['_labels'] );		
+
 ?>
 <?php if ( empty( $arrProducts ) ) : ?>
 	<div><p><?php _e( 'No products found.', 'amazon-auto-links' ); ?></p></div>
@@ -33,7 +35,7 @@ $arrStructure_Product = array(
 <?php return; ?>
 <?php endif; ?>
 	
-<div class="amazon-products-container">
+<div class="<?php echo $sClassAttributes_ProductsContainer; ?>">
 <?php foreach( $arrProducts as $arrProduct ) : ?>
 	<?php $arrProduct = $arrProduct + $arrStructure_Product; ?>
 	<div class="amazon-product-container">

@@ -7,7 +7,6 @@
  * $arrArgs - the user defined arguments such as image size and count etc.
  */
 
- 
 $arrStructure_Product = array(
 	'product_url' => '',
 	'title' => '',
@@ -25,6 +24,10 @@ $arrStructure_Product = array(
 	'lowest_new_price' => '', 
 	'lowest_used_price' => '',
 ); 
+
+$sClassAttributes_ProductsContainer = 'amazon-products-container-search' . ' amazon-unit-' . $arrArgs['id'];
+$sClassAttributes_ProductsContainer .= empty( $arrArgs['_labels'] ) ? '' : ' amazon-label-' . implode( ' amazon-label-', $arrArgs['_labels'] );
+		
 ?>
 <?php if ( ! isset( $arrProducts ) || empty( $arrProducts ) ) : ?>
 	<div><p><?php _e( 'No products found.', 'amazon-auto-links' ); ?></p></div>
@@ -39,7 +42,7 @@ $arrStructure_Product = array(
 <?php return; ?>
 <?php endif; ?>
 
-<div class="amazon-products-container-search">
+<div class="<?php echo $sClassAttributes_ProductsContainer; ?>">
 <?php foreach( $arrProducts as $arrProduct ) : ?>
 	<?php $arrProduct = $arrProduct + $arrStructure_Product; ?>
 	<div class="amazon-product-container">

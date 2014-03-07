@@ -34,27 +34,28 @@ abstract class AmazonAutoLinks_Units_ {
 		// The label parameter.
 		if ( isset( $this->arrArgs['label'] ) ) {
 			
-			$arrLabels = AmazonAutoLinks_Utilities::convertStringToArray( $this->arrArgs['label'], "," );
-			$arrIDs = array_merge( $this->getPostIDsByLabel( $arrLabels, isset( $arrArgs['operator'] ) ? $arrArgs['operator'] : null ), $arrIDs );
+			$this->arrArgs['_labels'] = AmazonAutoLinks_Utilities::convertStringToArray( $this->arrArgs['label'], "," );
+			$arrIDs = array_merge( $this->getPostIDsByLabel( $this->arrArgs['_labels'], isset( $arrArgs['operator'] ) ? $arrArgs['operator'] : null ), $arrIDs );
 			
 		}
 			
-		$arrOutputs = array();
+		$_aOutputs = array();
 		$arrIDs = array_unique( $arrIDs );
 
-// AmazonAutoLinks_Debug::logArray( $arrIDs );		
-		foreach( $arrIDs as $intID ) 
-			$arrOutputs[] = $this->getOutputByID( $intID );
+		foreach( $arrIDs as $_iID ) 
+			$_aOutputs[] = $this->getOutputByID( $_iID );
 		
-		return implode( '', $arrOutputs );
-		
+		return implode( '', $_aOutputs );
 
 	}
 			
 		protected function getOutputByID( $intPostID ) {
 			
 			$arrUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $intPostID );
-			$arrUnitOptions = $this->arrArgs + $arrUnitOptions + array( 'unit_type' => null );	// if the unit gets deleted, auto-insert causes an error for not finding the options
+			$arrUnitOptions = $this->arrArgs + $arrUnitOptions + array( 
+				'unit_type' => null,
+				'id' => $intPostID,
+			);	// if the unit gets deleted, auto-insert causes an error for not finding the options
 			switch ( $arrUnitOptions['unit_type'] ) {
 				case 'category':
 					$oAALCat = new AmazonAutoLinks_Unit_Category( $arrUnitOptions );

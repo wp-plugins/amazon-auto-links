@@ -48,6 +48,9 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		/* used outside the class */
 		'is_preview' => false,	// for the search unit, true won't be used but just for the code consistency. 
 		'operator' => 'AND', // this is for fetching by label. AND, IN, NOT IN can be used
+		
+		'id' => null,		// the unit ID
+		'_labels'	=> array(),	// stores labels (plugin custom taxonomy)
 	);
 	
 	public static $aStructure_Item = array(
@@ -139,8 +142,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		$intPage = $this->_getTotalPageNumber( $intCount, $arrResponse, $this->arrArgs['SearchIndex'] );
 		
 		$arrResponseTrunk = $arrResponse;
-		
-		
+				
 		// First perform fetching data in the background if caches are not available. Parse backwards 
 		$_fScheduled = null;
 		for ( $i = $intPage; $i >= 2 ; $i-- ) {
@@ -152,7 +154,7 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			AmazonAutoLinks_Shadow::gaze();
 		}
 		
-		// Start from the second page since the first page it's already done. 
+		// Start from the second page since the first page has been already done. 
 		for ( $i = 2; $i <= $intPage; $i++ ) {
 			
 			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'], $i ), '', $this->arrArgs['cache_duration'] );

@@ -118,6 +118,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 		if ( ! isset( $GLOBALS['post']->post_type ) || $GLOBALS['post']->post_type != $this->oProps->strPostType ) return $strContent;
 
 		$arrUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $GLOBALS['post']->ID );
+		$arrUnitOptions['id'] = $GLOBALS['post']->ID;
 		switch ( $arrUnitOptions['unit_type'] ) {
 			case 'category':
 				$oAALCat = new AmazonAutoLinks_Unit_Category( $arrUnitOptions );

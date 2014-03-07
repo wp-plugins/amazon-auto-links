@@ -52,6 +52,8 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 		// 'image_format' => '',
 		// 'title_format' => '',
 		
+		'id'	=> null,	// the unit id
+		'_labels'	=> array(),	// stores labels (plugin custom taxonomy)
 	);
 
 	public static $arrStructure_Product = array(

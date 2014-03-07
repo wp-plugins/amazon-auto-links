@@ -148,7 +148,8 @@ abstract class AmazonAutoLinks_Option_ {
 				$arrUnitOptions['column'], 	// number to sanitize
 				4, 	// default
 				1, 		// minimum
-				$this->arrOptions['aal_settings']['template']['max_column'] 	// max
+				$this->getMaxSupportedColumnNumber()
+				// $this->arrOptions['aal_settings']['template']['max_column'] 	// max
 			);			
 
 		// For the 'item_lookup' unit type

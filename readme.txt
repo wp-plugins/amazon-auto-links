@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.5 =
+* Added the class attributes indicating the unit ID and the label(plugin custom taxonomy) in each products container output.
+* Fixed a bug that the `column` option was saved always as 1 for the first time.
+* Refactored the code.
+
 = 2.0.4.1 - 03/03/2014 =
 * Fixed a bug with the Auto-insert feature that set page type for the `Where to Enable` section did not take effect.
 * Added the ability to use an image when no product is found for the search unit type.
