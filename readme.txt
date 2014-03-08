@@ -158,6 +158,7 @@ You can check if your access key is valid or not with this tool (http://associat
 == Changelog ==
 
 = 2.0.5 =
+* Fixed a PHP warning that occurs when a user with an insufficient access level logs in to the admin page.
 * Added the class selectors representing unit ID and the label to the products container element.
 * Fixed a bug that the `column` option was saved always as 1 for the first time.
 * Refactored the code.

@@ -22,6 +22,7 @@ abstract class AmazonAutoLinks_AdminPage_Menu extends AmazonAutoLinks_AdminPage_
 		
 		// Remove the default post type menu item.
 		$strPageSlug = $this->oProps->arrRootMenu['strPageSlug'];
+		if ( ! isset( $GLOBALS['submenu'][ $strPageSlug ] ) ) return;	// logged-in users of an insufficient access level don't have the menu to be registered.
 		foreach ( $GLOBALS['submenu'][ $strPageSlug ] as $intIndex => $arrSubMenu ) {
 						
 			if ( ! isset( $arrSubMenu[ 2 ] ) ) continue;
