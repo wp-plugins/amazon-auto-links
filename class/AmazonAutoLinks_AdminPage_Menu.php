@@ -41,7 +41,7 @@ abstract class AmazonAutoLinks_AdminPage_Menu extends AmazonAutoLinks_AdminPage_
 
 			// Copy and remove the Tag menu element to change the position. 
 			if ( $arrSubMenu[ 2 ] == 'edit-tags.php?taxonomy=' . AmazonAutoLinks_Commons::TagSlug . '&amp;post_type=' . AmazonAutoLinks_Commons::PostTypeSlug ) {
-				$arrMenuEntry_Tag = array( $GLOBALS['submenu'][ $strPageSlug ][ $intIndex ] );
+				$_aMenuEntry_Tag = array( $GLOBALS['submenu'][ $strPageSlug ][ $intIndex ] );
 				unset( $GLOBALS['submenu'][ $strPageSlug ][ $intIndex ] );
 				continue;				
 			}
@@ -59,12 +59,12 @@ abstract class AmazonAutoLinks_AdminPage_Menu extends AmazonAutoLinks_AdminPage_
 		}
 	
 		// Insert the Tag menu item before the Settings menu item.
-		if ( isset( $arrMenuEntry_Tag ) )
+		if ( isset( $_aMenuEntry_Tag ) )
 			array_splice( 
 				$GLOBALS['submenu'][ $strPageSlug ], // original array
 				$intMenuPos_Setting, 	// position
 				0, 	// offset - should be 0
-				$arrMenuEntry_Tag 	// replacement array
+				$_aMenuEntry_Tag 	// replacement array
 			);		
 
 		// Unfortunately array_splice() will lose all the associated keys(index).
