@@ -10,6 +10,7 @@
  * @action		aal_action_setup_transients
  * @action		aal_action_simplepie_renew_cache
  * @action		aal_action_api_transient_renewal	
+ * @filter		aal_filter_store_redirect_url - [2.0.5+] receives the redirecting url of the Amazon store
  */
 abstract class AmazonAutoLinks_Event_ {
 
@@ -22,24 +23,30 @@ abstract class AmazonAutoLinks_Event_ {
 		add_action( 'aal_action_api_transient_renewal', array( $this, '_replyToRenewAPITransients' ) );
 		
 		// This must be called after the above action hooks are added.
-		new AmazonAutoLinks_Shadow(	// defined in the parent class. 			
-			array(
-				'aal_action_simplepie_renew_cache',
-				'aal_action_api_transient_renewal',
-			) 
-		);	
+		if ( 'intense' == $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['cache']['chaching_mode'] ) {	
+			new AmazonAutoLinks_Shadow(	// defined in the parent class. 			
+				array(
+					'aal_action_simplepie_renew_cache',
+					'aal_action_api_transient_renewal',
+				) 
+			);	
+		} else {
+			if ( AmazonAutoLinks_Shadow::isBackground() ) {
+				exit;
+			}
+		}
 			
 		// User ads redirects
 		if ( isset( $_GET['amazon_auto_links_link'] ) && $_GET['amazon_auto_links_link'] ) {			
-			$oRedirect = new AmazonAutoLinks_Redirects;
-			$oRedirect->go( $_GET['amazon_auto_links_link'] );	// will exit there.
+			$_oRedirect = new AmazonAutoLinks_Redirects;
+			$_oRedirect->go( $_GET['amazon_auto_links_link'] );	// will exit there.
 		}
 		
 		// Draw cached image.
 		if ( isset( $_GET['amazon_auto_links_image'] ) && $_GET['amazon_auto_links_image'] && is_user_logged_in() ) {
 			
-			$oImageLoader = new AmazonAutoLinks_ImageHandler( AmazonAutoLinks_Commons::TransientPrefix );
-			$oImageLoader->draw( $_GET['amazon_auto_links_image'] );
+			$_oImageLoader = new AmazonAutoLinks_ImageHandler( AmazonAutoLinks_Commons::TransientPrefix );
+			$_oImageLoader->draw( $_GET['amazon_auto_links_image'] );
 			exit;
 			
 		}			
@@ -48,13 +55,15 @@ abstract class AmazonAutoLinks_Event_ {
 		add_action( 'aal_action_setup_transients', array( $this, '_replyToSetUpTransients' ) );
 		
 		// Load styles of templates
-		if ( isset( $_GET['amazon_auto_links_style'] ) )
+		if ( isset( $_GET['amazon_auto_links_style'] ) ) {
 			$GLOBALS['oAmazonAutoLinks_Templates']->loadStyle( $_GET['amazon_auto_links_style'] );
+		}
 			
 		// URL Cloak
-		$strQueryKey = $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['query']['cloak'];
-		if ( isset( $_GET[ $strQueryKey ] ) ) 			
-			$this->goToStore( $_GET[ $strQueryKey ], $_GET );	
+		$_sQueryKey = $GLOBALS['oAmazonAutoLinks_Option']->arrOptions['aal_settings']['query']['cloak'];
+		if ( isset( $_GET[ $_sQueryKey ] ) ) {
+			$this->goToStore( $_GET[ $_sQueryKey ], $_GET );	
+		}
 
 	}
 
@@ -101,26 +110,26 @@ abstract class AmazonAutoLinks_Event_ {
 	 * 
 	 * For URL cloaking redirects.
 	 */
-	protected function goToStore( $strASIN, $arrArgs ) {
+	protected function goToStore( $sASIN, $aArgs ) {
 		
-		$arrArgs = $arrArgs + array(
+		$aArgs = $aArgs + array(
 			'locale' => null,
 			'tag' => null,
 			'ref' => null,
 		);
 		
 		// http://www.amazon.[domain-suffix]/dp/ASIN/[asin]/ref=[...]?tag=[associate-id]
-		$strURL = isset( AmazonAutoLinks_Properties::$arrCategoryRootURLs[ strtoupper( $arrArgs['locale'] ) ] )
-			? AmazonAutoLinks_Properties::$arrCategoryRootURLs[ strtoupper( $arrArgs['locale'] ) ]
+		$_sURL = isset( AmazonAutoLinks_Properties::$arrCategoryRootURLs[ strtoupper( $aArgs['locale'] ) ] )
+			? AmazonAutoLinks_Properties::$arrCategoryRootURLs[ strtoupper( $aArgs['locale'] ) ]
 			: AmazonAutoLinks_Properties::$arrCategoryRootURLs['US'];
 		
-		$arrURLelem = parse_url( $strURL );
-		$strStoreURL = $arrURLelem['scheme'] . '://' . $arrURLelem['host'] 
-			. '/dp/ASIN/' . $strASIN . '/' 
-			. ( empty( $arrArgs['ref'] ) ? '' : 'ref=nosim' )
-			. "?tag={$arrArgs['tag']}";
+		$_aURLelem = parse_url( $_sURL );
+		$_sStoreURL = $_aURLelem['scheme'] . '://' . $_aURLelem['host'] 
+			. '/dp/ASIN/' . $sASIN . '/' 
+			. ( empty( $aArgs['ref'] ) ? '' : 'ref=nosim' )
+			. "?tag={$aArgs['tag']}";
 		
-		die( wp_redirect( $strStoreURL ) );
+		die( wp_redirect( apply_filters( 'aal_filter_store_redirect_url', $_sStoreURL ) ) );
 				
 	}
 	

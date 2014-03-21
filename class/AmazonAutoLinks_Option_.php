@@ -46,6 +46,9 @@ abstract class AmazonAutoLinks_Option_ {
 				'review' => 0,			// not implemented yet
 				'agreed' => false,		// hidden
 			),
+			'cache'	=>	array(
+				'chaching_mode' => 'normal',
+			),
 			'query' => array(
 				'cloak' => 'productlink'
 			),

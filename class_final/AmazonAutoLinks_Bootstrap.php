@@ -151,7 +151,7 @@ final class AmazonAutoLinks_Bootstrap {
 		
 		// 5. Post Type - It should not use "if ( is_admin() )" for the this class because posts of custom post type can be accessed from front-end regular pages.
 		new AmazonAutoLinks_PostType( AmazonAutoLinks_Commons::PostTypeSlug, null, $this->strFilePath ); 	// post type slug
-		new AmazonAutoLinks_AutoInsert_PostType( AmazonAutoLinks_Commons::PostTypeSlugAutoInsert, null, $this->strFilePath ); 	// post type slug
+		new AmazonAutoLinks_PostType_AutoInsert( AmazonAutoLinks_Commons::PostTypeSlugAutoInsert, null, $this->strFilePath ); 	// post type slug
 	
 		// 6. Meta Boxes
 		if ( is_admin() ) 

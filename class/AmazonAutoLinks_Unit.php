@@ -2,6 +2,8 @@
 /**
  * A base class for unit classes, search, tag, and category.
  * 
+ * Provides shared methods and properties for those classes.
+ * 
  * @package     	Amazon Auto Links
  * @copyright   	Copyright (c) 2013, Michael Uno
  * @license     	http://opensource.org/licenses/gpl-2.0.php GNU Public License
@@ -10,6 +12,8 @@
  * 		first parameter:	(string) template path
  * 		second parameter:	(array) arguments(unit options) 
  * @filter			aal_filter_unit_output
+ * 		first parameter:	(string) unit output
+ * 		second parameter:	(array)	arguments(unit options)
  */
 
 abstract class AmazonAutoLinks_Unit {
@@ -311,7 +315,6 @@ abstract class AmazonAutoLinks_Unit {
 		
 		$oEncrypt = new AmazonAutoLinks_Encrypt;
 		$strDevID = isset( AmazonAutoLinks_Properties::$arrTokens[ $strLocale ] )
-			// ? AmazonAutoLinks_Properties::$arrTokens[ $strLocale ]
 			? $oEncrypt->decode( AmazonAutoLinks_Properties::$arrTokens[ $strLocale ] )
 			: $strAssociateID;
 		
@@ -326,7 +329,7 @@ abstract class AmazonAutoLinks_Unit {
 	 * 
 	 * The keys that can determine the template path are template, template_id, template_path.
 	 * 
-	 * The template_id key is automatically assigned when creating a unit. IF the template_path is explictly set and the file exists, it will be used.
+	 * The template_id key is automatically assigned when creating a unit. If the template_path is explicitly set and the file exists, it will be used.
 	 * 
 	 * The template key is a user friendly one and it should point to the name of the template. If multiple names exist, the first item will be used.
 	 * 

@@ -167,7 +167,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 			)
 		);	// no expiration by itself
 
-// AmazonAutoLinks_Debug::logArray( 'the transient is saved: ' . $strTransientKey , dirname( dirname( __FILE__ ) ) . '/class_final/cache_renewals.txt' );
+// AmazonAutoLinks_Debug::logArray( 'the transient is saved: ' . $strTransientKey );
 
 		// delete_transient( $sLockTransient );
 		

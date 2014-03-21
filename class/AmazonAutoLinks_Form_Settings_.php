@@ -53,8 +53,13 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strPageSlug'		=> $strPageSlug,
 				'strTabSlug'		=> 'general',
 				'strTitle'			=> __( 'Custom Query Key', 'amazon-auto-links' ),
-			),			
-	
+			),
+			array( 
+				'strSectionID'		=> 'cache',
+				'strPageSlug'		=> $strPageSlug,
+				'strTabSlug'		=> 'general',
+				'strTitle'			=> __( 'Caches', 'amazon-auto-links' ),
+			),
 			// misc
 			array(
 				'strSectionID'		=> 'capabilities',
@@ -115,6 +120,7 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 			$this->getFieldsOfSupport( 'support' ),
 			$this->getFieldsOfSupport( 'initial_support', 'initial_' ),
 			$this->getFieldsOfQuery(),
+			$this->getFieldsOfCacheSettings(),
 			$this->getFieldsOfDebug(),
 			$this->getFieldsOfCapabilities(),
 			$this->getFieldsOfFormOptions(),
@@ -314,9 +320,38 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'strType' => 'text',
 				'vDefault' => AmazonAutoLinks_Option::$arrStructure_Options['aal_settings']['query']['cloak'],
 			),
+			// array(  // single button
+				// 'strFieldID' => 'submit_general',
+				// 'strSectionID' => 'query',
+				// 'strType' => 'submit',
+				// 'strBeforeField' => "<div style='display: inline-block;'>" . $this->oUserAds->getTextAd() . "</div>"
+					// . "<div class='right-button'>",
+				// 'strAfterField' => "</div>",
+				// 'vLabelMinWidth' => 0,
+				// 'vLabel' => __( 'Save Changes', 'amazon-auto-links' ),
+				// 'vClassAttribute' => 'button button-primary',
+			// )	
+		);		
+	}
+	protected function getFieldsOfCacheSettings() {
+		return array(
+			array(
+				'strFieldID' => 'chaching_mode',
+				'strSectionID' => 'cache',
+				'strTitle' => __( 'Caching Mode', 'amazon-auto-links' ),
+				'strType' => 'radio',
+				'strCapability' => 'manage_options',
+				'vLabel' => array(
+					'normal' => __( 'Normal', 'amazon-auto-links' ) . ' - ' . __( 'relies on WP Cron.', 'amazon-auto-links' ) . '<br />',
+					'intense' => __( 'Intense', 'amazon-auto-links' ) . ' - ' . __( 'relies on the plugin caching method.', 'amazon-auto-links' ) . '<br />',
+				),
+				'strDescription' => __( 'The intense mode should only be enabled when the normal mode does not work.', 'amazon-auto-links' ),
+				'vDefault' => 'normal',
+
+			),		
 			array(  // single button
 				'strFieldID' => 'submit_general',
-				'strSectionID' => 'query',
+				'strSectionID' => 'cache',
 				'strType' => 'submit',
 				'strBeforeField' => "<div style='display: inline-block;'>" . $this->oUserAds->getTextAd() . "</div>"
 					. "<div class='right-button'>",
@@ -324,8 +359,8 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 				'vLabelMinWidth' => 0,
 				'vLabel' => __( 'Save Changes', 'amazon-auto-links' ),
 				'vClassAttribute' => 'button button-primary',
-			)	
-		);		
+			)			
+		);
 	}
 	protected function getFieldsOfCapabilities() {
 		return array(

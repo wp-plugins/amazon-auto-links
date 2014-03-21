@@ -8,9 +8,9 @@
  * @since		2.0.0
  * 
  */
-abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_AdminPageFramework_PostType {
+abstract class AmazonAutoLinks_PostType_AutoInsert_ extends AmazonAutoLinks_AdminPageFramework_PostType {
 
-	public function start_AmazonAutoLinks_AutoInsert_PostType() {
+	public function start_AmazonAutoLinks_PostType_AutoInsert() {
 
 		$this->setPostTypeArgs(
 			array(			// argument - for the array structure, refer to http://codex.wordpress.org/Function_Reference/register_post_type#Arguments
@@ -240,7 +240,7 @@ abstract class AmazonAutoLinks_AutoInsert_PostType_ extends AmazonAutoLinks_Admi
 	}
 		
 	// Style for this custom post type pages
-	public function style_AmazonAutoLinks_AutoInsert_PostType() {
+	public function style_AmazonAutoLinks_PostType_AutoInsert() {
 		$strNone = 'none';
 		return "#post-body-content {
 				margin-bottom: 10px;

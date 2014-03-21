@@ -6,6 +6,7 @@
  * @copyright   Copyright (c) 2013, Michael Uno
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @since		2.0.0
+ * @since		2.0.5			Fixed a bug that a first item always get removed.
 */
 abstract class AmazonAutoLinks_UserAds_ {
 
@@ -83,7 +84,7 @@ abstract class AmazonAutoLinks_UserAds_ {
 		
 		if ( ! isset( $this->arrFeedItems[ $strURLID ] ) ) {
 			$this->arrFeedItems[ $strURLID ] = ( array ) get_transient( $this->strTransientPrefix . $strURLID );
-			unset( $this->arrFeedItems[ $strURLID ][0] );	// casting array causes the 0 key,
+			$this->arrFeedItems[ $strURLID ] = array_filter( $this->arrFeedItems[ $strURLID ] );	// casting array causes the 0 key
 		}
 			
 		// If it's out of stock, fill the array by fetching the feed.
@@ -115,12 +116,7 @@ abstract class AmazonAutoLinks_UserAds_ {
 		
 		$this->arrFeedItems[ $strURLID ] = array_unique( $this->arrFeedItems[ $strURLID ] );
 		shuffle( $this->arrFeedItems[ $strURLID ] );
-		// $arrOut = array();
-		// foreach( ( array ) array_rand( $this->arrFeedItems[ $strURLID ], $numItems ) as $intKey ) {
-			// $arrOut[] = $this->arrFeedItems[ $strURLID ][ $intKey ];
-			// unset( $this->arrFeedItems[ $strURLID ][ $intKey ] );
-		// }
-		// return implode( '', $arrOut );
+
 		$strOut = '';
 		for ( $i = 1; $i <= $numItems; $i++ ) 
 			$strOut .= array_pop( $this->arrFeedItems[ $strURLID ] );		

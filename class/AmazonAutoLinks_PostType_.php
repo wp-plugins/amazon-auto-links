@@ -64,14 +64,14 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 			)
 		);
 		
-		$strCurrentPostTypeInAdmin = isset( $GLOBALS['post_type'] ) ? $GLOBALS['post_type']
+		$_sCurrentPostTypeInAdmin = isset( $GLOBALS['post_type'] ) ? $GLOBALS['post_type']
 			: isset( $_GET['post_type'] ) ? $_GET['post_type'] : '';
 		
 		// For admin
 		if ( 
 			is_admin() 
 			&& (
-				( $strCurrentPostTypeInAdmin == $this->oProps->strPostType  )
+				( $this->oProps->strPostType == $_sCurrentPostTypeInAdmin )
 				|| ( $GLOBALS['pagenow'] == 'post.php' && isset( $_GET['post'], $_GET['action'] ) && $_GET['action'] == 'edit' && get_post_type( $_GET['post'] ) == $this->oProps->strPostType )
 			)
 		) {
@@ -113,39 +113,41 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 	 * 
 	 * @remark			Used for the post type single page that functions as preview the result.
 	 * */
-	public function previewProductLinks( $strContent ) {
+	public function previewProductLinks( $sContent ) {
 	
-		if ( ! isset( $GLOBALS['post']->post_type ) || $GLOBALS['post']->post_type != $this->oProps->strPostType ) return $strContent;
+		if ( ! isset( $GLOBALS['post']->post_type ) || $GLOBALS['post']->post_type != $this->oProps->strPostType ) return $sContent;
 
-		$arrUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $GLOBALS['post']->ID );
-		$arrUnitOptions['id'] = $GLOBALS['post']->ID;
-		switch ( $arrUnitOptions['unit_type'] ) {
+		$_aUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $GLOBALS['post']->ID );
+		$_aUnitOptions['id'] = $GLOBALS['post']->ID;
+		$_sOutput = '';
+		switch ( $_aUnitOptions['unit_type'] ) {
 			case 'category':
-				$oAALCat = new AmazonAutoLinks_Unit_Category( $arrUnitOptions );
-				$oAALCat->render();
+				$_oAALCat = new AmazonAutoLinks_Unit_Category( $_aUnitOptions );
+				$_sOutput = $_oAALCat->getOutput();
 				break;
 			case 'tag':
-				$oAALTag = new AmazonAutoLinks_Unit_Tag( $arrUnitOptions );
-				$oAALTag->render();
+				$_oAALTag = new AmazonAutoLinks_Unit_Tag( $_aUnitOptions );
+				$_sOutput = $_oAALTag->getOutput();
 				break;
 			case 'search':
-				$oAALSearch = new AmazonAutoLinks_Unit_Search( $arrUnitOptions );
-				$oAALSearch->render();
+				$_oAALSearch = new AmazonAutoLinks_Unit_Search( $_aUnitOptions );
+				$_sOutput = $_oAALSearch->getOutput();
 				break;
 			case 'item_lookup':
-				$oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );
-				$oAALSearch->render();
+				$_oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $_aUnitOptions );
+				$_sOutput = $_oAALSearch->getOutput();
 				break;
 			case 'similarity_lookup':
-				$oAALSearch = new AmazonAutoLinks_Unit_Search_SimilarityLookup( $arrUnitOptions );				
-				$oAALSearch->render();	
+				$_oAALSearch = new AmazonAutoLinks_Unit_Search_SimilarityLookup( $_aUnitOptions );				
+				$_sOutput = $_oAALSearch->getOutput();	
 				break;
 			default:
 				echo AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type.', 'amazon-auto-links' );
 				break;
 		}
 		
-		return $strContent;	// should be an empty string.
+		return $sContent 	// $sContent should be an empty string.
+			. $_sOutput;	
 		
 	}
 
