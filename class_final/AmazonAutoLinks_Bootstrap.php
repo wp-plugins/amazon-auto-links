@@ -12,9 +12,9 @@
 
 final class AmazonAutoLinks_Bootstrap {
 	
-	function __construct( $strPluginFilePath ) {
+	function __construct( $sPluginFilePath ) {
 	
-		$this->strFilePath = $strPluginFilePath;
+		$this->strFilePath = $sPluginFilePath;
 		
 		// 0. Define constants.
 		$this->defineConstants();

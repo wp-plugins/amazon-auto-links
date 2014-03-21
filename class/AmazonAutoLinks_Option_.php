@@ -82,10 +82,10 @@ abstract class AmazonAutoLinks_Option_ {
 		 
 	protected $strOptionKey = '';	// stores the option key for this plugin. 
 		 
-	public function __construct( $strOptionKey ) {
+	public function __construct( $sOptionKey ) {
 
-		$this->strOptionKey = $strOptionKey;
-		$this->arrOptions = $this->set( $strOptionKey );
+		$this->strOptionKey = $sOptionKey;
+		$this->arrOptions = $this->set( $sOptionKey );
 		$this->strCharEncoding = get_bloginfo( 'charset' ); 
 		
 		// Black ASINs 
@@ -100,9 +100,9 @@ abstract class AmazonAutoLinks_Option_ {
 	 * 
 	 * Back end methods
 	 * */
-	protected function set( $strOptionKey ) {
+	protected function set( $sOptionKey ) {
 		
-		$vOption = get_option( $strOptionKey );
+		$vOption = get_option( $sOptionKey );
 		
 		// Avoid casting array because it causes a zero key when the subject is null.
 		$vOption = empty( $vOption ) ? array() : $vOption;		

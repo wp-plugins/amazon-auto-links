@@ -122,44 +122,48 @@ abstract class AmazonAutoLinks_Templates_ {
 	 */
 	public function getActiveTemplates( $fUseProperty=true ) {
 
-		if ( $fUseProperty && isset( $oOption->arrOptions['arrTemplates'] ) && ! empty( $oOption->arrOptions['arrTemplates'] ) )		
-			return $oOption->arrOptions['arrTemplates'];
+		$_oOption = $GLOBALS['oAmazonAutoLinks_Option'];
+	
+		if ( $fUseProperty && isset( $_oOption->arrOptions['arrTemplates'] ) && ! empty( $_oOption->arrOptions['arrTemplates'] ) ) {
+			return $_oOption->arrOptions['arrTemplates'];
+		}
 			
 		// The saved active templates.
-		$oOption = $GLOBALS['oAmazonAutoLinks_Option'];
-		$arrActiveTemplates = $oOption->arrOptions['arrTemplates'];
+		$_aActiveTempletes = $_oOption->arrOptions['arrTemplates'];
 						
-		// Check if they exist - movings the site may cause an issue that files don't exist anymore.
-		foreach( $arrActiveTemplates as $strDirSlug => &$arrActiveTemplate ) {		
+		// Check if they exist - moving the site may cause an issue that files don't exist anymore.
+		foreach( $_aActiveTempletes as $_sDirSlug => &$_aActiveTemplete ) {		
 		
-			if ( ! is_array( $arrActiveTemplate ) || $strDirSlug == '' ) {
-				unset( $arrActiveTemplates[ $strDirSlug ] );
+			if ( ! is_array( $_aActiveTemplete ) || $_sDirSlug == '' ) {
+				unset( $_aActiveTempletes[ $_sDirSlug ] );
 				continue;
 			}
 			
-			$arrActiveTemplate = $arrActiveTemplate + self::$arrStructure_Template;	
+			$_aActiveTemplete = $_aActiveTemplete + self::$arrStructure_Template;	
 			
 			// Check mandatory files. Consider that the user may directly delete the template files/folders.
-			if ( ! $this->doFilesExist( array( $arrActiveTemplate['strCSSPath'], $arrActiveTemplate['strTemplatePath'], ) ) ) {
-				unset( $arrActiveTemplates[ $strDirSlug ] );
+			if ( ! $this->doFilesExist( array( $_aActiveTemplete['strCSSPath'], $_aActiveTemplete['strTemplatePath'], ) ) ) {
+				unset( $_aActiveTempletes[ $_sDirSlug ] );
 				continue;
 			}
-											
+						
 		}
 		
 		// Store the data in a property so that it can be reused.
-		$oOption->arrOptions['arrTemplates'] = empty( $arrActiveTemplates ) 
+		$_oOption->arrOptions['arrTemplates'] = empty( $_aActiveTempletes ) 
 			? $this->getPluginDefaultTemplate( 'category', true ) + $this->getPluginDefaultTemplate( 'search', true )
-			: $arrActiveTemplates;
+			: $_aActiveTempletes;
 		
-		foreach( $oOption->arrOptions['arrTemplates'] as $strID => &$arrTemplate ) 
-			$arrTemplate['fIsActive'] = true;
+		foreach( $_oOption->arrOptions['arrTemplates'] as $_sID => &$_aTemplate ) {
+			$_aTemplate['fIsActive'] = true;
+		}
 		
 		// If there are no active templates, the default one was just added. So save it.
-		if ( empty( $arrActiveTemplates ) ) 
-			$oOption->save();
+		if ( empty( $_aActiveTempletes ) ) {
+			$_oOption->save();
+		}
 			
-		return $oOption->arrOptions['arrTemplates'];
+		return $_oOption->arrOptions['arrTemplates'];
 		
 	}
 	
