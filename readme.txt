@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.3
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: 2.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -157,7 +157,10 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.5 =
+= 2.0.5.1 04/24/2014 =
+- Changed the default option value of `Prevent Duplicates`.
+
+= 2.0.5 - 03/22/2014 =
 * Fixed a bug that templates were deactivated when the plugin was deactivated and reactivated.
 * Fixed an issue that the `the_content` filter was ignored in the plugin custom post type page.
 * Added the `Caching Mode` option.
