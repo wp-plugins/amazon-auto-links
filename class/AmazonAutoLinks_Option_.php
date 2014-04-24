@@ -38,7 +38,7 @@ abstract class AmazonAutoLinks_Option_ {
 					'description' => '',
 				),
 				'case_sensitive' => 0,
-				'no_duplicate' => 1,
+				'no_duplicate' => 0,	// in 2.0.5.1 changed to 0 from 1.
 			),
 			'support' => array(
 				'rate' => 0,			// asked for the first load of the plugin admin page
