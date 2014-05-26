@@ -38,21 +38,27 @@ class AmazonAutoLinks_MetaBox_CategoryOptions_ extends AmazonAutoLinks_AdminPage
 	}
 	
 	
-	public function validation_AmazonAutoLinks_MetaBox_CategoryOptions( $arrInput, $arrOriginal ) {	// validation_ + extended class name
+	public function validation_AmazonAutoLinks_MetaBox_CategoryOptions( $aInput, $aOriginal ) {	// validation_ + extended class name
 			
-		$arrInput['count'] = $this->oUtil->fixNumber( 
-			$arrInput['count'], 	// number to sanitize
+		$aInput['count'] = $this->oUtil->fixNumber( 
+			$aInput['count'], 	// number to sanitize
 			10, 	// default
 			1, 		// minimum
 			$GLOBALS['oAmazonAutoLinks_Option']->getMaximumProductLinkCount() // max
 		);
-		$arrInput['image_size'] = $this->oUtil->fixNumber( 
-			$arrInput['image_size'], 	// number to sanitize
+		$aInput['image_size'] = $this->oUtil->fixNumber( 
+			$aInput['image_size'], 	// number to sanitize
 			160, 	// default
 			0, 		// minimum
 			500 	// max
 		);		
-		return $arrInput;
+		
+		// If nothing is checked for the feed type, enable the bestseller item.
+		if ( ! array_filter( $aInput['feed_type'] ) ) {
+			$aInput['feed_type']['bestsellers'] = true;
+		}	
+		
+		return $aInput;
 		
 	}
 	

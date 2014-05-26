@@ -36,7 +36,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 				// 'supports' => array( 'title', 'editor', 'comments', 'thumbnail' ),	// 'custom-fields'
 				'supports' => array( 'title' ),
 				'taxonomies' => array( '' ),
-				'menu_icon' => AmazonAutoLinks_Commons::getPluginURL( '/image/menu_icon_16x16.png' ),
+				'menu_icon' => AmazonAutoLinks_Commons::getPluginURL( 'asset/image/menu_icon_16x16.png' ),
 				'has_archive' => true,
 				'hierarchical' => false,
 				'show_admin_column' => true,
@@ -92,7 +92,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 	}
 	
 	public function enqueueCustomStyle() {
-		wp_enqueue_style( 'amazon-auto-links-post-type-admin-style', AmazonAutoLinks_Commons::getPluginURL( 'css/admin.css' ) );
+		wp_enqueue_style( 'amazon-auto-links-post-type-admin-style', AmazonAutoLinks_Commons::getPluginURL( 'asset/css/admin.css' ) );
 	}
 	
 	
@@ -258,7 +258,7 @@ abstract class AmazonAutoLinks_PostType_ extends AmazonAutoLinks_AdminPageFramew
 				display: {$strNone};
 			}
 			#icon-edit.icon32.icon32-posts-" . AmazonAutoLinks_Commons::PostTypeSlug . " {
-				background:url('" . AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ) . "') no-repeat;
+				background:url('" . AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ) . "') no-repeat;
 			}			
 		";
 	}

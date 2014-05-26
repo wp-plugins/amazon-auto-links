@@ -35,20 +35,22 @@ final class AmazonAutoLinks_Debug {
 	static public function logArray( $asArray, $sFilePath=null ) {
 		
 		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) return;
-			
+		
 		static $_iPageLoadID;
 		$_iPageLoadID = $_iPageLoadID ? $_iPageLoadID : uniqid();		
 		
-		$oCallerInfo = debug_backtrace();
-		$sCallerFunction = $oCallerInfo[ 1 ]['function'];
-		$sCallerClasss = $oCallerInfo[ 1 ]['class'];
+		$_oCallerInfo = debug_backtrace();
+		$_sCallerFunction = isset( $_oCallerInfo[ 1 ]['function'] ) ? $_oCallerInfo[ 1 ]['function'] : '';
+		$_sCallerClasss = isset( $_oCallerInfo[ 1 ]['class'] ) ? $_oCallerInfo[ 1 ]['class'] : '';
+		$sFilePath = $sFilePath
+			? $sFilePath
+			: WP_CONTENT_DIR . DIRECTORY_SEPARATOR . get_class() . '_' . date( "Ymd" ) . '.log';
 		file_put_contents( 
-			$sFilePath ? $sFilePath : dirname( __FILE__ ) . '/array_log.txt', 
-			date( "Y/m/d H:i:s", current_time( 'timestamp' ) ) . ' ' . "{$_iPageLoadID} {$sCallerClasss}::{$sCallerFunction} " . self::getCurrentURL() . PHP_EOL	
+			$sFilePath, 
+			date( "Y/m/d H:i:s", current_time( 'timestamp' ) ) . ' ' . "{$_iPageLoadID} {$_sCallerClasss}::{$_sCallerFunction} " . self::getCurrentURL() . PHP_EOL	
 			. print_r( $asArray, true ) . PHP_EOL . PHP_EOL,
 			FILE_APPEND 
 		);					
-							
 	}	
 
 	/**

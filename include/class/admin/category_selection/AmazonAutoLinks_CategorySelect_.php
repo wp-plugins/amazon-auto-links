@@ -236,7 +236,7 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 			AmazonAutoLinks_Option::insertPost( $arrAutoInsertOptions, AmazonAutoLinks_Commons::PostTypeSlugAutoInsert );
 			
 		}	
-// AmazonAutoLinks_Debug::logArray( $arrUnitOptions );		
+
 	}	
 	
 	protected function printPreviewTable( $arrComponents, $arrArgs ) {
@@ -249,9 +249,7 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 		$oAALUnitPreview = new AmazonAutoLinks_Unit_Category( $arrArgs );
 		echo "<!-- page url:{$arrComponents['strPageURL']}-->";
 		echo "<!-- preview url:{$arrComponents['strRSSURL']}-->";
-		// echo "<pre>page url:{$arrComponents['strPageURL']}</pre>";
-		// echo "<pre>preview url:{$arrComponents['strRSSURL']}</pre>";
-		
+
 		// Buttons 
 		$fReachedLimit = $this->isReachedLimit( $arrArgs );
 		$fIsAlreadyAdded = $this->isAddedCategory( $arrComponents['strBreadcrumb'], $arrArgs['categories'] );
@@ -264,16 +262,10 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 		$strCreateOrSave = $arrComponents['fNew'] ? __( 'Create', 'amazon-auto-links' ) : __( 'Save', 'amazon-auto-links' );
 		
 		// Arrows
-		$strAddArrow = $arrComponents['fNew'] && ! empty( $arrComponents['strRSSURL'] ) && empty( $arrArgs['categories'] ) ? "<img class='category-select-right-arrow' title='" . __( 'Add the current selection!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/arrow_right.png' ) . "'/>" : "";
-		$strCreateArrow = $arrComponents['fNew'] && ! empty( $arrComponents['strRSSURL'] ) && ! empty( $arrArgs['categories'] ) ? "<img class='category-select-right-arrow' title='" . __( 'Create the unit!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/arrow_right.png' ) . "'/>" : "";
-		$strSelectArrow = $arrComponents['fNew'] && empty( $arrComponents['strRSSURL'] ) && empty( $arrArgs['categories'] ) ? "<img class='category-select-left-bottom-arrow' title='" . __( 'Select a category from the links!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/arrow_left_bottom.png' ) . "'/>" : "";
-		
-		// $oAALUnitPreview = new AmazonAutoLinks_Core( $this->arrOptions, $this->arrGeneralOptions );	
-	
-// $arrComponents['strRSSURL'] = 'http://www.amazon.com/gp/rss/bestsellers/arts-crafts/ref=zg_bs_arts-crafts_rsslink';
-// AmazonAutoLinks_Debug::logArray( $this->arrUnitOptions['categories'] );
-// AmazonAutoLinks_Debug::logArray( $arrComponents );
-		
+		$strAddArrow = $arrComponents['fNew'] && ! empty( $arrComponents['strRSSURL'] ) && empty( $arrArgs['categories'] ) ? "<img class='category-select-right-arrow' title='" . __( 'Add the current selection!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'asset/image/arrow_right.png' ) . "'/>" : "";
+		$strCreateArrow = $arrComponents['fNew'] && ! empty( $arrComponents['strRSSURL'] ) && ! empty( $arrArgs['categories'] ) ? "<img class='category-select-right-arrow' title='" . __( 'Create the unit!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'asset/image/arrow_right.png' ) . "'/>" : "";
+		$strSelectArrow = $arrComponents['fNew'] && empty( $arrComponents['strRSSURL'] ) && empty( $arrArgs['categories'] ) ? "<img class='category-select-left-bottom-arrow' title='" . __( 'Select a category from the links!', 'amazon-auto-links' ) . "' src='" . AmazonAutoLinks_Commons::getPluginURL( 'asset/image/arrow_left_bottom.png' ) . "'/>" : "";
+				
 		?>
 		<form action="" method="post">		
 			<?php if ( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( AmazonAutoLinks_Commons::AdminOptionKey, 'nonce' ); }  ?>
@@ -442,7 +434,7 @@ abstract class AmazonAutoLinks_CategorySelect_ {
 		
 		// Include the library.
 		if ( ! class_exists( 'simple_html_dom_node' ) )
-			include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/simple_html_dom.php' );
+			include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/include/library/simple_html_dom.php' );
 		
 		// This has a caching functionality.
 		$strHTML = $this->oDOM->getHTML( $strPageURL );

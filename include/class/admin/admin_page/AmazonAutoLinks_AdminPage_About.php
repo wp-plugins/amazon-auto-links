@@ -15,7 +15,7 @@ abstract class AmazonAutoLinks_AdminPage_About extends AmazonAutoLinks_AdminPage
 	 */
 	public function do_before_aal_about() {		// do_before_ + {page slug}
 
-		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/library/wordpress-plugin-readme-parser/parse-readme.php' );
+		include_once( AmazonAutoLinks_Commons::$strPluginDirPath . '/include/library/wordpress-plugin-readme-parser/parse-readme.php' );
 		$this->oWPReadMe = new WordPress_Readme_Parser;
 		$this->arrWPReadMe = $this->oWPReadMe->parse_readme( AmazonAutoLinks_Commons::$strPluginDirPath . '/readme.txt' );
 	
@@ -29,8 +29,8 @@ abstract class AmazonAutoLinks_AdminPage_About extends AmazonAutoLinks_AdminPage
 	}
 	public function do_aal_about_get_pro() {
 		
-		$strCheckMark = AmazonAutoLinks_Commons::getPluginURL( '/image/checkmark.gif' );
-		$strDeclineMark = AmazonAutoLinks_Commons::getPluginURL( '/image/declinedmark.gif' );
+		$strCheckMark = AmazonAutoLinks_Commons::getPluginURL( 'asset/image/checkmark.gif' );
+		$strDeclineMark = AmazonAutoLinks_Commons::getPluginURL( 'asset/image/declinedmark.gif' );
 		$strAvailable = __( 'Available', 'amazon-auto-links' );
 		$strUnavailable = __( 'Unavailable', 'amazon-auto-links' );
 		$strImgAvailable = "<img class='feature-available' title='{$strAvailable}' alt='{$strAvailable}' src='{$strCheckMark}' />";
@@ -129,18 +129,18 @@ abstract class AmazonAutoLinks_AdminPage_About extends AmazonAutoLinks_AdminPage
 		
 	}
 		protected function printBuyNowButton() {	
-			$strLink='http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro';
+			$_sLink='http://en.michaeluno.jp/amazon-auto-links/amazon-auto-links-pro';
 			?>
 			<div class="get-now-button">
-				<a href="<?php echo $strLink; ?>?lang=<?php echo ( WPLANG ? WPLANG : 'en' ); ?>" title="<?php _e( 'Get Now!', 'amazon-auto-links' ) ?>">
-					<img src="<?php echo AmazonAutoLinks_Commons::getPluginURL( '/image/buynowbutton.gif' ); ?>" />
+				<a href="<?php echo $_sLink; ?>?lang=<?php echo ( WPLANG ? WPLANG : 'en' ); ?>" title="<?php _e( 'Get Now!', 'amazon-auto-links' ) ?>">
+					<img src="<?php echo AmazonAutoLinks_Commons::getPluginURL( 'asset/image/buynowbutton.gif' ); ?>" />
 				</a>
 			</div>	
 			<?php
 		}
 	
 	public function do_aal_about_contact() {
-		include( AmazonAutoLinks_Commons::$strPluginDirPath . '/text/about.txt' );
+		include( AmazonAutoLinks_Commons::$strPluginDirPath . '/include/text/about.txt' );
 	} 	
 		
 }

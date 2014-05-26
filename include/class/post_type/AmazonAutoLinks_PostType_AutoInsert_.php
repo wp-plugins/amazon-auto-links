@@ -34,7 +34,7 @@ abstract class AmazonAutoLinks_PostType_AutoInsert_ extends AmazonAutoLinks_Admi
 				'menu_position' => 120,
 				'supports' => array( 'title' ),	// 'supports' => array( 'title', 'editor', 'comments', 'thumbnail' ),	// 'custom-fields'
 				'taxonomies' => array( '' ),
-				'menu_icon' => AmazonAutoLinks_Commons::getPluginURL( '/image/menu_icon_16x16.png' ),
+				'menu_icon' => AmazonAutoLinks_Commons::getPluginURL( 'asset/image/menu_icon_16x16.png' ),
 				'has_archive' => false,
 				'hierarchical' => false,
 				'show_admin_column' => true,
@@ -249,7 +249,7 @@ abstract class AmazonAutoLinks_PostType_AutoInsert_ extends AmazonAutoLinks_Admi
 				display: {$strNone};
 			}
 			#icon-edit.icon32.icon32-posts-" . AmazonAutoLinks_Commons::PostTypeSlugAutoInsert . " {
-				background:url('" . AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ) . "') no-repeat;
+				background:url('" . AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ) . "') no-repeat;
 			}			
 		";
 	}

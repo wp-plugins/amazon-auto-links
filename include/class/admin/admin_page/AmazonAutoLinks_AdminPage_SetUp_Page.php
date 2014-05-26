@@ -20,18 +20,18 @@ abstract class AmazonAutoLinks_AdminPage_SetUp_Page extends AmazonAutoLinks_Admi
 			array(
 				'strPageTitle'		=> __( 'Add Unit by Category', 'amazon-auto-links' ),
 				'strPageSlug'		=> 'aal_add_category_unit',
-				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 				// 'fPageHeadingTab' => false,
 			),		
 			array(
 				'strPageTitle'		=> __( 'Add Unit by Tag', 'amazon-auto-links' ),
 				'strPageSlug'		=> 'aal_add_tag_unit',
-				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),				
 			array(
 				'strPageTitle'		=> __( 'Add Unit by Search', 'amazon-auto-links' ),
 				'strPageSlug'		=> 'aal_add_search_unit',
-				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),				
 			array(
 				'strMenuTitle'		=> __( 'Manage Auto Insert', 'amazon-auto-links' ),
@@ -42,32 +42,32 @@ abstract class AmazonAutoLinks_AdminPage_SetUp_Page extends AmazonAutoLinks_Admi
 					? __( 'Edit Auto Insert', 'amazon-auto-links' )
 					: __( 'Add Auto Insert', 'amazon-auto-links' ),
 				'strPageSlug'		=> 'aal_define_auto_insert',
-				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),					
 			array(
 				'strPageTitle'		=> __( 'Settings', 'amazon-auto-links' ),
 				'strPageSlug'		=> 'aal_settings',
-				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'		=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),
 			// array(
 				// 'strPageTitle' => __( 'Extensions', 'amazon-auto-links' ),
 				// 'strPageSlug' => 'aal_extensions',
-				// 'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				// 'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			// ),			
 			array(
 				'strPageTitle' => __( 'Templates', 'amazon-auto-links' ),
 				'strPageSlug' => 'aal_templates',
-				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),
 			array(
 				'strPageTitle' => __( 'About', 'amazon-auto-links' ),
 				'strPageSlug' => 'aal_about',
-				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			),
 			array(
 				'strPageTitle' => __( 'Help', 'amazon-auto-links' ),
 				'strPageSlug' => 'aal_help',
-				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+				'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 			)					
 		);
 		if ( $this->oOption->isDebugMode() )
@@ -75,7 +75,7 @@ abstract class AmazonAutoLinks_AdminPage_SetUp_Page extends AmazonAutoLinks_Admi
 				array(
 					'strPageTitle'		=> __( 'Debug', 'amazon-auto-links' ),
 					'strPageSlug'		=> 'aal_debug',
-					'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "/image/screen_icon_32x32.png" ),
+					'strScreenIcon'	=> AmazonAutoLinks_Commons::getPluginURL( "asset/image/screen_icon_32x32.png" ),
 					// 'fPageHeadingTab' => false,
 				)
 			);
@@ -239,17 +239,17 @@ abstract class AmazonAutoLinks_AdminPage_SetUp_Page extends AmazonAutoLinks_Admi
 		$this->showInPageTabs( false, 'aal_add_search_unit' );
 		$this->showInPageTabs( false, 'aal_define_auto_insert' );
 				
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/admin.css' ) );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/select_categories.css' ), 'aal_add_category_unit', 'select_categories' );
-		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_add_category_unit.css' ), 'aal_add_category_unit' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_add_search_unit.css' ), 'aal_add_search_unit' );
-		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_add_tag_unit.css' ), 'aal_add_tag_unit' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_settings.css' ), 'aal_settings' );
-		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_define_auto_insert.css' ), 'aal_define_auto_insert' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/aal_templates.css' ), 'aal_templates' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/readme.css' ), 'aal_about' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/readme.css' ), 'aal_help' );
-		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'css/get_pro.css' ), 'aal_about', 'get_pro' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/admin.css' ) );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/select_categories.css' ), 'aal_add_category_unit', 'select_categories' );
+		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_add_category_unit.css' ), 'aal_add_category_unit' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_add_search_unit.css' ), 'aal_add_search_unit' );
+		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_add_tag_unit.css' ), 'aal_add_tag_unit' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_settings.css' ), 'aal_settings' );
+		// $this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_define_auto_insert.css' ), 'aal_define_auto_insert' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/aal_templates.css' ), 'aal_templates' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/readme.css' ), 'aal_about' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/readme.css' ), 'aal_help' );
+		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'asset/css/get_pro.css' ), 'aal_about', 'get_pro' );
 		$this->enqueueStyle( AmazonAutoLinks_Commons::getPluginURL( 'template/preview/style-preview.css' ), 'aal_add_category_unit', 'select_categories' );
 
 		$this->setDisallowedQueryKeys( array( 'aal-option-upgrade', 'bounce_url' ) );

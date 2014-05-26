@@ -38,10 +38,10 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 		
 	}
 	
-	public function validation_aal_add_category_unit_set_category_unit_options( $arrInput, $arrOldInput ) {	// validation + _ + page slug + tab slug
+	public function validation_aal_add_category_unit_set_category_unit_options( $aInput, $aOldInput ) {	// validation + _ + page slug + tab slug
 		
-		$fVerified = true;
-		$arrErrors = array();
+		$_fVerified = true;
+		$_aErrors = array();
 		
 		// Check the limitation.
 		if ( $this->oOption->isUnitLimitReached() ) {
@@ -54,30 +54,30 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 					admin_url( 'edit.php?post_status=trash&post_type=' . AmazonAutoLinks_Commons::PostTypeSlug )
 				)
 			);
-			return $arrOldInput;
+			return $aOldInput;
 			
 		} 	
 		
-		if ( empty( $arrInput['aal_add_category_unit']['category']['category_associate_id'] ) ) {
+		if ( empty( $aInput['aal_add_category_unit']['category']['category_associate_id'] ) ) {
 			
-			$arrErrors['category']['category_associate_id'] = __( 'The associate ID cannot be empty.', 'amazon-auto-links' );
-			$fVerified = false;
+			$_aErrors['category']['category_associate_id'] = __( 'The associate ID cannot be empty.', 'amazon-auto-links' );
+			$_fVerified = false;
 			
 		}
-					
+							
 		// An invalid value is found.
-		if ( ! $fVerified ) {
+		if ( ! $_fVerified ) {
 		
 			// Set the error array for the input fields.
-			$this->setFieldErrors( $arrErrors );		
+			$this->setFieldErrors( $_aErrors );		
 			$this->setSettingNotice( __( 'There was an error in your input.', 'amazon-auto-links' ) );
-			return $arrOldInput;
+			return $aOldInput;
 			
 		}		
 			
 		// Drop the sections.
 		$arrNewFields = array();
-		foreach( $arrInput['aal_add_category_unit'] as $strSection => $arrFields  ) 
+		foreach( $aInput['aal_add_category_unit'] as $strSection => $arrFields  ) 
 			$arrNewFields = $arrNewFields + $arrFields;
 		$arrSanitizedFields = array();
 		
@@ -90,15 +90,16 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 		$arrSanitizedFields = $this->oOption->sanitizeUnitOpitons( $arrSanitizedFields );
 			
 		// If nothing is checked for the feed type, enable the bestseller item.
-		if ( ! array_filter( $arrSanitizedFields['feed_type'] ) ) 			
+		if ( ! array_filter( $arrSanitizedFields['feed_type'] ) ) {
 			$arrSanitizedFields['feed_type']['bestsellers'] = true;
+		}	
 		
 		$arrTempUnitOptions = ( array ) get_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'] );
 		set_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions ), 60*10*6*24 );
 			
 // AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );
 		
-		return $arrInput;
+		return $aInput;
 		
 	}
 	

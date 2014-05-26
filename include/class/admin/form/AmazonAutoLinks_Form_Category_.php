@@ -103,22 +103,7 @@ abstract class AmazonAutoLinks_Form_Category_ extends AmazonAutoLinks_Form {
 				'strType' => 'number',
 				'strDescription' => __( 'The number of product links to display.', 'amazon-auto-links' ),
 				'vDefault' => 10,
-			),
-			// array(
-				// 'strFieldID' => $strPrefix . 'column',
-				// 'strSectionID' => $strSectionID ? $strSectionID : null,
-				// 'strTitle' => __( 'Number of Columns', 'amazon-auto-links' ),
-				// 'strType' => 'number',
-				// 'vClassAttribute' => ( $intMaxCol = $GLOBALS['oAmazonAutoLinks_Option']->getMaxSupportedColumnNumber() ) > 1 ? '' : 'disabled',
-				// 'vDisable' => $intMaxCol > 1 ? false : true,
-				// 'vMax' => $intMaxCol,
-				// // 'vMin' => 1, // <-- not sure this horizontally diminishes the input element
-				// 'vAfterInputTag' => "<div style='margin:auto; width:100%; clear: both;'><img src='" . AmazonAutoLinks_Commons::getPluginURL( 'image/columns.gif' ) . "' title='" . __( 'The number of columns', 'amazon-auto-links' ) . "' style='width:220px; margin-top: 8px;' /></div>",
-				// 'strDescription' => __( 'This option requires a column supported template to be activated.' ) 
-					// . ( $intMaxCol > 1 ? '' : ' ' . sprintf( __( 'Get one <a href="%1$s" target="_blank">here</a>!' ), 'http://en.michaeluno.jp/amazon-auto-links-pro/' ) ),
-				// 'vDefault' => 4,
-				// 'vDelimiter' => '',
-			// ),			
+			),	
 			array(
 				'strFieldID' => $strPrefix . 'image_size',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
