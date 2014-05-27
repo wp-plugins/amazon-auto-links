@@ -157,12 +157,12 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.5.2 =
+= 2.0.5.2 - 05/27/2014 =
 - Tweaked a form validation method to prevent no type option item gets selected.
 - Changed the file structure of including files.
 - Tweaked the styling of the `Category` template to center the not found image.
 
-= 2.0.5.1 04/24/2014 =
+= 2.0.5.1 - 04/24/2014 =
 - Changed the default option value of `Prevent Duplicates`.
 
 = 2.0.5 - 03/22/2014 =
