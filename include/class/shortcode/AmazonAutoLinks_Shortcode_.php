@@ -16,19 +16,10 @@ abstract class AmazonAutoLinks_Shortcode_ {
 		
 	}
 	
-	public function getOutput( $arrArgs ) {
-			
-		// $this->oFetch = isset( $this->oFetch ) ? $this->oFetch : new AmazonAutoLinks_Fetch();
-		
-		// if ( isset( $arrArgs['id'] ) || isset( $arrArgs['ids'] ) ) 
-			// return $this->oFetch->getTweetsOutput( $arrArgs );
-		// else if ( isset( $arrArgs['tag'] ) || isset( $arrArgs['tags'] ) ) 
-			// return $this->oFetch->getTweetsOutputByTag( $arrArgs );
-			
-		$oUnits = new AmazonAutoLinks_Units( $arrArgs );
-// var_dump( $arrArgs );		
-		return $oUnits->getOutput();
-		
+	public function getOutput( $aArgs ) {
+						
+		$_oUnits = new AmazonAutoLinks_Units( $aArgs );
+		return $_oUnits->getOutput();
 		
 	}	
 

@@ -157,6 +157,9 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.5.3 = 05/30/2014 =
+- Fixed the `warning: Array to string conversion in...` message when product links were displayed with the auto-insert.
+
 = 2.0.5.2 - 05/27/2014 =
 - Tweaked a form validation method to prevent no type option item gets selected.
 - Changed the file structure of including files.

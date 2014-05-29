@@ -66,18 +66,7 @@ abstract class AmazonAutoLinks_Option_ {
 		),
 		'arrTemplates' => array(),	// stores information of active templates.
 	);
-	
-	// public $arrStructure_DefaultParams = array(
-	// );	
-	// public $arrStructure_DefaultTemplateOptions = array(
-		// leave them null and let each template define default values.
-		// 'slug'				=> null,	// the template slug
-		// 'avatar_size'		=> null,	// 48, 
-		// 'width'				=> null,	// 100,	
-		// 'width_unit'		=> null,	// '%',	
-		// 'height'			=> null,	// 800,
-		// 'height_unit'		=> null,	// 'px',
-	// );		 
+	 
 	public $arrOptions = array();	// stores the option values.
 		 
 	protected $strOptionKey = '';	// stores the option key for this plugin. 
@@ -102,7 +91,7 @@ abstract class AmazonAutoLinks_Option_ {
 	 * */
 	protected function set( $sOptionKey ) {
 		
-		$vOption = get_option( $sOptionKey );
+		$vOption = get_option( $sOptionKey, array() );
 		
 		// Avoid casting array because it causes a zero key when the subject is null.
 		$vOption = empty( $vOption ) ? array() : $vOption;		

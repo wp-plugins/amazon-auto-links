@@ -48,30 +48,38 @@ abstract class AmazonAutoLinks_Units_ {
 		return implode( '', $_aOutputs );
 
 	}
+		
+		protected function getOutputByID( $iPostID ) {
+
+			$arrUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $iPostID );
+
+			/**
+			 * The auto-insert sets the 'id' as array storing multiple ids. But this method is called per ID so the array should be discarded.
+			 */
+			$_aSetArgs = $this->arrArgs;
+			unset( $_aSetArgs['id'] );
 			
-		protected function getOutputByID( $intPostID ) {
-			
-			$arrUnitOptions = AmazonAutoLinks_Option::getUnitOptionsByPostID( $intPostID );
-			$arrUnitOptions = $this->arrArgs + $arrUnitOptions + array( 
+			$arrUnitOptions = $_aSetArgs + $arrUnitOptions + array( 
 				'unit_type' => null,
-				'id' => $intPostID,
+				'id' => $iPostID,
 			);	// if the unit gets deleted, auto-insert causes an error for not finding the options
+	
 			switch ( $arrUnitOptions['unit_type'] ) {
 				case 'category':
-					$oAALCat = new AmazonAutoLinks_Unit_Category( $arrUnitOptions );
-					return $oAALCat->getOutput();
+					$_oAALCat = new AmazonAutoLinks_Unit_Category( $arrUnitOptions );
+					return $_oAALCat->getOutput();
 				case 'tag':
-					$oAALTag = new AmazonAutoLinks_Unit_Tag( $arrUnitOptions );
-					return $oAALTag->getOutput();
+					$_oAALTag = new AmazonAutoLinks_Unit_Tag( $arrUnitOptions );
+					return $_oAALTag->getOutput();
 				case 'search':
-					$oAALSearch = new AmazonAutoLinks_Unit_Search( $arrUnitOptions );
-					return $oAALSearch->getOutput();
+					$_oAALSearch = new AmazonAutoLinks_Unit_Search( $arrUnitOptions );
+					return $_oAALSearch->getOutput();
 				case 'item_lookup':
-					$oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );				
-					return $oAALSearch->getOutput();
+					$_oAALSearch = new AmazonAutoLinks_Unit_Search_ItemLookup( $arrUnitOptions );				
+					return $_oAALSearch->getOutput();
 				case 'similarity_lookup':
-					$oAALSearch = new AmazonAutoLinks_Unit_Search_SimilarityLookup( $arrUnitOptions );				
-					return $oAALSearch->getOutput();				
+					$_oAALSearch = new AmazonAutoLinks_Unit_Search_SimilarityLookup( $arrUnitOptions );				
+					return $_oAALSearch->getOutput();				
 				default:
 					return "<!-- " . AmazonAutoLinks_Commons::$strPluginName . ': ' . __( 'Could not identify the unit type. Please make sure to update the auto-insert definition if you have deleted the unit.', 'amazon-auto-links' ) . " -->";
 			}		

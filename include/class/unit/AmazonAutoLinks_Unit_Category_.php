@@ -94,7 +94,7 @@ abstract class AmazonAutoLinks_Unit_Category_ extends AmazonAutoLinks_Unit {
 	 * 
 	 */
 	public function setArguments( $arrArgs ) {
-		
+
 		$this->arrArgs = $arrArgs + self::$arrStructure_Args + self::getItemFormatArray();
 		$this->arrRSSURLs = $this->getRSSURLsFromArguments( $this->arrArgs );
 		$this->arrExcludingRSSURLs = $this->getRSSURLsFromArguments( $this->arrArgs, 'categories_exclude' );
