@@ -315,7 +315,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 			array(
 				'strFieldID' => $strPrefix . 'SearchIndex',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
-				'strTitle' => __( 'Categories', 'amazon-auto-links' ),			
+				'strTitle' => __( 'Category', 'amazon-auto-links' ),			
 				'strType' => 'select',
 				'vLabel' => AmazonAutoLinks_Properties::getSearchIndexByLocale( isset( $arrUnitOptions['country'] ) ? $arrUnitOptions['country'] : null ),
 				'vDefault' => 'All',
@@ -588,7 +588,8 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'vBeforeInputTag' => $strOpeningTag,
 				'vAfterInputTag' => $strClosingTag,				
 				'vMin' => 1,
-				'strDescription' => __( 'Specifies the maximum price of the items in the response. Prices are in terms of the lowest currency denomination, for example, pennies. For example, 3241 represents $32.41.', 'amazon-auto-links' ),
+				'strDescription' => __( 'Specifies the maximum price of the items in the response. Prices are in terms of the lowest currency denomination, for example, pennies. For example, 3241 represents $32.41.', 'amazon-auto-links' )
+					. ' ' . __( 'This option will not take effect if the Category option is set to <code>All</code> or <code>Blended</code>', 'amazon-auto-links' ),
 			),						
 			array(
 				'strFieldID' => $strPrefix . 'MinimumPrice',
@@ -600,12 +601,13 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'vBeforeInputTag' => $strOpeningTag,
 				'vAfterInputTag' => $strClosingTag,				
 				'vMin' => 1,
-				'strDescription' => __( 'Specifies the minimum price of the items to return. Prices are in terms of the lowest currency denomination, for example, pennies, for example, 3241 represents $32.41.', 'amazon-auto-links' ),
+				'strDescription' => __( 'Specifies the minimum price of the items to return. Prices are in terms of the lowest currency denomination, for example, pennies, for example, 3241 represents $32.41.', 'amazon-auto-links' )
+					. ' ' . __( 'This option will not take effect if the Category option is set to <code>All</code> or <code>Blended</code>', 'amazon-auto-links' ),
 			),					
 			array(
 				'strFieldID' => $strPrefix . 'MinPercentageOff',
 				'strSectionID' => $strSectionID ? $strSectionID : null,
-				'strTitle' => __( 'Minimum Price', 'amazon-auto-links' ) . ' <span class="description">(' . __( 'optional', 'amazon-auto-links' ) . ')</span>',
+				'strTitle' => __( 'Minimum Percentage Off', 'amazon-auto-links' ) . ' <span class="description">(' . __( 'optional', 'amazon-auto-links' ) . ')</span>',
 				'strType' => 'number',
 				'vDisable' => $fIsDisabled,
 				'vClassAttribute' => $fIsDisabled ? 'disabled' : '',		

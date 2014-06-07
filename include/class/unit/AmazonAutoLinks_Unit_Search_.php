@@ -79,36 +79,39 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		
 	}
 	
-	public function fetch( $arrURLs=array() ) {
+	/**
+	 * 
+	 * @return	array	The response array.
+	 */
+	public function fetch( $aURLs=array() ) {
 		
 		// The search unit type does not use directly passed urls.
 		// Maybe later at some point, custom request URIs can get implemented and they can be directly passed to this method.
-		unset( $arrURLs );
+		unset( $aURLs );
 		
+// $this->arrArgs['cache_duration'] = 0;
 // AmazonAutoLinks_Debug::dumpArray( $this->arrArgs );
 
-		$arrResponse = $this->getRequest( $this->arrArgs['count'] );
+		$_aResponse = $this->getRequest( $this->arrArgs['count'] );
 		
 		// Check errors
-		if ( isset( $arrResponse['Error']['Code']['Message'] ) ) 
-			return $arrResponse;
-		
-// AmazonAutoLinks_Debug::logArray( $arrResponse );			
+		if ( isset( $_aResponse['Error']['Code']['Message'] ) ) {
+			return $_aResponse;
+		}			
 		// Error in the Request element.
-		if ( isset( $arrResponse['Items']['Request']['Errors'] ) )
-			return $arrResponse['Items']['Request']['Errors'];
-
-
+		if ( isset( $_aResponse['Items']['Request']['Errors'] ) ) {
+			return $_aResponse['Items']['Request']['Errors'];
+		}
 			
-// $arrProductItems = $arrResponse['Items'];
+// $arrProductItems = $_aResponse['Items'];
 // unset( $arrProductItems['Item'] );
 // AmazonAutoLinks_Debug::dumpArray( $arrProductItems );			
 		
-		$arrProducts = $this->composeArray( $arrResponse );
+		$_aProducts = $this->composeArray( $_aResponse );
 		
-// AmazonAutoLinks_Debug::dumpArray( $arrProducts );
+// AmazonAutoLinks_Debug::dumpArray( $_aProducts );
 			
-		return $arrProducts;
+		return $_aProducts;
 		
 	}
 	
@@ -119,9 +122,9 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 	 * 
 	 * @since			2.0.1
 	 */
-	protected function getRequest( $intCount ) {
+	protected function getRequest( $iCount ) {
 		
-		$oAPI = new AmazonAutoLinks_ProductAdvertisingAPI( 
+		$_oAPI = new AmazonAutoLinks_ProductAdvertisingAPI( 
 			$this->arrArgs['country'], 
 			$this->oOption->getAccessPublicKey(),
 			$this->oOption->getAccessPrivateKey(),
@@ -130,23 +133,25 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 
 		// First, perform the search for the first page regardless the specified count (number of items).
 		// Keys with an empty value will be filtered out when performing the request.			
-		$arrResponse = $oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );	
-		if ( $intCount <= 10 )
-			return $arrResponse;
+		$_aResponse = $_oAPI->request( $this->getAPIParameterArray( $this->arrArgs['Operation'] ), '', $this->arrArgs['cache_duration'] );	
+		if ( $iCount <= 10 ) {
+			return $_aResponse;
+		}
 		
 		// Check necessary key is set
-		if ( ! isset( $arrResponse['Items']['Item'] ) || ! is_array( $arrResponse['Items']['Item'] ) )
-			return $arrResponse;
+		if ( ! isset( $_aResponse['Items']['Item'] ) || ! is_array( $_aResponse['Items']['Item'] ) ) {
+			return $_aResponse;
+		}
 		
 		// Calculate the required number of pages.
-		$intPage = $this->_getTotalPageNumber( $intCount, $arrResponse, $this->arrArgs['SearchIndex'] );
+		$_iPage = $this->_getTotalPageNumber( $iCount, $_aResponse, $this->arrArgs['SearchIndex'] );
 		
-		$arrResponseTrunk = $arrResponse;
+		$_aResponseTrunk = $_aResponse;
 				
 		// First perform fetching data in the background if caches are not available. Parse backwards 
 		$_fScheduled = null;
-		for ( $i = $intPage; $i >= 2 ; $i-- ) {
-			$_fResult = $oAPI->scheduleInBackground( $this->getAPIParameterArray( $this->arrArgs['Operation'], $i ) );
+		for ( $_i = $_iPage; $_i >= 2 ; $_i-- ) {
+			$_fResult = $_oAPI->scheduleInBackground( $this->getAPIParameterArray( $this->arrArgs['Operation'], $_i ) );
 			$_fScheduled = $_fScheduled ? $_fScheduled : $_fResult;
 		}
 		if ( $_fScheduled ) {
@@ -155,16 +160,16 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 		}
 		
 		// Start from the second page since the first page has been already done. 
-		for ( $i = 2; $i <= $intPage; $i++ ) {
+		for ( $_i = 2; $_i <= $_iPage; $_i++ ) {
 			
-			$arrResponse = $oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'], $i ), '', $this->arrArgs['cache_duration'] );
-			if ( isset( $arrResponse['Items']['Item'] ) && is_array( $arrResponse['Items']['Item'] ) ) {
-				$arrResponseTrunk['Items']['Item'] = $this->_addItems( $arrResponseTrunk['Items']['Item'], $arrResponse['Items']['Item'] );	
+			$_aResponse = $_oAPI->request( 	$this->getAPIParameterArray( $this->arrArgs['Operation'], $_i ), '', $this->arrArgs['cache_duration'] );
+			if ( isset( $_aResponse['Items']['Item'] ) && is_array( $_aResponse['Items']['Item'] ) ) {
+				$_aResponseTrunk['Items']['Item'] = $this->_addItems( $_aResponseTrunk['Items']['Item'], $_aResponse['Items']['Item'] );	
 			}
 							
 		}	
 		
-		return $arrResponseTrunk;
+		return $_aResponseTrunk;
 		
 	}
 		/**
@@ -232,11 +237,12 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			'MaximumPrice' => ! $bIsIndexAllOrBlended && $this->arrArgs['MaximumPrice'] ? $this->arrArgs['MaximumPrice'] : null,
 			'MinimumPrice' => ! $bIsIndexAllOrBlended && $this->arrArgs['MinimumPrice'] ? $this->arrArgs['MinimumPrice'] : null,
 			'MinPercentageOff' => $this->arrArgs['MinPercentageOff'] ? $this->arrArgs['MinPercentageOff'] : null,
-		);							
-		return $iItemPage
+		);			
+		$_aParams = $iItemPage
 			? $aParams + array( 'ItemPage' => $iItemPage )
 			: $aParams;
-
+// var_dump( $_aParams );
+		return $_aParams;
 	}
 	
 	protected function composeArray( $arrResponse ) {

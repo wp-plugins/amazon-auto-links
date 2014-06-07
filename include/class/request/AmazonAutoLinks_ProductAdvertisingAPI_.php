@@ -138,20 +138,22 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		);
 	
 		// If an error occurs, 
-		if ( ! is_string( $vResponse ) )	// if ( is_array( $vResponse ) && isset( $vResponse['Error'] ) )
+		if ( ! is_string( $vResponse ) ) {	
 			return $vResponse;
+		}
 			
-		$strXMLResponse = $vResponse;
+		$_sXMLResponse = $vResponse;
 		
 		// It returns a string if it's not a valid XML content.
-		$osXML = AmazonAutoLinks_Utilities::getXMLObject( $strXMLResponse );
-		if ( is_string( $osXML ) ) 
-			return array( 'Error' => array( 'Message' => $osXML, 'Code' => 'Invalid XML' ) );	// compose an error array. 
+		$_osXML = AmazonAutoLinks_Utilities::getXMLObject( $_sXMLResponse );
+		if ( is_string( $_osXML ) ) {
+			return array( 'Error' => array( 'Message' => $_osXML, 'Code' => 'Invalid XML' ) );	// compose an error array. 
+		}
 					
 		// Return the result with the specified type.
-		if ( $strType == 'xml' ) return $strXMLResponse;
-		if ( $strType == 'array' ) return AmazonAutoLinks_Utilities::convertXMLtoArray( $osXML );
-		if ( $strType == 'json' ) return AmazonAutoLinks_Utilities::convertXMLtoJSON( $osXML );
+		if ( $strType == 'xml' ) return $_sXMLResponse;
+		if ( $strType == 'array' ) return AmazonAutoLinks_Utilities::convertXMLtoArray( $_osXML );
+		if ( $strType == 'json' ) return AmazonAutoLinks_Utilities::convertXMLtoJSON( $_osXML );
 		
 	}
 	
@@ -176,12 +178,13 @@ class AmazonAutoLinks_ProductAdvertisingAPI_ extends AmazonAutoLinks_APIRequestT
 		$vResponse = wp_remote_get( $strRequestURI, $arrHTTPArgs );
 		// $vResponse = wp_safe_remote_request( $strRequestURI, $arrHTTPArgs );	// not supported in WP version 3.5.x or below.
 
-		if ( is_wp_error( $vResponse ) ) 
+		if ( is_wp_error( $vResponse ) ) {
 			return array( 'Error' => array(
 					'Code' => $vResponse->get_error_code(),
 					'Message' => 'WP HTTP Error: ' . $vResponse->get_error_message(),
 				) 
 			);
+		}
 
 		return wp_remote_retrieve_body( $vResponse );	// returns the xml document.
 				

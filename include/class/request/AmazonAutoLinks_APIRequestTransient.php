@@ -34,7 +34,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	/**
 	 * Checks if the request is cached or not from the given request array.
 	 * 
-	 * Note that this does not check if it's expired or not. Just checks the existance of the transient.
+	 * Note that this does not check if it's expired or not. Just checks the existence of the transient.
 	 * 
 	 */
 	protected function isCached( $aParams=array() ) {
@@ -60,6 +60,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	 */ 
 	protected function requestWithCache( $strRequestURI, $arrHTTPArgs=array(), $arrParams=array(), $intCacheDuration=3600, $strLocale='US' ) {
 // AmazonAutoLinks_Debug::logArray( $strRequestURI );	
+// var_dump( $strRequestURI );	
 		// Create an ID from the URI - it's better not use the ID from an Amazon API request URI because it is built upon a timestamp.
 		$strTransientID = $this->generateIDFromRequestParameter( $arrParams );
 
