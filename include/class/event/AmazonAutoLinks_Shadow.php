@@ -54,6 +54,9 @@ class AmazonAutoLinks_Shadow {
 		
 		if ( ! $this->isBackground() ) return;
 	
+		// Tell WordPress this is a background routine by setting the Cron flag.
+		if ( ! defined( 'DOING_CRON' ) ) { define( 'DOING_CRON', true ); }		
+		
 		// Do not process if a delay is not set.
 		if ( ! $this->isBackground( true ) ) {	
 			die( $this->_loadBackgroundPageWithDelay( 2, $_GET ) );	// give 2 seconds delay

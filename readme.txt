@@ -157,6 +157,10 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.6 =
+- Made a small optimization on the background caching routines.
+- Added the `%price%` variable for the search unit type.
+
 = 2.0.5.4 - 06/07/2014 =
 - Tweaked the styling to horizontally center the Not Found image of the `Search` template.
 - Fixed the label of one of the advanced options of the search unit type.

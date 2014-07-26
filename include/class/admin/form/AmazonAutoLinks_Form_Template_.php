@@ -51,7 +51,8 @@ abstract class AmazonAutoLinks_Form_Template_ extends AmazonAutoLinks_Form {
 					. '<code>%title_text%</code> - ' . __( 'title without HTML tags', 'amazon-auto-links' ) . '<br />'
 					. '<code>%image%</code> - ' . __( 'thumbnail with HTML tags defined in the Image Format option', 'amazon-auto-links' ) . '<br />'
 					. '<code>%description%</code> - ' . __( 'description with HTML tags', 'amazon-auto-links' ) . '<br />'
-					. '<code>%description_text%</code> - ' . __( 'description without HTML tags', 'amazon-auto-links' ),
+					. '<code>%description_text%</code> - ' . __( 'description without HTML tags', 'amazon-auto-links' ) . '<br />'
+					. '<code>%price%</code> - ' . __( 'the product price (only for the search unit type).', 'amazon-auto-links' ),
 				'vDefault'	=> $arrItemFormat['item_format'],
 			),
 			array(

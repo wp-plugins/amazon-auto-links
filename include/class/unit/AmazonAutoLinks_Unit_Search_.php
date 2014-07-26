@@ -277,32 +277,32 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 
 		// unset( $arrItem['ItemLinks'], $arrItem['ImageSets'], $arrItem['BrowseNodes'], $arrItem['SimilarProducts'] );
 			$arrProduct = array(
-				'ASIN' => $arrItem['ASIN'],
-				'product_url' => $strProductURL,
-				'title' => $strTitle,
-				'text_description' => $this->sanitizeDescription( $strContent, 250 ),
-				'description' => $strDescription,
-				'meta' => '',
-				'content'  => $strContent,
-				'image_size' => $this->arrArgs['image_size'],
-				'thumbnail_url' => $this->formatImage( isset( $arrItem['MediumImage'] ) ? $arrItem['MediumImage']['URL'] : null, $this->arrArgs['image_size'] ),
-				'author' => isset( $arrItem['ItemAttributes']['Author'] ) ? implode( ', ', ( array ) $arrItem['ItemAttributes']['Author'] ) : '',
+				'ASIN'				=>	$arrItem['ASIN'],
+				'product_url'		=>	$strProductURL,
+				'title'				=>	$strTitle,
+				'text_description'	=>	$this->sanitizeDescription( $strContent, 250 ),
+				'description'		=>	$strDescription,
+				'meta'				=>	'',
+				'content' 			=>	$strContent,
+				'image_size'		=>	$this->arrArgs['image_size'],
+				'thumbnail_url'		=>	$this->formatImage( isset( $arrItem['MediumImage'] ) ? $arrItem['MediumImage']['URL'] : null, $this->arrArgs['image_size'] ),
+				'author'			=>	isset( $arrItem['ItemAttributes']['Author'] ) ? implode( ', ', ( array ) $arrItem['ItemAttributes']['Author'] ) : '',
 				// 'manufacturer' => $arrItem['ItemAttributes']['Manufacturer'], 
-				'category' => isset( $arrItem['ItemAttributes']['ProductGroup'] ) ? $arrItem['ItemAttributes']['ProductGroup'] : '',
-				'date' => isset( $arrItem['ItemAttributes']['PublicationDate'] ) ? $arrItem['ItemAttributes']['PublicationDate'] : '',	// ReleaseDate
+				'category'			=>	isset( $arrItem['ItemAttributes']['ProductGroup'] ) ? $arrItem['ItemAttributes']['ProductGroup'] : '',
+				'date'				=>	isset( $arrItem['ItemAttributes']['PublicationDate'] ) ? $arrItem['ItemAttributes']['PublicationDate'] : '',	// ReleaseDate
 				// 'is_adult_product' => $arrItem['ItemAttributes']['IsAdultProduct'],
-				'price' => isset( $arrItem['ItemAttributes']['ListPrice']['FormattedPrice'] ) ? $arrItem['ItemAttributes']['ListPrice']['FormattedPrice'] : '',
-				'lowest_new_price' => isset( $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] ) ? $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] : '',
-				'lowest_used_price' => isset( $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] ) ? $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] : '',
+				'price'				=>	isset( $arrItem['ItemAttributes']['ListPrice']['FormattedPrice'] ) ? "<span class='amazon-product-price-value'>"  . $arrItem['ItemAttributes']['ListPrice']['FormattedPrice'] . "</span>" : '',
+				'lowest_new_price'	=>	isset( $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] ) ? "<span class='amazon-product-lowest-new-price-value'>" . $arrItem['OfferSummary']['LowestNewPrice']['FormattedPrice'] . "</span>" : '',
+				'lowest_used_price'	=>	isset( $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] ) ? "<span class='amazon-product-lowest-used-price-value'>" . $arrItem['OfferSummary']['LowestUsedPrice']['FormattedPrice'] . "</span>" : '',
 			) + $arrItem;
 			
 			// Add meta data to the description
 			$arrProduct['meta'] .= $arrProduct['author'] ? "<span class='amazon-product-author'>" . sprintf( __( 'by %1$s', 'amazon-auto-links' ) . "</span>", $arrProduct['author'] ) . ' ' : '';
-			$arrProduct['meta'] .= $arrProduct['price'] ? "<span class='amazon-product-price'>" . sprintf( __( 'at %1$s', 'amazon-auto-links' ), $arrProduct['price'] ) . "</span> " : '';
+			$arrProduct['meta'] .= $arrProduct['price']	? "<span class='amazon-product-price'>" . sprintf( __( 'at %1$s', 'amazon-auto-links' ), $arrProduct['price'] ) . "</span> " : '';
 			$arrProduct['meta'] .= $arrProduct['lowest_new_price'] ? "<span class='amazon-product-lowest-new-price'>" . sprintf( __( 'New from %1$s', 'amazon-auto-links' ) . "</span> ", $arrProduct['lowest_new_price'] ) . ' ' : '';
 			$arrProduct['meta'] .= $arrProduct['lowest_used_price'] ? "<span class='amazon-product-lowest-used-price'>" . sprintf( __( 'Used from %1$s', 'amazon-auto-links' ) . "</span> ", $arrProduct['lowest_used_price'] ) . ' ' : '';
 			$arrProduct['meta'] = empty( $arrProduct['meta'] ) ? '' : "<div class='amazon-product-meta'>{$arrProduct['meta']}</div>";
-			$arrProduct['description'] = $arrProduct['meta'] . $arrProduct['description'];
+			$arrProduct['description'] = $arrProduct['meta'] . "<div class='amazon-product-description'>" . $arrProduct['description'] . "</div>";
 
 			/* Format the item */
 			// Thumbnail
@@ -322,8 +322,24 @@ abstract class AmazonAutoLinks_Unit_Search_ extends AmazonAutoLinks_Unit {
 			);
 			// Item		
 			$arrProduct['formed_item'] = str_replace( 
-				array( "%href%", "%title_text%", "%description_text%", "%title%", "%image%", "%description%" ),
-				array( $arrProduct['product_url'], $arrProduct['title'], $arrProduct['text_description'], $arrProduct['formed_title'], $arrProduct['formed_thumbnail'], $arrProduct['description'] ),
+				array( 
+					"%href%", 
+					"%title_text%",
+					"%description_text%",
+					"%title%",
+					"%image%",
+					"%description%",
+					"%price%"
+				),
+				array( 
+					$arrProduct['product_url'],
+					$arrProduct['title'],
+					$arrProduct['text_description'],
+					$arrProduct['formed_title'],
+					$arrProduct['formed_thumbnail'],
+					$arrProduct['description'],
+					$arrProduct['price']
+				),
 				$this->arrArgs['item_format'] 
 			);
 			
