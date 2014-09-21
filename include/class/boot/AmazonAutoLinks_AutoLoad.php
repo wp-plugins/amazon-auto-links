@@ -6,6 +6,7 @@
  * @copyright   Copyright (c) 2013, Michael Uno
  * @authorurl	http://michaeluno.jp
  * @since		2.0.5.2
+ * @deprecated  2.0.6
  */
 
 final class AmazonAutoLinks_AutoLoad {

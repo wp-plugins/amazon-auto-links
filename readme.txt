@@ -3,7 +3,7 @@ Contributors: Michael Uno, miunosoft
 Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.3
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: 2.0.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -160,6 +160,7 @@ You can check if your access key is valid or not with this tool (http://associat
 = 2.0.6 =
 - Made a small optimization on the background caching routines.
 - Added the `%price%` variable for the search unit type.
+- Fixed widget output formatting.
 
 = 2.0.5.4 - 06/07/2014 =
 - Tweaked the styling to horizontally center the Not Found image of the `Search` template.

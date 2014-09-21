@@ -384,7 +384,10 @@ abstract class AmazonAutoLinks_Unit {
 		protected function getCredit( $fEnabled=true ) {
 			
 			return "<!-- Rendered with Amazon Auto Links by miunosoft -->"
-				. ( $fEnabled ? "<span class='amazon-auto-links-credit'>by <a href='" . AmazonAutoLinks_Commons::$strPluginURI . "' rel='author' title='" . AmazonAutoLinks_Commons::$strPluginDescription . "'>Amazon Auto Links</a></span>" : "" );
+				. ( $fEnabled 
+                    ? "<span class='amazon-auto-links-credit'>by <a href='" . esc_url( AmazonAutoLinks_Commons::getPluginURL() ) . "' rel='author' title='" . esc_attr( AmazonAutoLinks_Commons::$strPluginDescription ) . "'>Amazon Auto Links</a></span>"
+                    : "" 
+                );
 			
 		}
 		

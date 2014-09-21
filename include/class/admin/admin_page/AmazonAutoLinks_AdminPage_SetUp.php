@@ -23,7 +23,7 @@ abstract class AmazonAutoLinks_AdminPage_SetUp extends AmazonAutoLinks_AdminPage
 				
 		$this->addLinkToPluginDescription(  
 			'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J4UJHETVAZX34">' . __( 'Donate', 'amazon-auto-links' ) . '</a>',
-			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( WPLANG ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'amazon-auto-links' ) . '</a>'
+			'<a href="http://en.michaeluno.jp/contact/custom-order/?lang=' . ( defined( 'WPLANG' ) ? WPLANG : 'en' ) . '">' . __( 'Order custom plugin', 'amazon-auto-links' ) . '</a>'
 		);						
 		
 	}
