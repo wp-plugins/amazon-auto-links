@@ -4,7 +4,7 @@ Donate link: http://en.michaeluno.jp/donate
 Tags: amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 2.0.5.4
+Stable tag: 2.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -157,7 +157,7 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
-= 2.0.6 =
+= 2.0.6 - 09/27/2014 =
 - Made a small optimization on the background caching routines.
 - Added the `%price%` variable for the search unit type.
 - Fixed widget output formatting.
