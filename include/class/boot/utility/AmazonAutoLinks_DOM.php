@@ -73,7 +73,7 @@ final class AmazonAutoLinks_DOM {
 
 		// Check the transient first.
 		$strTransient =  $this->strHTMLCachePrefix . md5( $strURL );
-		$strHTMLBodyEncoded = get_transient( $strTransient );
+		$strHTMLBodyEncoded = AmazonAutoLinks_WPUtilities::getTransient( $strTransient );
 		if ( false !== $strHTMLBodyEncoded )
 			return $this->oEncrypt->decode( $strHTMLBodyEncoded );
 	
@@ -89,7 +89,7 @@ final class AmazonAutoLinks_DOM {
 		if ( empty( $strHTMLBody ) ) return $strHTMLBody;
 		
 		// Encode the HTML string; otherwise, sometimes it gets broken.
-		set_transient( $strTransient, $this->oEncrypt->encode( $strHTMLBody ), 60*60*48 );
+		AmazonAutoLinks_WPUtilities::setTransient( $strTransient, $this->oEncrypt->encode( $strHTMLBody ), 60*60*48 );
 		return $strHTMLBody;
 	
 	}
@@ -98,7 +98,7 @@ final class AmazonAutoLinks_DOM {
 	 * Deletes the cache of the provided URL.
 	 */
 	public function deleteCache( $strURL ) {
-		delete_transient( $this->strHTMLCachePrefix . md5( $strURL ) );
+		AmazonAutoLinks_WPUtilities::deleteTransient( $this->strHTMLCachePrefix . md5( $strURL ) );
 	}
 	
 	/**

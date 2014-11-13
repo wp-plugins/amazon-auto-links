@@ -76,7 +76,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPage_AddU
 			$strBounceURL = htmlspecialchars_decode( AmazonAutoLinks_WPUtilities::getCurrentAdminURL() );
 			$strBounceURL = str_replace( 'tab=support', '', $strBounceURL );		// prevent infinite redirects			;
 			$strBounceURL = remove_query_arg( 'aal-option-upgrade', $strBounceURL );
-			set_transient( 'AAL_BounceURL', $strBounceURL, 60*10 );		
+			AmazonAutoLinks_WPUtilities::setTransient( 'AAL_BounceURL', $strBounceURL, 60*10 );		
 			wp_redirect( admin_url( 'edit.php?post_type=' . AmazonAutoLinks_Commons::PostTypeSlug . '&page=aal_settings&tab=support&bounce_url=AAL_BounceURL' ) );
 		
 		}
@@ -90,7 +90,7 @@ abstract class AmazonAutoLinks_AdminPage_ extends AmazonAutoLinks_AdminPage_AddU
 			// $strCurrentURL = $this->oEncode->encode( AmazonAutoLinks_WPUtilities::getCurrentAdminURL() );	
 			$strBounceURL = htmlspecialchars_decode( AmazonAutoLinks_WPUtilities::getCurrentAdminURL() );
 			$strBounceURL = str_replace( 'tab=import_v1_options', '', $strBounceURL );		// prevent infinite redirects
-			set_transient( 'AAL_BounceURL_Importer', $strBounceURL, 60*10 );
+			AmazonAutoLinks_WPUtilities::setTransient( 'AAL_BounceURL_Importer', $strBounceURL, 60*10 );
 			$this->setAdminNotice( 
 				sprintf( 
 					__( 'Please upgrade the options of previous versions of the plugin by clicking <a href="%1$s">here</a>.', 'amazon-auto-links' )

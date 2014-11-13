@@ -198,7 +198,7 @@ abstract class AmazonAutoLinks_AdminPage_Setting extends AmazonAutoLinks_AdminPa
 	public function validation_aal_settings_reset( $arrInput, $arrOldInput ) {
 
 		if ( isset( $arrInput['aal_settings']['caches']['clear_caches'] ) && $arrInput['aal_settings']['caches']['clear_caches'] ) {
-			AmazonAutoLinks_Transients::cleanTransients( 'AAL' );
+			AmazonAutoLinks_WPUtilities::cleanTransients( 'AAL' );
 			$this->setSettingNotice( __( 'The caches have been cleared.', 'amazon-auto-links' ) );			
 		}
 
@@ -227,7 +227,7 @@ abstract class AmazonAutoLinks_AdminPage_Setting extends AmazonAutoLinks_AdminPa
 		
 		if ( ! isset( $_GET['bounce_url'] ) ) return;
 		
-		$strBounceURL = get_transient( $_GET['bounce_url'] );	// AAL_BounceURL_Importer
+		$strBounceURL = AmazonAutoLinks_WPUtilities::getTransient( $_GET['bounce_url'] );	// AAL_BounceURL_Importer
 		
 // AmazonAutoLinks_Debug::logArray( $strBounceURL );
 		// $strBounceURL = $this->oEncode->decode( $_GET['bounce_url'] );

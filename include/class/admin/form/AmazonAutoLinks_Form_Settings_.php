@@ -299,9 +299,8 @@ abstract class AmazonAutoLinks_Form_Settings_ extends AmazonAutoLinks_Form {
 	}
 		protected function getBounceURL() {
 				
-
-			// delete_transient( 'AAL_BounceURL' );
-			return get_transient( isset( $_GET['bounce_url'] ) ? $_GET['bounce_url'] : 'AAL_BounceURL' );
+			// AmazonAutoLinks_WPUtilities::deleteTransient( 'AAL_BounceURL' );
+			return AmazonAutoLinks_WPUtilities::getTransient( isset( $_GET['bounce_url'] ) ? $_GET['bounce_url'] : 'AAL_BounceURL' );
 			
 			// if ( ! isset( $_GET['bounce_url'] ) )
 				// return;

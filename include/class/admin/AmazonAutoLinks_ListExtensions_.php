@@ -24,7 +24,7 @@ abstract class AmazonAutoLinks_ListExtensions_ {
 		$strURLID = md5( serialize( $arrURLs ) );
 		
 		if ( ! isset( $this->arrFeedItems[ $strURLID ] ) && $fCacheRenew == false ) {
-			$this->arrFeedItems[ $strURLID ] = ( array ) get_transient( $this->strTransientPrefix . $strURLID );
+			$this->arrFeedItems[ $strURLID ] = ( array ) AmazonAutoLinks_WPUtilities::getTransient( $this->strTransientPrefix . $strURLID );
 			unset( $this->arrFeedItems[ $strURLID ][0] );	// casting array causes the 0 key,
 		}
 			
@@ -53,7 +53,7 @@ abstract class AmazonAutoLinks_ListExtensions_ {
 			}
 		
 			// This life span should be little longer than the feed cache life span, which is 1700.
-			set_transient( $this->strTransientPrefix . $strURLID, $this->arrFeedItems[ $strURLID ], 1800 );	// 30 minutes	
+			AmazonAutoLinks_WPUtilities::setTransient( $this->strTransientPrefix . $strURLID, $this->arrFeedItems[ $strURLID ], 1800 );	// 30 minutes	
 			
 		}
 		

@@ -75,14 +75,14 @@ abstract class AmazonAutoLinks_Unit_Search_ItemLookup_ extends AmazonAutoLinks_U
 		
 		);
 		
-		if ( $this->arrArgs['IdType'] == 'ASIN' )
+		if ( 'ASIN' === $this->arrArgs['IdType'] ) {
 			unset( $aParams['SearchIndex'] );
+        }
 
-		return $this->arrArgs['MerchantId'] == 'Amazon'
+		$_aArgs = 'Amazon' === $this->arrArgs['MerchantId']
 			? $aParams + array( 'MerchantId' => $this->arrArgs['MerchantId'] )	// (optional) 'Amazon' restrict the returned items only to be soled by Amazon.
 			: $aParams;
-				
-	
+        return $_aArgs;
 	}
 
 }

@@ -128,7 +128,7 @@ class AmazonAutoLinks_SimplePie extends AmazonAutoLinks_SimplePie__ {
 		$GLOBALS['arrSimplePieCacheModTimestamps'] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'] ) ? $GLOBALS['arrSimplePieCacheModTimestamps'] : array();
 		$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] = isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) && is_array( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ] ) 
 			? $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]
-			: ( array ) get_transient( $this->strPluginKey ) ;
+			: ( array ) AmazonAutoLinks_WPUtilities::getTransient( $this->strPluginKey ) ;
 // AmazonAutoLinks_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'], dirname( __FILE__ ) . '/mods.txt'  );
 			
 		// - this stores expired cache items.
@@ -147,7 +147,7 @@ class AmazonAutoLinks_SimplePie extends AmazonAutoLinks_SimplePie__ {
 		// This is used to avoid multiple calls of set_transient() by the cache class.
 		if ( ! ( isset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) && $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ) ) {
 			unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] ); // remove the unnecessary data.
-			set_transient( $this->strPluginKey, $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ], $this->cache_duration * $this->numCacheLifetimeExpand );
+			AmazonAutoLinks_WPUtilities::setTransient( $this->strPluginKey, $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ], $this->cache_duration * $this->numCacheLifetimeExpand );
 			$GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ]['bIsCacheTransientSet'] = true;
 		}
 		
@@ -299,7 +299,7 @@ class AmazonAutoLinks_SimplePie_Cache_Transient {
 // AmazonAutoLinks_Debug::DumpArray( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strFileID ] , dirname( __FILE__ ) . '/saved_cache.txt'  );		
 
 		// make it 100 times longer so that it barely gets expires by itself
-		set_transient( $this->strTransientName, $data, $this->lifetime * $this->numExpand );
+		AmazonAutoLinks_WPUtilities::setTransient( $this->strTransientName, $data, $this->lifetime * $this->numExpand );
 		return true;
 	}
 	public function load() {		
@@ -307,7 +307,7 @@ class AmazonAutoLinks_SimplePie_Cache_Transient {
 		// If this returns an empty value, SimplePie will fetch the feed.
 		if ( $this->lifetime == 0 ) return null;  
 		
-		return get_transient( $this->strTransientName );	// the stored cache data
+		return AmazonAutoLinks_WPUtilities::getTransient( $this->strTransientName );	// the stored cache data
 		
 	}
 	public function mtime() {		
@@ -324,7 +324,7 @@ class AmazonAutoLinks_SimplePie_Cache_Transient {
 	}
 	public function unlink() {
 		unset( $GLOBALS['arrSimplePieCacheModTimestamps'][ $this->strPluginKey ][ $this->strFileID ] );
-		delete_transient( $this->strTransientName );
+		AmazonAutoLinks_WPUtilities::deleteTransient( $this->strTransientName );
 		return true;
 	}
 }

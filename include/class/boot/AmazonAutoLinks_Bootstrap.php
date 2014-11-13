@@ -286,7 +286,7 @@ final class AmazonAutoLinks_Bootstrap {
 	 * A callback method triggered when the plugin is deactivated.
 	 */
 	public function _replyToDoWhenPluginDeactivates() {
-		AmazonAutoLinks_Transients::cleanTransients();
+		AmazonAutoLinks_WPUtilities::cleanTransients();
 	}	
 	
 	/**
@@ -294,7 +294,7 @@ final class AmazonAutoLinks_Bootstrap {
 	 * @remark			currently not used yet.
 	 */
 	public static function _replyToDoWhenPluginUninstalled() {
-		AmazonAutoLinks_Transients::cleanTransients();	
+		AmazonAutoLinks_WPUtilities::cleanTransients();	
 	}
 	
 	/**

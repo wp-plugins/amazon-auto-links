@@ -57,7 +57,7 @@ abstract class AmazonAutoLinks_PostType_AutoInsert_ extends AmazonAutoLinks_Admi
 			$this->setAuthorTableFilter( false );
 		
 			$this->strCustomNonce = uniqid();
-			set_transient( 'AAL_Nonce_' . $this->strCustomNonce, $this->strCustomNonce, 60*10 );
+			AmazonAutoLinks_WPUtilities::setTransient( 'AAL_Nonce_' . $this->strCustomNonce, $this->strCustomNonce, 60*10 );
 			
 			$this->handleCustomActions();
 							
@@ -72,12 +72,12 @@ abstract class AmazonAutoLinks_PostType_AutoInsert_ extends AmazonAutoLinks_Admi
 		
 		if ( ! isset( $_GET['custom_action'], $_GET['nonce'], $_GET['post'] ) ) return;
 		
-		$strNonce = get_transient( 'AAL_Nonce_' . $_GET['nonce'] );
+		$strNonce = AmazonAutoLinks_WPUtilities::getTransient( 'AAL_Nonce_' . $_GET['nonce'] );
 		if ( $strNonce === false ) { 
 			add_action( 'admin_notices', array( $this, 'notifyNonceFailed' ) );
 			return;
 		}
-		delete_transient( 'AAL_Nonce_' . $_GET['nonce'] );
+		AmazonAutoLinks_WPUtilities::deleteTransient( 'AAL_Nonce_' . $_GET['nonce'] );
 		
 		// Currently only the status toggle is supported.
 		If ( $_GET['custom_action'] == 'toggle_status' && $_GET['post'] ) {

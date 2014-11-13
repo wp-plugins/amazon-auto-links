@@ -10,7 +10,7 @@
  * 
  */
 
-final class AmazonAutoLinks_Utilities {
+class AmazonAutoLinks_Utilities {
 	
 	/**
 	 * Merges multiple multi-dimensional array recursively.

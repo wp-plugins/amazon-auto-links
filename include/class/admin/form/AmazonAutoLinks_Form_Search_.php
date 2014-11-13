@@ -254,7 +254,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 	public function getFieldsOfProductSearch( $strSectionID='search', $strPrefix='search2_' ) {
 		
 		$arrUnitOptions = isset( $_REQUEST['transient_id'] )
-			? get_transient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
+			? AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
 			: ( $GLOBALS['strAmazonAutoLinks_UnitType'] == 'search' && isset( $_GET['post'] ) && $_GET['post'] != 0
 				? $GLOBALS['oAmazonAutoLinks_Option']->getUnitOptionsByPostID( $_GET['post'] )
 				: array()
@@ -627,6 +627,17 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 				'vAfterInputTag' => $strClosingTag,				
 				'vMin' => 1,
 				'strDescription' => __( 'If you know the browse node that you are searching, specify it here. It is a positive integer.', 'amazon-auto-links' ),
+			),	
+			array(
+				'strFieldID' => $strPrefix . 'MerchantId',
+				'strSectionID' => $strSectionID ? $strSectionID : null,
+				'strTitle' => __( 'Merchant ID', 'amazon-auto-links' ) . ' <span class="description">(' . __( 'optional', 'amazon-auto-links' ) . ')</span>',
+				'strType' => 'text',
+				'vDisable' => $fIsDisabled,
+				'vClassAttribute' => $fIsDisabled ? 'disabled' : '',		
+				'vBeforeInputTag' => $strOpeningTag,		
+				'vAfterInputTag' => $strClosingTag,				
+				'strDescription' => __( 'Filter search results and offer listings to only include items sold by Amazon. By default, Product Advertising API returns items sold by various merchants including Amazon. Use the Amazon to limit the response to only items sold by Amazon. Case sensitive. e.g.<code>Amazon</code>', 'amazon-auto-links' ),
 			),				
 		);		
 		
@@ -666,7 +677,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 		
 		$bIsSearchUnitType = in_array( $GLOBALS['strAmazonAutoLinks_UnitType'], array( 'search', 'item_lookup', 'similarity_lookup ' ) );
 		$arrUnitOptions = isset( $_REQUEST['transient_id'] )
-			? get_transient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
+			? AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
 			: ( $bIsSearchUnitType && isset( $_GET['post'] ) && $_GET['post'] != 0
 				? $GLOBALS['oAmazonAutoLinks_Option']->getUnitOptionsByPostID( $_GET['post'] )
 				: array()
@@ -896,7 +907,7 @@ abstract class AmazonAutoLinks_Form_Search_ extends AmazonAutoLinks_Form {
 		
 		$bIsSearchUnitType = in_array( $GLOBALS['strAmazonAutoLinks_UnitType'], array( 'search', 'item_lookup', 'similarity_lookup ' ) );
 		$arrUnitOptions = isset( $_REQUEST['transient_id'] )
-			? get_transient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
+			? AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $_REQUEST['transient_id'] )
 			: ( $bIsSearchUnitType && isset( $_GET['post'] ) && $_GET['post'] != 0
 				? $GLOBALS['oAmazonAutoLinks_Option']->getUnitOptionsByPostID( $_GET['post'] )
 				: array()

@@ -10,7 +10,7 @@
  * 
  */
 
-final class AmazonAutoLinks_WPUtilities {
+class AmazonAutoLinks_WPUtilities extends AmazonAutoLinks_WPUtilities_Transient {
 
 	/**
 	 * Returns an array of the installed taxonomies on the site.

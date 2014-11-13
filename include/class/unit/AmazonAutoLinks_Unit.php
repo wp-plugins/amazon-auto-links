@@ -374,7 +374,11 @@ abstract class AmazonAutoLinks_Unit {
 		// Capture the output buffer
 		ob_start(); // start buffer
 		$arrArgs = $this->arrArgs;	// this lets the template file to access the local $arrArgs variable.
-		include( $strTemplatePath );	// not include_once() as it may be called many times.
+        if ( file_exists( $strTemplatePath ) ) {
+            include( $strTemplatePath );	// not include_once() as it may be called many times.
+        } else {
+            echo '<p>' . AmazonAutoLinks_Commons::Name . ': ' . __( 'the template could not be found. Try reselecting the template in the unit option page.', 'amazon-auto-links' ) . '</p>';
+        }
 		$strContent = ob_get_contents(); // assign the content buffer to a variable
 		ob_end_clean(); // end and remove the buffer		
 		

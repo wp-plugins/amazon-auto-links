@@ -148,19 +148,19 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 		$sLockTransient = AmazonAutoLinks_Commons::TransientPrefix . '_' . md5( "Lock_{$strTransientKey}" );
 		 
 		// Check if the transient is locked
-		if ( get_transient( $sLockTransient ) !== false ) {
+		if ( AmazonAutoLinks_WPUtilities::getTransient( $sLockTransient ) !== false ) {
 			return;	// it means the cache is being modified right now in a different process.
 		}
 		
 		// Set a lock flag transient that indicates the transient is being renewed.
-		set_transient(
+		AmazonAutoLinks_WPUtilities::setTransient(
 			$sLockTransient, 
 			time(), // the value can be anything that yields true
 			AmazonAutoLinks_Utilities::getAllowedMaxExecutionTime( 30, 30 )	// max 30 seconds
 		);
 // AmazonAutoLinks_Debug::logArray( 'set transient: ' . $strTransientKey );
 		// Save the cache
-		set_transient(
+		AmazonAutoLinks_WPUtilities::setTransient(
 			$strTransientKey, 
 			array( 
 				'mod' => $intTime ? $intTime : time(), 
@@ -170,7 +170,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 
 // AmazonAutoLinks_Debug::logArray( 'the transient is saved: ' . $strTransientKey );
 
-		// delete_transient( $sLockTransient );
+		// AmazonAutoLinks_WPUtilities::deleteTransient( $sLockTransient );
 		
 	}
 	
@@ -185,7 +185,7 @@ abstract class AmazonAutoLinks_APIRequestTransient {
 	 */ 
 	public function getTransient( $strTransientKey ) {
 		
-		$vData = get_transient( $strTransientKey );
+		$vData = AmazonAutoLinks_WPUtilities::getTransient( $strTransientKey );
 		
 		// if it's false, no transient is stored. Otherwise, some values are in there.
 		if ( $vData === false ) return false;

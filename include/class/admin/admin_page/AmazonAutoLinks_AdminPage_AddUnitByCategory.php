@@ -21,7 +21,7 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 
 		// Retrieve the submitted options. 
 		$strTransientID = isset( $_GET['transient_id'] ) ? $_GET['transient_id'] : '';
-		$arrOptions = get_transient( 'AAL_CreateUnit_' . $strTransientID );
+		$arrOptions = AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $strTransientID );
 		
 		// Note that this method is called in the validation callback as well whose page is options.php and does not have $_GET parameters.
 		if ( ! isset( $_GET['post'] ) && $arrOptions === false )
@@ -34,7 +34,7 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 		
 		$strTransientID = isset( $_GET['transient_id'] ) ? $_GET['transient_id'] : '';
 		$arrOptions = $this->oCategorySelect->renderForm();
-		set_transient( 'AAL_CreateUnit_' . $strTransientID, $arrOptions, 60*10*6*24 );	// this transient should be deleted when creating a new unit.
+		AmazonAutoLinks_WPUtilities::setTransient( 'AAL_CreateUnit_' . $strTransientID, $arrOptions, 60*10*6*24 );	// this transient should be deleted when creating a new unit.
 		
 	}
 	
@@ -94,8 +94,8 @@ abstract class AmazonAutoLinks_AdminPage_AddUnitByCategory extends AmazonAutoLin
 			$arrSanitizedFields['feed_type']['bestsellers'] = true;
 		}	
 		
-		$arrTempUnitOptions = ( array ) get_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'] );
-		set_transient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions ), 60*10*6*24 );
+		$arrTempUnitOptions = ( array ) AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'] );
+		AmazonAutoLinks_WPUtilities::setTransient( 'AAL_CreateUnit_' . $arrSanitizedFields['transient_id'], AmazonAutoLinks_Utilities::uniteArrays( $arrSanitizedFields, $arrTempUnitOptions ), 60*10*6*24 );
 			
 // AmazonAutoLinks_Debug::logArray( $arrSanitizedFields );
 		

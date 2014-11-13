@@ -157,6 +157,11 @@ You can check if your access key is valid or not with this tool (http://associat
 
 == Changelog ==
 
+= 2.0.7 - 11/14/2014 =
+- Added a error message when a template is not found.
+- Added the `Merchant ID` option in the advanced options for the `Search` unit type.
+- Fixed an issue that options were not saved with sites that enables object caching in the admin area.
+
 = 2.0.6 - 09/27/2014 =
 - Made a small optimization on the background caching routines.
 - Added the `%price%` variable for the search unit type.

@@ -268,7 +268,7 @@ class AmazonAutoLinks_ImageHandler extends IXR_Message {
 		
 		// Delete the transient so that the event method can check whether it really needs to be renewed or not.
 		// foreach( ( array ) $this->vSetURL as $strURL ) 
-			// delete_transient( $this->strRealCacheModTimePrefix . md5( $strURL ) );
+			// AmazonAutoLinks_WPUtilities::deleteTransient( $this->strRealCacheModTimePrefix . md5( $strURL ) );
 		
 		wp_schedule_single_event( time() + $this->numRenewTime, $this->strCacheRenewEventActionName, array( $this->strImageURL ) );
 
@@ -287,7 +287,7 @@ class AmazonAutoLinks_ImageHandler extends IXR_Message {
 		$strURL = $this->sanitizeScheme( $strURL );
 		
 		// Get the image data array.
-		$arrImageData = get_transient( $this->strTransientPrefix_Image . md5( $strURL ) );
+		$arrImageData = AmazonAutoLinks_WPUtilities::getTransient( $this->strTransientPrefix_Image . md5( $strURL ) );
 		if ( 
 			! is_array( $arrImageData )
 			||   ! isset( $arrImageData['mime_type'] ) 
@@ -375,7 +375,7 @@ class AmazonAutoLinks_ImageHandler extends IXR_Message {
 			return $arrData;
 			
 		// Store the transients.
-		$bSucceed = set_transient( 
+		$bSucceed = AmazonAutoLinks_WPUtilities::setTransient( 
 			$this->strTransientPrefix_Image . md5( $strURL ), 
 			$arrData,
 			$this->numCacheExpirationInterval * 100		// 100 times greater than the original duration so that it won't varnish by itself.

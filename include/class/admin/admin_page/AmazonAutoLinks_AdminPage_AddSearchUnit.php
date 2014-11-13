@@ -17,7 +17,7 @@ abstract class AmazonAutoLinks_AdminPage_AddSearchUnit extends AmazonAutoLinks_A
 	public function load_aal_add_search_unit_search_products() {
 
 		// Validation callbacks sets it in the $_POST array so check the $_REQUEST array.
-		if ( ! isset( $_REQUEST['transient_id'] ) || false === get_transient( "AAL_CreateUnit_" . $_REQUEST['transient_id'] ) ) {
+		if ( ! isset( $_REQUEST['transient_id'] ) || false === AmazonAutoLinks_WPUtilities::getTransient( "AAL_CreateUnit_" . $_REQUEST['transient_id'] ) ) {
 			
 			$strMessage = __( 'A problem occurred while loading the page of adding a search unit. Please go back to the previous page.', 'amazon-auto-links' );
 			// $this->setSettingNotice( $strMessage );
@@ -138,9 +138,9 @@ abstract class AmazonAutoLinks_AdminPage_AddSearchUnit extends AmazonAutoLinks_A
 		}
 			
 		// Save the transient
-		$arrTempUnitOptions = ( array ) get_transient( 'AAL_CreateUnit_' . $_aSanitizedFields['transient_id'] );
+		$arrTempUnitOptions = ( array ) AmazonAutoLinks_WPUtilities::getTransient( 'AAL_CreateUnit_' . $_aSanitizedFields['transient_id'] );
 		$aSavingUnitOptions = AmazonAutoLinks_Utilities::uniteArrays( $_aSanitizedFields, $arrTempUnitOptions );
-		set_transient( 'AAL_CreateUnit_' . $_aSanitizedFields['transient_id'], $aSavingUnitOptions, 60*10*6*24 );
+		AmazonAutoLinks_WPUtilities::setTransient( 'AAL_CreateUnit_' . $_aSanitizedFields['transient_id'], $aSavingUnitOptions, 60*10*6*24 );
 									
 		// Go to the next page.
 		die( wp_redirect( add_query_arg( array( 'tab' => $sTabSlug, 'transient_id' => $_aSanitizedFields['transient_id'] ) + $_GET, $_aSanitizedFields['bounce_url'] ) ) );

@@ -92,7 +92,7 @@ class AmazonAutoLinks_Shadow {
 	protected function _handleCronTasks( $aActionHooks ) {
 
 		$_sTransientName = md5( get_class() );
-		$_aTasks = get_transient( $_sTransientName );
+		$_aTasks = AmazonAutoLinks_WPUtilities::getTransient( $_sTransientName );
 		$_nNow = microtime( true );
 		$_nCalledTime = isset( $_aTasks['called'] ) ? $_aTasks['called'] : 0;
 		$_nLockedTime = isset( $_aTasks['locked'] ) ? $_aTasks['locked'] : 0;
@@ -116,11 +116,11 @@ class AmazonAutoLinks_Shadow {
 			'locked'	=>	microtime( true ),	// set/renew the locked time
 			'called'	=>	$_nCalledTime,		// inherit the called time
 		);
-		set_transient( $_sTransientName, $aFlagKeys + $_aTasks, $this->getAllowedMaxExecutionTime() ); // lock the process.
+		AmazonAutoLinks_WPUtilities::setTransient( $_sTransientName, $aFlagKeys + $_aTasks, $this->getAllowedMaxExecutionTime() ); // lock the process.
 		$this->_doTasks( $_aTasks );	
 
 		// remove tasks but leave the flag element.
-		set_transient( $_sTransientName, $aFlagKeys, $this->getAllowedMaxExecutionTime() ); // lock the process.
+		AmazonAutoLinks_WPUtilities::setTransient( $_sTransientName, $aFlagKeys, $this->getAllowedMaxExecutionTime() ); // lock the process.
 		exit;
 		
 	}
@@ -256,7 +256,7 @@ class AmazonAutoLinks_Shadow {
 		
 			// Retrieve the plugin scheduled tasks array.
 			$_sTransientName = md5( get_class() );
-			$_aTasks = get_transient( $_sTransientName );
+			$_aTasks = AmazonAutoLinks_WPUtilities::getTransient( $_sTransientName );
 			$_aTasks = $_aTasks ? $_aTasks : array();
 			$_nNow = microtime( true );
 			
@@ -272,7 +272,7 @@ class AmazonAutoLinks_Shadow {
 			$_aFlagKeys = array(
 				'called'	=>	$_nNow,
 			);
-			set_transient( $_sTransientName, $_aFlagKeys + $_aTasks, self::getAllowedMaxExecutionTime() );	// set a locked key so it prevents duplicated function calls due to too many calls caused by simultaneous accesses.
+			AmazonAutoLinks_WPUtilities::setTransient( $_sTransientName, $_aFlagKeys + $_aTasks, self::getAllowedMaxExecutionTime() );	// set a locked key so it prevents duplicated function calls due to too many calls caused by simultaneous accesses.
 			
 			// Compose a GET query array
 			$_aGet = self::$_aGet;
