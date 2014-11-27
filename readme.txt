@@ -4,9 +4,9 @@ Donate link:        http://en.michaeluno.jp/donate
 Tags:               amazon, link, links, ad, ads, advertisement, widget, widgets, sidebar, post, posts, affiliate, affiliate marketing, ecommerce, internet-marketing, marketing, monetization, revenue, shortcode
 Requires at least:  3.3
 Tested up to:       4.0.1
-Stable tag:         2.0.7
+Stable tag:         2.1.0
 License:            GPLv2 or later
-License             URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI:        http://www.gnu.org/licenses/gpl-2.0.html
 
 Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.
 
