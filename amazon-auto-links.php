@@ -8,7 +8,7 @@
 	Text Domain:    amazon-auto-links
 	Domain Path:    /language
 	Requirements:   WordPress >= 3.3 and PHP >= 5.2.4
-	Version:        2.1.0
+	Version:        2.1.1b01
 */
 
 /**
@@ -18,7 +18,7 @@
  */
 class AmazonAutoLinks_Commons_Base {
  
-	const Version        = '2.1.0';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
+	const Version        = '2.1.1b01';    // <--- DON'T FORGET TO CHANGE THIS AS WELL!!
 	const Name           = 'Amazon Auto Links';
 	const Description    = 'Generates links of Amazon products just coming out today. You just pick categories and they appear even in JavaScript disabled browsers.';
 	const URI            = 'http://en.michaeluno.jp/amazon-auto-links';
@@ -48,11 +48,11 @@ final class AmazonAutoLinks_Commons extends AmazonAutoLinks_Commons_Base {
     
 	const TextDomain                = 'amazon-auto-links';
 	const TextDomainPath            = './language';
-	const PostTypeSlug              = 'amazon_auto_links';
 	const ShortCode                 = 'amazon_auto_links';
 	const TagSlug                   = 'amazon_auto_links_tag';
 	const AdminOptionKey            = 'amazon_auto_links_admin';
 	const TransientPrefix           = 'AAL';
+	const PostTypeSlug              = 'amazon_auto_links';
 	const PostTypeSlugAutoInsert    = 'aal_auto_insert';	// amazon_auto_links_auto_insert fails creating the post type.
 	const PageSettingsSlug          = 'aal_settings';	// this is to be referred by Pro and third party extension.
 	const SectionID_License         = 'pro_license';
@@ -129,7 +129,5 @@ AmazonAutoLinks_Commons::setUp( __FILE__ );
 include( AmazonAutoLinks_Commons::$sDirPath . '/include/class/boot/AmazonAutoLinks_AutoLoad.php' );
 include( AmazonAutoLinks_Commons::$sDirPath . '/include/class/boot/AmazonAutoLinks_Bootstrap.php' );
 include( AmazonAutoLinks_Commons::$sDirPath . '/include/class/boot/AmazonAutoLinks_RegisterClasses.php' );
-// include( AmazonAutoLinks_Commons::$sDirPath . '/include/function/functions.php' );
-// new AmazonAutoLinks_AutoLoad( dirname( __FILE__ ) . '/include/class/boot/' );
 
 new AmazonAutoLinks_Bootstrap( __FILE__ );
