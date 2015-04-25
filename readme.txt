@@ -164,6 +164,10 @@ You can check if your access key is valid or not with [Scratchpad](http://associ
 
 == Changelog ==
 
+= 2.2.1 - 04/25/2015 =
+- Fixed a compatibility issue with WordPress 4.2 in template listing page.
+- Tweaked the styling of plugin template listing pages.
+
 = 2.2.0 - 04/24/2015 =
 - Added the `Preview Unit` options including one that allows the user to set a custom url slug to the unit preview page.
 
