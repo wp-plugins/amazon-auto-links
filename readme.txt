@@ -173,6 +173,11 @@ You can check if your access key is valid or not with [Scratchpad](http://associ
 
 == Changelog ==
 
+= 3.0.3 - 07/25/2015 =
+- Fixed a bug in the contextual product widget that product filter options did not take effect.
+- Fixed a bug that setting `0` for the `Max Image Size for Sub-images` option did not disable the images.
+- Fixed a bug that templates inherited from v2 options were listed twice in the template listing table.
+
 = 3.0.2 - 07/04/2015 =
 - Fixed an issue that templates were not properly loaded if the user did not upgrade the options to v3.
  
