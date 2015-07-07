@@ -173,7 +173,12 @@ You can check if your access key is valid or not with [Scratchpad](http://associ
 
 == Changelog ==
 
-= 3.0.3 - 07/25/2015 =
+= 3.0.4 - 07/07/2015 =
+- Changed debug methods not to function when the site debug mode is off.
+- Changed not to redirect the user to the listing table page after editing an auto-insert definition.
+- Fixed strict standard PHP warnings.
+
+= 3.0.3 - 07/05/2015 =
 - Fixed a bug in the contextual product widget that product filter options did not take effect.
 - Fixed a bug that setting `0` for the `Max Image Size for Sub-images` option did not disable the images.
 - Fixed a bug that templates inherited from v2 options were listed twice in the template listing table.
