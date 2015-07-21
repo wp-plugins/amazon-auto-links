@@ -37,11 +37,11 @@
         oPreviewButton.styles = {
             'margin-left': 'auto',
             'margin-right': 'auto',
-            'text-align': 'center',
+            'text-align':'center',
             'white-space': 'nowrap',
         };
-        oPreviewButton.styles_markup = '';
-        oPreviewButton.styles_hover_markup = '';
+        oPreviewButton.styles_markup        = '';
+        oPreviewButton.styles_hover_markup  = '';
 
         $( '#post' )
             .find( 'input[data-property][type="text"], input[data-property][type="number"], input[data-property][type="radio"], select[data-property]' )
@@ -229,7 +229,7 @@
           var _isButtonID = aal_button_script_preview_updator[ 'post_id' ];          
           oPreviewButton.styles_markup = '.amazon-auto-links-button.amazon-auto-links-button-' + _isButtonID + ' {\n' + oPreviewButton.styles_markup + '}';
           oPreviewButton.styles_hover_markup += oPreviewButton.getStyleByLine( 'text-decoration', 'none' );
-          oPreviewButton.styles_hover_markup = '\n\n.amazon-auto-links-button.amazon-auto-links-button-' + _isButtonID + ':hover {\n'     
+          oPreviewButton.styles_hover_markup = '\n\n.amazon-auto-links-button.amazon-auto-links-button-' + _isButtonID + ':hover {\n'
             + oPreviewButton.styles_hover_markup 
             + '}';
     }
@@ -239,7 +239,8 @@
      */
     oPreviewButton.printStyles = function(){
         
-        var _sOutput = oPreviewButton.styles_markup + oPreviewButton.styles_hover_markup;
+        var _sOutput = oPreviewButton.styles_markup 
+            + oPreviewButton.styles_hover_markup;
         var _sStyleTag = '<style id="amazon-auto-links-button-style" type="text/css">' 
                 + _sOutput 
             + '</style>';

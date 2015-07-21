@@ -255,13 +255,17 @@ abstract class AmazonAutoLinks_Unit_Base extends AmazonAutoLinks_PluginUtility {
         $arrOptions    = $aOptions;
         $arrProducts   = $aProducts;        
         
-        // Not using include_once() because templates can be loaded multiple times.
-        
-        $_bLoaded      = defined( 'WP_DEBUG' ) && WP_DEBUG
-            ? include( $sTemplatePath )
-            : @include( $sTemplatePath );
+        if ( file_exists( $sTemplatePath ) ) {
             
-        if ( ! $_bLoaded ) {
+            // Not using include_once() because templates can be loaded multiple times.
+            $_bLoaded      = defined( 'WP_DEBUG' ) && WP_DEBUG
+                ? include( $sTemplatePath )
+                : @include( $sTemplatePath ); 
+                
+            // Enqueue the impression counter script.
+            $this->_enqueueImpressionCounter();
+            
+        } else {
             echo '<p>' 
                 . AmazonAutoLinks_Registry::NAME 
                 . ': ' . __( 'the template could not be found. Try reselecting the template in the unit option page.', 'amazon-auto-links' )
@@ -290,6 +294,46 @@ abstract class AmazonAutoLinks_Unit_Base extends AmazonAutoLinks_PluginUtility {
         
     }      
         /**
+         * Stores the locales of the impression counter scripts to insert.
+         * @since       3.1.0
+         */
+        static private $_aImressionCounterSciptLocales = array();
+        /*
+         * Enqueues the impression counter script.
+         * @since       3.1.0
+         */
+        private function _enqueueImpressionCounter() {
+            
+            if ( ! $this->oOption->get( 'external_scripts', 'impression_counter_script' ) ) {
+                return;
+            }
+            $_sLocale       = $this->oUnitOption->get( 'country' );
+            $_sAssociateID  = $this->oUnitOption->get( 'associate_id' );
+            self::$_aImressionCounterSciptLocales[ $_sLocale ] = isset( self::$_aImressionCounterSciptLocales[ $_sLocale ] )
+                ? self::$_aImressionCounterSciptLocales[ $_sLocale ]
+                : array();
+            self::$_aImressionCounterSciptLocales[ $_sLocale ][ $_sAssociateID ] = $_sAssociateID;
+                
+            add_action( 'wp_footer', array( __CLASS__, '_replyToInsertImpressionCounter' ), 999 );
+            
+        }
+            /**
+             * Inserts impression counter scripts.
+             * @since       3.1.0
+             */
+            static public function _replyToInsertImpressionCounter() {
+                foreach( self::$_aImressionCounterSciptLocales as $_sLocale => $_aAssociateTags ) {
+                    foreach( $_aAssociateTags as $_sAssociateTag ) {                        
+                        echo str_replace(
+                            '%ASSOCIATE_TAG%',  // needle
+                            $_sAssociateTag,    // replacement
+                            AmazonAutoLinks_Property::getImpressionCounterScript( $_sLocale ) // haystack
+                        );
+                    }
+                }
+            }
+        
+        /**
          * Checks whether response has an error.
          * @since       3
          * @return      boolean
@@ -315,11 +359,11 @@ abstract class AmazonAutoLinks_Unit_Base extends AmazonAutoLinks_PluginUtility {
                 site_url()
             );
             return $_sHTMLCOmment
-                . "<span class='amazon-auto-links-credit'>by "
-                    ."<a href='" . esc_url( $_sVendorURL ) . "' title='" . esc_attr( AmazonAutoLinks_Registry::DESCRIPTION ) . "' rel='author'>"
+                ."<a href='" . esc_url( $_sVendorURL ) . "' title='" . esc_attr( AmazonAutoLinks_Registry::DESCRIPTION ) . "' rel='author' target='_blank' style='border: none;'>"
+                    . "<div class='amazon-auto-links-credit' style='margin: 1em 0.4em; float: right; background-image: url(" . esc_url( AmazonAutoLinks_Registry::getPluginUrl( 'asset/image/menu_icon_16x16.png' ) ) . "); background-repeat:no-repeat; background-position: 0% 50%; padding-left: 20px; font-size: smaller;'>"
                         . AmazonAutoLinks_Registry::NAME
-                    . "</a>"
-                . "</span>";
+                    . "</div>"
+                . "</a>";
                 
         }
         

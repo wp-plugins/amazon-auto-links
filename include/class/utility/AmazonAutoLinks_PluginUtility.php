@@ -207,6 +207,7 @@ class AmazonAutoLinks_PluginUtility extends AmazonAutoLinks_WPUtility {
     /**
      * Returns a button output by a given button (custom post) ID.
      * @return      string
+     * @since       3
      */
     static public function getButton( $isButtonID, $sLabel='', $bVisible=true ) {
         
@@ -235,8 +236,8 @@ class AmazonAutoLinks_PluginUtility extends AmazonAutoLinks_WPUtility {
                 . "</div>"
             . "</div>";
             
-    }
-
+    } 
+    
     /**
      * Returns the url using the Amazon SSL image server.
      * @since       3

@@ -1,10 +1,19 @@
 <?php
 /**
+ * Amazon Auto Links
+ * 
+ * 
+ * http://en.michaeluno.jp/amazon-auto-links/
+ * Copyright (c) 2013-2015 Michael Uno; Licensed GPLv2
+ * 
+ */
+
+/**
  * Provides the definitions of form fields.
  * 
  * @since           3  
  */
-class AmazonAutoLinks_FormFields_Setting_ProductFilter extends AmazonAutoLinks_FormFields_Base {
+class AmazonAutoLinks_FormFields_ProductFilter extends AmazonAutoLinks_FormFields_Base {
 
     /**
      * Returns field definition arrays.

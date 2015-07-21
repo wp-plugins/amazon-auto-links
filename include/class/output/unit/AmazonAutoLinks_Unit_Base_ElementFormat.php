@@ -8,7 +8,7 @@
  */
 
 /**
- * A one of the base classes for unit classes.
+ * One of the base classes for unit classes.
  * 
  * Provides shared methods and properties relating formating product elements.
  *
@@ -319,15 +319,69 @@ abstract class AmazonAutoLinks_Unit_Base_ElementFormat extends AmazonAutoLinks_U
         }
     
     /**
-     * Formats a button
+     * Formats a button.
+     * 
      * @since       3
+     * @return      string
      */
-    protected function _getButton( $isButtonID, $sProductURL ) {
-        $sProductURL = esc_url( $sProductURL );
-        return "<a href='{$sProductURL}' target='_blank'>"
-                . $this->getButton( $isButtonID )
-            . "</a>";
+    protected function _getButton( $iButtonType, $isButtonID, $sProductURL, $sASIN, $sLocale, $sAssociateID, $sAccessKey ) {
+        switch( ( integer ) $iButtonType ) {
+            case 1:
+                return $this->_getAddToCartButton( 
+                    $sASIN, 
+                    $sLocale, 
+                    $sAssociateID, 
+                    $isButtonID, 
+                    $sAccessKey
+                );
+            
+            default:
+            case 0:
+                return $this->_getLinkButton(
+                    $iButtonType, 
+                    $isButtonID, 
+                    $sProductURL
+                );
+            
+        }
     }    
+        /**
+         * @since       3.1.0
+         */
+        protected function _getLinkButton( $iButtonType, $isButtonID, $sProductURL ) {
+            $sProductURL = esc_url( $sProductURL );
+            return "<a href='{$sProductURL}' target='_blank'>"
+                    . $this->getButton( $isButtonID )
+                . "</a>";            
+            
+        }
+        /**
+         * Returns an add to cart button.
+         * @since       3.1.0
+         */
+        protected function _getAddToCartButton( $sASIN, $sLocale, $sAssociateID, $isButtonID, $sAccessKey='' ) {            
+        
+            $_sScheme       = is_ssl() ? 'https' : 'http';
+            $_sURL          = isset( AmazonAutoLinks_Property::$aAddToCartURLs[ $sLocale ] )
+                ? AmazonAutoLinks_Property::$aAddToCartURLs[ $sLocale ]
+                : AmazonAutoLinks_Property::$aAddToCartURLs[ 'US' ];        
+            $_sGETFormURL = esc_url(
+                add_query_arg(                  
+                    array(
+                        'AssociateTag'      => $sAssociateID,
+                        'SubscriptionId'    => $sAccessKey,
+                        'AWSAccessKeyId'    => $sAccessKey,
+                        'ASIN.1'            => $sASIN,
+                        'Quantity.1'        => 1,
+                    ),
+                    $_sScheme . '://' . $_sURL
+                )
+            );
+            return "<a href='{$_sGETFormURL}' target='_blank'>"
+                    . $this->getButton( $isButtonID )
+                . "</a>";            
+      
+        }
     
     /**
      * Formats the given url such as adding associate ID, ref=nosim, and link style.
@@ -362,9 +416,14 @@ abstract class AmazonAutoLinks_Unit_Base_ElementFormat extends AmazonAutoLinks_U
                 $sAssociateID,
                 $sLocale
             );
-            return $_oLinksTyle->get(
+            $_sURL = $_oLinksTyle->get(
                 $sURL,
                 $sASIN
+            );
+            return str_replace(
+                'amazon-auto-links-20',  // dummy url used for a request
+                $sAssociateID,
+                $_sURL
             );
 
         }

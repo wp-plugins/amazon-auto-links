@@ -7,28 +7,28 @@
  */
 
 /**
- * Adds the 'Product Filters' form section to the 'General' tab.
+ * Adds the 'External Scripts' form section to the 'General' tab.
  * 
- * @since       3
+ * @since       3.1.0
  */
-class AmazonAutoLinks_AdminPage_Setting_General_ProductFilters extends AmazonAutoLinks_AdminPage_Section_Base {
+class AmazonAutoLinks_AdminPage_Setting_General_ExternalScript extends AmazonAutoLinks_AdminPage_Section_Base {
     
     /**
      * A user constructor.
      * 
-     * @since       3
+     * @since       3.1.0
      * @return      void
      */
     protected function construct( $oFactory ) {}
     
     /**
      * Adds form fields.
-     * @since       3
+     * @since       3.1.0
      * @return      void
      */
     public function addFields( $oFactory, $sSectionID ) {
 
-        $_oFields = new AmazonAutoLinks_FormFields_ProductFilter;
+        $_oFields = new AmazonAutoLinks_FormFields_Setting_ExternalScript;
         foreach( $_oFields->get() as $_aField ) {
             $oFactory->addSettingFields(
                 $sSectionID, // the target section id,
@@ -42,21 +42,13 @@ class AmazonAutoLinks_AdminPage_Setting_General_ProductFilters extends AmazonAut
     /**
      * Validates the submitted form data.
      * 
-     * @since       3
+     * @since       3.1.0
      */
     public function validate( $aInput, $aOldInput, $oAdminPage, $aSubmitInfo ) {
     
         $_bVerified = true;
         $_aErrors   = array();
         
-        // Sanitize text inputs
-        foreach( $aInput[ 'black_list' ] as &$_sElem ) {
-            $_sElem = trim( AmazonAutoLinks_Utility::trimDelimitedElements( $_sElem, ',' ) );
-        }
-        foreach( $aInput[ 'white_list' ] as &$_sElem ) {
-            $_sElem = trim( AmazonAutoLinks_Utility::trimDelimitedElements( $_sElem, ',' ) );
-        }
-       
         // An invalid value is found. Set a field error array and an admin notice and return the old values.
         if ( ! $_bVerified ) {
             $oAdminPage->setFieldErrors( $_aErrors );     

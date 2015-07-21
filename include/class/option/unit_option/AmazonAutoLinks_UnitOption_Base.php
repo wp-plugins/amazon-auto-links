@@ -54,8 +54,10 @@ class AmazonAutoLinks_UnitOption_Base extends AmazonAutoLinks_WPUtility {
         
         'is_preview'            => false,   // for the search unit, true won't be used but just for the code consistency. 
         
-// @todo examine whether this is necessary 
-'_labels'               => array(),    // stores labels (plugin custom taxonomy)
+        
+        // stores labels associated with the units (the plugin custom taxonomy).
+        '_labels'               => array(),    
+        
 // this is for fetching by label. AND, IN, NOT IN can be used
 'operator'              => 'AND',   
 
@@ -67,6 +69,8 @@ class AmazonAutoLinks_UnitOption_Base extends AmazonAutoLinks_WPUtility {
         'customer_review_include_extra' => false,
         
         'button_id'                     => null, // a button (post) id will be assigned
+        // 3.1.0+
+        'button_type'                   => 1,   // 0: normal link, 1: add to cart
         
         'product_filters'               => array(
             'white_list'    => array(
@@ -82,7 +86,10 @@ class AmazonAutoLinks_UnitOption_Base extends AmazonAutoLinks_WPUtility {
             'case_sensitive'    => 0,   // or 1
             'no_duplicate'      => 0,   // or 1
         ),
-        
+        // 3.1.0+
+        'skip_no_image'               => false,
+       
+       
         'width'         => null,
         'width_unit'    => '%',
         'height'        => null,
@@ -90,6 +97,7 @@ class AmazonAutoLinks_UnitOption_Base extends AmazonAutoLinks_WPUtility {
         
         'show_errors'   => true,    // whether to show an error message.
         
+ 
     );
     
     /**

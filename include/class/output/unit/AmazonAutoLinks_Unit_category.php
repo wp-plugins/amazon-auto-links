@@ -205,7 +205,8 @@ class AmazonAutoLinks_Unit_category extends AmazonAutoLinks_Unit_Base_ElementFor
             : $_aURLElems[ 'scheme' ];
         return add_query_arg( 
             array( 
-                'tag' => $this->oUnitOption->get( 'associate_id' ) 
+                // 'tag' => $this->oUnitOption->get( 'associate_id' ),
+                'tag' => 'amazon-auto-links-20',
             ), 
             "{$_sScheme}://{$_aURLElems['host']}{$_aURLElems['path']}"
         );
@@ -238,14 +239,14 @@ class AmazonAutoLinks_Unit_category extends AmazonAutoLinks_Unit_Base_ElementFor
     protected function getProducts( array $aItems ) {
 
         // Disable DOM related errors to be displayed.
-        $_bDOMError              = libxml_use_internal_errors( true );
+        $_bDOMError    = libxml_use_internal_errors( true );
 
         $_aASINLocales = array();  // stores added product ASINs for performing a custom database query.
-        $_sLocale                = strtoupper( $this->oUnitOption->get( 'country' ) );
-        $_sAssociateID           = $this->oUnitOption->get( 'associate_id' );
+        $_sLocale      = strtoupper( $this->oUnitOption->get( 'country' ) );
+        $_sAssociateID = $this->oUnitOption->get( 'associate_id' );
     
         // First Iteration - Extract displaying ASINs.
-        $_aProducts = array();
+        $_aProducts    = array();
         foreach ( $aItems as $_aItem ) {
             
             // Load a DOM Object for description.
@@ -310,6 +311,11 @@ class AmazonAutoLinks_Unit_category extends AmazonAutoLinks_Unit_Base_ElementFor
                 $this->oUnitOption->get( 'image_size' ) 
             );
 
+            // Check whether no-image shuld be skipped.
+            if ( ! $this->_isNoImageAllowed( $_aProduct[ 'thumbnail_url' ] ) ) {
+                continue;
+            }
+            
             // Links - a tags
             $this->formatLinks( 
                 $_oNodeDiv, 
@@ -342,9 +348,16 @@ class AmazonAutoLinks_Unit_category extends AmazonAutoLinks_Unit_Base_ElementFor
                 ) 
             ) {            
                 $_aProduct[ 'button' ] = $this->_getButton( 
-                    $this->_getButtonID(),
-                    $_aProduct[ 'product_url' ]
+                    $this->oUnitOption->get( 'button_type' ), 
+                    $this->_getButtonID(), 
+                    $_aProduct[ 'product_url' ], 
+                    $_aProduct[ 'ASIN' ], 
+                    $_sLocale, 
+                    $_sAssociateID, 
+                    $this->_getButtonID(), 
+                    $this->oOption->get( 'authentication_keys', 'access_key' ) // public access key
                 );
+                
             }
             
             // Store the product output
